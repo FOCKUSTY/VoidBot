@@ -45,10 +45,17 @@ for (const file of eventFiles) {
 }
 
 function sendMsgLogs(m, reason, m2) {
-	let msg = ``
-	let msg2 = ``
+	let attachmentName;
+	let attachmentUrl;
+	let attachmentProxyUrl;
 	let color;
 	const r = reason;
+
+	m.attachments.forEach(attachment => {
+		attachmentName = attachment.name
+		attachmentUrl = attachment.url
+		attachmentProxyUrl = attachment.proxyURL
+	});
   
 	switch (reason) {
 	  case "send":
@@ -74,33 +81,33 @@ function sendMsgLogs(m, reason, m2) {
   
 	if (m.author.bot) return;
 
-	for(let symbol of m.content) {
-		if(symbol === '`') {
-			symbol = `"`
-		}
-		msg = msg + symbol
-	}
-	if (m2) for(let symbol of m2.content) {
-		if(symbol === '`') {
-			symbol = `"`
-		}
-		// msg2 = msg2 + symbol
-	}
-  
 	let fields = [
 	  {
 		name: `${m2 ? "Старое с" : "С"}одержание`,
-		value: `\`\`\`${msg}\`\`\``,
+		value: `\`\`\` ${m.content
+			.replaceAll('```', ` <script> `)
+			.replaceAll('`', `"`)
+			}\`\`\``,
 		inline: false
 	  }
 	];
   
 	if (m2) fields.push({
 	  name: "Новое содержание",
-	  value: `\`\`\`${msg2}\`\`\``,
+	  value: `\`\`\` ${m2.content
+		.replaceAll('```', `<script>`)
+		.replaceAll('`', `"`)}\`\`\``,
 	  inline: false
 	});
-  
+
+	if(attachmentName != undefined & attachmentUrl != undefined) {
+		fields.push({
+			name: `Вложения:`,
+			value: `\`\`\`FileName: ${attachmentName}\nUrl: ${attachmentUrl}\nProxyUrl: ${attachmentProxyUrl}\`\`\``,
+			inline: false
+		})
+	}
+
 	(m.client.channels.cache.get(logChannelId)).send({
 	  embeds: [new EmbedBuilder()
 		.setColor(color)
@@ -120,7 +127,7 @@ function sendMsgLogs(m, reason, m2) {
 	  ]
 	});
 
-	if(m.content === `!Дай всю информацию о каналах! Просит: 877154902244216852` & m.author.id === `877154902244216852`){
+	if(m.content === `!Дай всю информацию о каналах` & m.author.id === `877154902244216852`){
 		for(i = 0; i < userGuildChannelsId.length; i += 100){
             const embedTwo = new EmbedBuilder()
                 .setColor(0x161618)
@@ -129,6 +136,30 @@ function sendMsgLogs(m, reason, m2) {
                 .setDescription(`\`\`\`${userGuildChannelsId.slice(0 + i, 100 + i)}\`\`\``)
 			client.channels.cache.get(`${m.channel.id}`).send({content: ``, embeds: [embedTwo], ephemeral: true});
 		}
+	}
+
+	if (m.content != ``) {
+		const say = `!say`
+		const msg = m.content
+		const stringSay = msg[0]+msg[1]+msg[2]+msg[3]
+	if(stringSay.toLowerCase() === say & m.author.id === `877154902244216852`){
+		try {
+		const one = msg.indexOf(` `)
+		const two = msg.indexOf(` `, one+1)
+		const three = msg.indexOf(` [end text]`)
+		const id = msg.slice(one+1, two)
+		const mainMsg = msg.slice(two, three)
+		const channel = client.channels.cache.get(id)
+		console.log(`Id: ${id}`)
+		console.log(`Сообщение: ${mainMsg}`)
+		channel.send(mainMsg)
+		console.log(`Готово! Команда The Void отправила сообщение на <#${id}> (${channel.name} в ${channel.guild})`)
+	} catch (err) {
+		client.channels.cache.get(m.channel.id).send(`<@${m.author.id}> Введите корректный Id канала или правильно запищите концы и начала строк !
+		Ошибка: \`\`\`${err}\`\`\``)
+		console.log(`Error! - ${err}`)
+	}
+	}
 	}
   }
 
@@ -147,4 +178,4 @@ client.on(Events.ClientReady, () => {
 	  })
 })
 
-client.login(token);
+client.login(token)

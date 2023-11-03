@@ -25,13 +25,13 @@ const rest = new REST().setToken(token);
 
 (async () => {
 	try {
-		console.log(`Started refreshing ${commands.length} application (/) commands.`);
+		console.log(`Начало обновления ${commands.length} (/) commands`);
 
 		const data = await rest.put(
 			Routes.applicationCommands(clientId),
 			{ body: commands },
 		)
-		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+		console.log(`Успешно обновлено ${data.length} (/) commands`);
 	} catch (error) {
 		console.error(error);
 	}

@@ -14,9 +14,9 @@ module.exports = {
 			`${hat} /random`,
 			`${hat} /help`,
 			`${hat} /roles`,
+			`${hat} /say`,
 			`${hat} /test`,
 			`${hat} /thevoid`,
-			`${hat} /reload`,
 			`${hat} /server`,
 			`${hat} /user`,
 			`${hat} /version`

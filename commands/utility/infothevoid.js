@@ -1,22 +1,37 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
-	cooldown: 5,
+	cooldown: 0,
 	data: new SlashCommandBuilder()
 		.setName('thevoid')
 		.setDescription('Информация о The Void !'),
 	async execute(interaction) {
 
 		let text = `Грязный читер, как ты получил это сообщение ?`
-		const random = (Math.round(Math.random() * (8 - 3) + 3))
+		const random = (Math.round(Math.random() * (30 - 10) + 10))-10
 
-		if(random === 3) {text = `# :tophat:\n## Готовим печеньки...`
-		} else if(random===4){text = `# :tophat:\n## Вырезаем поделки...`
-		} else if(random===5){text = `# :tophat:\n## Пишем код...`
-		} else if(random===6){text = `# :tophat:\n## Обновляем Windows...`
-		} else if(random===7){text = `# :tophat:\n## Жмакаем на клавиши...`
-		} else if(random===8){text = `# :tophat:\n## Думаем о великом...`
-		} else{text=`# :tophat:\n## Признаемся в любви...`}
+		if(random===0) {text=`# :tophat:\n## Готовим печеньки...`
+		}else if(random===1){text=`# :tophat:\n## Вырезаем поделки...`
+		}else if(random===2){text=`# :tophat:\n## Пишем код...`
+		}else if(random===3){text=`# :tophat:\n## Обновляем Windows...`
+		}else if(random===4){text=`# :tophat:\n## Жмакаем на клавиши...`
+		}else if(random===5){text=`# :tophat:\n## Думаем о великом...`
+		}else if(random===6){text=`# :tophat:\n## Валя лох..!||Он сам сказал!!||`
+		}else if(random===7){text=`# :tophat:\n## Обновляем Linux...`
+		}else if(random===8){text=`# :tophat:\n## Обновляем MacOS...`
+		}else if(random===9){text=`# :tophat:\n## А также попробуйте **[Kristy](<https://discord.com/api/oauth2/authorize?client_id=1164228812217790565&permissions=275414976512&scope=applications.commands%20bot>)** !`
+		}else if(random===10){text=`# :tophat:\n## Примеряет шляпу...`
+		}else if(random===11){text=`# :tophat:\n## Удаление Bottomless Hat...`
+		}else if(random===12){text=`# :tophat:\n## Не забудьте про [The Void Community!](<https://discord.gg/5MJrRjzPec>)...`
+		}else if(random===13){text=`# :tophat:\n## Собираем кубик Рубика...`
+		}else if(random===14){text=`# :tophat:\n## Ждем компиляции...`
+		}else if(random===15){text=`# :tophat:\n## Ищем ошибки...`
+		}else if(random===16){text=`# :tophat:\n## TypeScript...`
+		}else if(random===17){text=`# :tophat:\n## Переводим текст...`
+		}else if(random===18){text=`# :tophat:\n## Пельмени...`
+		}else if(random===19){text=`# :tophat:\n## А также попробуйте FarySD !`
+		}else if(random===20){text=`# :tophat:\n## Загружаем в Github...`
+		}else{text=`# :tophat:\n## Признаемся в любви...`}
 
 		await interaction.reply({
 			content: `${text}`, fetchReply: true, ephemeral: true
@@ -25,22 +40,25 @@ module.exports = {
 		const embed = new EmbedBuilder()
 		.setColor(0x161618)
 		.setTitle('Информация о сообществе The Void')
-		.setAuthor({ name: `Bottomless Hat`, iconURL: `https://cdn.discordapp.com/icons/1053295032762908782/c349d0ecbd2d23859aba5b0f7bbec1ae.png` })
+		.setAuthor({ name: `The Void`, iconURL: `https://cdn.discordapp.com/icons/1169284741846016061/63ff0e27c4c5de492894df065ef72266.png` })
 		.setDescription(`
 		## О The Void:
- The Void - Это сообщество, созданное <@877154902244216852> для объединения некоторых социальных сетей
-Главная задача The Void - захватить мир, в хорошем смысле !
-Этот проект нацелен на объединение Discord, VK и Telegram в одно большое cообщество
- Также, The Void развлекает и объединяет людей с общими интересами! С ними не скучно, честно !
- Bottomless Hat продвигает сообщество всеми силами! Присоединяйтесь к ним, чтобы помочь в развитии !
-Взамен Вы получите новые знакомства (Возможно и вторую половинку)
-А также возможность стать значимым человек в сообществе, кто знает, вдруг Вы привнесете больший вклад !
+- The Void - Это сообщество, созданное <@877154902244216852> для объединения некоторых социальных сетей
+- Главная задача The Void - захватить мир, в хорошем смысле !
+ - Этот проект нацелен на объединение Discord, VK и Telegram в одно большое cообщество
+ - Также, The Void развлекает и объединяет людей с общими интересами! С ними не скучно, честно !
+- Bottomless Hat продвигает сообщество всеми силами! Присоединяйтесь к ним, чтобы помочь в развитии !
+ - Взамен Вы получите новые знакомства (Возможно и вторую половинку)
+ - А также возможность стать значимым человек в сообществе, кто знает, вдруг Вы привнесете больший вклад !
 
 ## О владельце:
- FOCKUSTY - Владелец сообщества The Void, а так же главных в нем серверов
-Эти сервера называются Bottomless Hat, они есть в Discord, Вконтакте и Telegram
- Сайт и сообщество создал FOCKUSTY своими лапками/палками - Не самый отличный человек, но помните, он всегда говорит правду !
-Этот человек может быть эгоистичен, но он никогда не отвернется от пользователей сообщества и в любых ситуациях попробует помочь ! Он любит всех !
+- FOCKUSTY - Владелец сообщества The Void, а так же главных в нем серверов
+ - Эти сервера называются Bottomless Hat, они есть в Discord, Вконтакте и Telegram
+- Сайт и сообщество создал FOCKUSTY своими лапками/палками - Не самый отличный человек, но помните, он всегда говорит правду !
+ - Этот человек может быть эгоистичен, но он никогда не отвернется от пользователей сообщества и в любых ситуациях попробует помочь ! Он любит всех !
+
+## О The Void Community!
+- The Void Community - это проект, который разрабатывает бота **[The Void](<https://discord.com/api/oauth2/authorize?client_id=1122199797449904179&scope=applications.commands>)**
 
 В The Void есть три основных сервера:
 ## [Telegram](<https://t.me/BottomlessHat>)
@@ -59,19 +77,20 @@ module.exports = {
 > Вы должны иметь хорошую стилистику в Discord
 > Вы должны иметь подключенное сообщество на Discord сервере
 > У Вас должен быть собственная стилистика Discord сервера (Можно использовать стилистику Bottomless Hat)
-> У Вас должны быть боты (Такие как: [JuniperBot](<https://juniper.bot>), [Gusic](<https://gusic.xyz>), [VoiceMaster](<https://voicemaster.xyz> или их аналоги на Discord сервере Telegram. Последние два не обязательны)
+> У Вас должны быть боты (Такие как: [JuniperBot](<https://juniper.bot>), [Gusic](<https://gusic.xyz>), [VoiceMaster](<https://voicemaster.xyz>) или их аналоги на Discord сервере Telegram. Последние два не обязательны)
 ## Telegram:
-> Вы должы иметь канал с обсуждениями (Коментариями)
+> Вы должы иметь канал с обсуждениями (Комментариями)
 > Вы должны публиковать разные новости
 ## VK:
 > Вы должны иметь оригинальную стилистику аватарки и шапки группы
 > Группа должна хотя бы просто существовать
 		`)
-		.setThumbnail(`https://cdn.discordapp.com/icons/1053295032762908782/c349d0ecbd2d23859aba5b0f7bbec1ae.png`)
+		.setThumbnail(`https://cdn.discordapp.com/icons/1169284741846016061/63ff0e27c4c5de492894df065ef72266.png`)
 		.setTimestamp()
-		.setFooter({ text: `Id: 1053295032762908782`, iconURL: `https://cdn.discordapp.com/icons/1053295032762908782/c349d0ecbd2d23859aba5b0f7bbec1ae.png` });
+		.setFooter({ text: `Id: 1169284741846016061`, iconURL: `https://cdn.discordapp.com/icons/1169284741846016061/63ff0e27c4c5de492894df065ef72266.png` });
 
-		interaction.editReply({content: ``, embeds: [embed], ephemeral: true}
-			)
+		setTimeout(() => {
+			interaction.editReply({content: ``, embeds: [embed], ephemeral: true})
+		}, 2000);
 	},
 };

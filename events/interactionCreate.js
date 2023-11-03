@@ -7,7 +7,7 @@ client.cooldowns = new Collection();
 module.exports = {
 	name: Events.InteractionCreate,
 	async execute(interaction) {
-		const int = interaction
+		const int = interaction;
 		
 		if (!int.isChatInputCommand()) return;
 
@@ -16,18 +16,20 @@ module.exports = {
 		const fsLog = fs.createWriteStream(	`./command.log`, {	flags: 'a'	} )
 
 const textLog = `
--------[New command use] -------
-The command was launched !:
-Command name   : ${int.commandName}
+-------[Команда была использована] -------
+Команда была запущена !:
+Command name   : /${int.commandName}
 Command used   : ${int.user}
 Command used   : ${int.user.username}
 Command used   : ${int.user.globalName}
+Command channel: ${int.channel}
+Command channel: ${int.channel.name}
 Command guild  : ${int.guild.id}
 Command guild  : ${int.guild.name}
 Command time   : <t:${Math.floor(int.createdTimestamp / 1000 - 35)}>
 Command time   : <t:${Math.floor(int.createdTimestamp / 1000 - 35)}:R>
 Test           : 
--------[New command use] -------
+-------[Команда была использована] -------
 `
 
 		// fsLog.write(textLog)
@@ -55,11 +57,11 @@ Test           :
 		
 			if (now < expirationTime) {
 				const expiredTimestamp = Math.round(expirationTime / 1000);
-				return int.reply({ content: `Пожалуйста подождите, у Вас задержка на команду \`${command.data.name}\`. Вы сможете использовать команду <t:${expiredTimestamp}:R>.`, ephemeral: true });
+				return int.reply({content: `Пожалуйста подождите, у Вас задержка на команду \`${command.data.name}\`. Вы сможете использовать команду <t:${expiredTimestamp}:R>.`, ephemeral: true });
 			}
 		}
 
-		timestamps.set(interaction.user.id, now);
+		timestamps.set(int.user.id, now);
 		setTimeout(() => timestamps.delete(int.user.id), cooldownAmount);
 
 		try {
@@ -68,5 +70,7 @@ Test           :
 			console.error(`Error executing ${int.commandName}`);
 			console.error(error);
 		}
+		
+		// await int.followUp({content: `Спасибо, что выбираете The Void !`, ephemeral: true});
 	},
 };
