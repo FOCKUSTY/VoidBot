@@ -15,6 +15,14 @@ module.exports = {
 
 		const fsLog = fs.createWriteStream(	`./command.log`, {	flags: 'a'	} )
 
+		const subcommands = []
+
+		for (let key in int.options) {
+			if (int.options.hasOwnProperty(key)) {
+				subcommands.push(key+" -> "+`"${int.options[key]}"`);
+			}
+		}
+
 const textLog = `
 -------[Команда была использована] -------
 Команда была запущена !:
@@ -28,7 +36,7 @@ Command guild  : ${int.guild.id}
 Command guild  : ${int.guild.name}
 Command time   : <t:${Math.floor(int.createdTimestamp / 1000 - 35)}>
 Command time   : <t:${Math.floor(int.createdTimestamp / 1000 - 35)}:R>
-Test           : 
+Subcommand     :\n${subcommands}\n
 -------[Команда была использована] -------
 `
 

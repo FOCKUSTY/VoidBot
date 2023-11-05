@@ -19,11 +19,10 @@ const client = new Client({intents: [GatewayIntentBits.Guilds,]})
         setInterval(() => {
             console.log(i++)
         }, 1000);
-        setTimeout(() => {
-            client.destroy();
-            process.exit();
+        setTimeout(() => {client.destroy();
+            setTimeout(() => {process.exit();}, 2000)
         }, 7000)} else {
-            console.log(`Error: Not enough rights`)
+            console.log(`Error: Недостаточно прав`)
             await interaction.reply({
                 content: `У Вас недостаточно прав`,
                 ephemeral: true

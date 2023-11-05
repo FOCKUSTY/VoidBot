@@ -1,4 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { Random } = require("random-js");
+const random = new Random();
 
 module.exports = {
 	cooldown: 0,
@@ -8,29 +10,29 @@ module.exports = {
 	async execute(interaction) {
 
 		let text = `Грязный читер, как ты получил это сообщение ?`
-		const random = (Math.round(Math.random() * (30 - 10) + 10))-10
+		const rnum = random.integer(0, 20) 
 
-		if(random===0) {text=`# :tophat:\n## Готовим печеньки...`
-		}else if(random===1){text=`# :tophat:\n## Вырезаем поделки...`
-		}else if(random===2){text=`# :tophat:\n## Пишем код...`
-		}else if(random===3){text=`# :tophat:\n## Обновляем Windows...`
-		}else if(random===4){text=`# :tophat:\n## Жмакаем на клавиши...`
-		}else if(random===5){text=`# :tophat:\n## Думаем о великом...`
-		}else if(random===6){text=`# :tophat:\n## Валя лох..!||Он сам сказал!!||`
-		}else if(random===7){text=`# :tophat:\n## Обновляем Linux...`
-		}else if(random===8){text=`# :tophat:\n## Обновляем MacOS...`
-		}else if(random===9){text=`# :tophat:\n## А также попробуйте **[Kristy](<https://discord.com/api/oauth2/authorize?client_id=1164228812217790565&permissions=275414976512&scope=applications.commands%20bot>)** !`
-		}else if(random===10){text=`# :tophat:\n## Примеряет шляпу...`
-		}else if(random===11){text=`# :tophat:\n## Удаление Bottomless Hat...`
-		}else if(random===12){text=`# :tophat:\n## Не забудьте про [The Void Community!](<https://discord.gg/5MJrRjzPec>)...`
-		}else if(random===13){text=`# :tophat:\n## Собираем кубик Рубика...`
-		}else if(random===14){text=`# :tophat:\n## Ждем компиляции...`
-		}else if(random===15){text=`# :tophat:\n## Ищем ошибки...`
-		}else if(random===16){text=`# :tophat:\n## TypeScript...`
-		}else if(random===17){text=`# :tophat:\n## Переводим текст...`
-		}else if(random===18){text=`# :tophat:\n## Пельмени...`
-		}else if(random===19){text=`# :tophat:\n## А также попробуйте FarySD !`
-		}else if(random===20){text=`# :tophat:\n## Загружаем в Github...`
+		if(rnum===0) {text=`# :tophat:\n## Готовим печеньки...`
+		}else if(rnum===1){text=`# :tophat:\n## Вырезаем поделки...`
+		}else if(rnum===2){text=`# :tophat:\n## Пишем код...`
+		}else if(rnum===3){text=`# :tophat:\n## Обновляем Windows...`
+		}else if(rnum===4){text=`# :tophat:\n## Жмакаем на клавиши...`
+		}else if(rnum===5){text=`# :tophat:\n## Думаем о великом...`
+		}else if(rnum===6){text=`# :tophat:\n## Валя лох..!||Он сам сказал!!||`
+		}else if(rnum===7){text=`# :tophat:\n## Обновляем Linux...`
+		}else if(rnum===8){text=`# :tophat:\n## Обновляем MacOS...`
+		}else if(rnum===9){text=`# :tophat:\n## А также попробуйте **[Kristy](<https://discord.com/api/oauth2/authorize?client_id=1164228812217790565&permissions=275414976512&scope=applications.commands%20bot>)** !`
+		}else if(rnum===10){text=`# :tophat:\n## Примеряет шляпу...`
+		}else if(rnum===11){text=`# :tophat:\n## Удаление Bottomless Hat...`
+		}else if(rnum===12){text=`# :tophat:\n## Не забудьте про [The Void Community!](<https://discord.gg/5MJrRjzPec>)...`
+		}else if(rnum===13){text=`# :tophat:\n## Собираем кубик Рубика...`
+		}else if(rnum===14){text=`# :tophat:\n## Ждем компиляции...`
+		}else if(rnum===15){text=`# :tophat:\n## Ищем ошибки...`
+		}else if(rnum===16){text=`# :tophat:\n## TypeScript...`
+		}else if(rnum===17){text=`# :tophat:\n## Переводим текст...`
+		}else if(rnum===18){text=`# :tophat:\n## Пельмени...`
+		}else if(rnum===19){text=`# :tophat:\n## А также попробуйте FarySD !`
+		}else if(rnum===20){text=`# :tophat:\n## Загружаем в Github...`
 		}else{text=`# :tophat:\n## Признаемся в любви...`}
 
 		await interaction.reply({

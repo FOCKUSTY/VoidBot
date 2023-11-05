@@ -1,9 +1,11 @@
 const { Client, Collection, GatewayIntentBits, Events, EmbedBuilder } = require('discord.js');
-const { token, logChannelId, logGuildId } = require('./config.json');
+const { token } = require('./config.json');
 const fs = require('node:fs');
 const path = require('node:path');
 const userGuildChannelsId = []
 const guildChannelsId = []
+const logChannelId = `1168616591051739296`
+const logGuildId = `1053295032762908782`
 
 const client = new Client({
 	intents: [
@@ -11,6 +13,7 @@ const client = new Client({
 	GatewayIntentBits.GuildMessages,
 	GatewayIntentBits.DirectMessages,
 	GatewayIntentBits.MessageContent,
+	GatewayIntentBits.GuildVoiceStates,
 ]});
 
 client.commands = new Collection();
