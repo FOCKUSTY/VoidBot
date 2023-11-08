@@ -1,6 +1,6 @@
-const { Events, Client, GatewayIntentBits, Collection } = require('discord.js');
+const { Events, Client, GatewayIntentBits, Collection, InteractionType, EmbedBuilder } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-const fs = require('node:fs');
+const { color } = require(`../developing.json`);
 
 client.cooldowns = new Collection();
 
@@ -11,9 +11,10 @@ module.exports = {
 		
 		if (!int.isChatInputCommand()) return;
 
-		const command = int.client.commands.get(int.commandName);
+		const user = int.user.globalName
+        const userIconURL = `https://cdn.discordapp.com/avatars/${int.user.id}/${int.user.avatar}.png`
 
-		const fsLog = fs.createWriteStream(	`./command.log`, {	flags: 'a'	} )
+		const command = int.client.commands.get(int.commandName);
 
 		const subcommands = []
 
@@ -78,7 +79,5 @@ Subcommand     :\n${subcommands}\n
 			console.error(`Error executing ${int.commandName}`);
 			console.error(error);
 		}
-		
-		// await int.followUp({content: `Спасибо, что выбираете The Void !`, ephemeral: true});
 	},
 };

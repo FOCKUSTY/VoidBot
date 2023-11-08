@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require(`discord.js`)
+const { EmbedBuilder, Client, GatewayIntentBits, Events } = require(`discord.js`)
 const { color, title, authorName, iconURL, footerText, description } = require(`./developing.json`)
 const developFields = [
     {name: `Как Вы можете помочь ?`, value: `Поддержать нас !`, inline: true},
@@ -15,4 +15,4 @@ module.exports = {
         .setFields(developFields)
         .setTimestamp()
         .setFooter({text: `${footerText}`, iconURL: `${iconURL}`})
-}
+};

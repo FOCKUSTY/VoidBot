@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, ChannelType, PermissionsBitField, Permissions } = require('discord.js');
 
     module.exports = {
         cooldown: 5,
@@ -10,7 +10,8 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
             option
                 .setName(`channel`)
                 .setDescription(`Канал на который вы хотите отправить сообщение`)
-                .setRequired(true))
+                .setRequired(true)
+                .addChannelTypes(ChannelType.GuildText))
         .addStringOption(option =>
             option
                 .setName('message')
@@ -18,13 +19,21 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
                 .setRequired(true)),
         async execute(interaction) {
 
-        const int = interaction
-        const channel = int.options.getChannel(`channel`)
-        const msg = int.options.getString(`message`)
+        const int = interaction;
+        const channel = int.options.getChannel(`channel`);
+        const msg = int.options.getString(`message`);
+        
+        if(!(channel.permissionsFor(interaction.client.user.id).has([PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel]))) {
+            await int.reply({
+            content:
+            `Сообщение не было доставлено на Ваш канал, возможны причины:\nВаш канал не является текстовым каналом\nУ меня не достаточно прав отправить сообщение на Ваш канал`,
+            ephemeral: true});
+            return
+        }
+        
+        channel.send(`${msg.replaceAll(`\\n`, `\n`)}`)
         
         try {
-
-        channel.send(`${msg}`)
         
         await int.reply({
 		content: `Сообщение было доставлено на: ${channel}`,
@@ -34,7 +43,7 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
         
         await int.reply({
         content:
-        `Сообщение не было доставлено на: ${channel}, возможны причины:\n${channel} - Не является текстовым каналом\nУ меня не достаточно прав отправить сообщение на ${channel}\n## Ошибка:\n\`\`\`${err}\`\`\``,
+        `Сообщение не было доставлено на Ваш канал, возможны причины:\nВаш канал не является текстовым каналом\nУ меня не достаточно прав отправить сообщение на Ваш канал\n## Ошибка:\n\`\`\`${err}\`\`\``,
         ephemeral: true});
     }
 	},

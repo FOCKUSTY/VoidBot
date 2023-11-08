@@ -12,6 +12,7 @@ module.exports = {
 		const commands = [
 			`${hat} /ping`,
 			`${hat} /random`,
+			`${hat} /voice play`
 			`${hat} /help`,
 			`${hat} /roles`,
 			`${hat} /say`,

@@ -20,7 +20,11 @@ module.exports = {
     .addSubcommand(subcommand =>
         subcommand
         .setName(`play`)
-        .setDescription(`Проиграть музыку`)),
+        .setDescription(`Проиграть музыку`))
+    .addSubcommand(subcommand =>
+        subcommand
+        .setName(`disconnect`)
+        .setDescription(`Выйти из голосового канала`)),
     async execute(interaction) {
 
         const musics = []
@@ -33,21 +37,37 @@ module.exports = {
         })}
 
         const music = random.integer(0, musics.length - 1);
-        console.log(music)
 
         const int = interaction;
 
         const user = int.user;
         const member = interaction.guild?.members.cache.get(user.id);
-        const voiceChannel = member?.voice.channel;
+        const voice = member?.voice;
+
+        if(int.options.getSubcommand()  === `disconnect`) {
+            const connection = getVoiceConnection(voice.guild.id);
+            if(connection===undefined) {
+                await int.reply({content: `Я не подключен к голосовому каналу`, ephemeral: true})
+            } else {
+                player.on(AudioPlayerStatus.Idle, () => {player.stop()});
+                connection.disconnect();
+                await int.reply({content: `Успешно отключено от голосового канала`, ephemeral: true});
+            };
+        }
+
+        else if(int.options.getSubcommand() === `play`) {
+
+        console.log(`Сейчас играет: ${musics[music]} (Индекс: ${music})`)
 
         const connection = joinVoiceChannel({
-            channelId: voiceChannel.id,
-            guildId: voiceChannel.guild.id,
-            adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+            channelId: voice.channel.id,
+            guildId: voice.channel.guild.id,
+            adapterCreator: voice.channel.guild.voiceAdapterCreator,
         });
 
+
         player.play(createAudioResource(path.join(`${musicsPath}\\${musics[music]}`)));
+        // player.play(createAudioResource(path.join(`../../sounds/nea.mp3`)));
               
         connection.subscribe(player);
 
@@ -57,14 +77,13 @@ module.exports = {
 
         player.on(AudioPlayerStatus.Idle, () => {
             player.stop()
-            connection.destroy()
-          });
-
-        console.log(`Сейчас играет: ${musics[music]}`)
+            connection.disconnect();
+        });
 
         await int.reply({
             embeds: [developEmbed],
             ephemeral: true
         });
+        }
     }
 };

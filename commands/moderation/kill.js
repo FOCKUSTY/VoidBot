@@ -1,5 +1,9 @@
 const { SlashCommandBuilder, Client, GatewayIntentBits } = require('discord.js');
-const client = new Client({intents: [GatewayIntentBits.Guilds,]})
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds
+    ]
+})
 
     module.exports = {
         cooldown: 5,
@@ -15,13 +19,12 @@ const client = new Client({intents: [GatewayIntentBits.Guilds,]})
         })
 
         console.log(`Бот сбит...`)
-        let i = 0
         setInterval(() => {
-            console.log(i++)
         }, 1000);
-        setTimeout(() => {client.destroy();
-            setTimeout(() => {process.exit();}, 2000)
-        }, 7000)} else {
+            await client.destroy();
+            setTimeout(() => {
+                process.exit();}, 2000)
+        } else {
             console.log(`Error: Недостаточно прав`)
             await interaction.reply({
                 content: `У Вас недостаточно прав`,

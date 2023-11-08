@@ -6,7 +6,7 @@ module.exports = {
 	execute(client) {
 
 		client.user.setPresence({ activities: [{ name: 'activity' }], status: 'idle' }); 
-		client.user.setActivity('The Void Community~~ /help', { type: ActivityType.Custom})
+		client.user.setActivity('The Void Community~', { type: ActivityType.Custom})
 
 		console.log(`Готово! The Void готов к работе, как ${client.user.tag}`);
 	},

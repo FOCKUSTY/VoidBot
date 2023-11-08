@@ -1,11 +1,10 @@
-const { Client, Collection, GatewayIntentBits, Events, EmbedBuilder } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, Events, InteractionType, EmbedBuilder } = require('discord.js');
 const { token } = require('./config.json');
+const { color } = require(`./developing.json`);
 const fs = require('node:fs');
 const path = require('node:path');
-const userGuildChannelsId = []
-const guildChannelsId = []
-const logChannelId = `1168616591051739296`
-const logGuildId = `1053295032762908782`
+const logChannelId = `1171197868909015102`;
+const logGuildId = `1169284741846016061`;
 
 const client = new Client({
 	intents: [
@@ -129,56 +128,38 @@ function sendMsgLogs(m, reason, m2) {
 		.addFields(fields)
 	  ]
 	});
-
-	if(m.content === `!Дай всю информацию о каналах` & m.author.id === `877154902244216852`){
-		for(i = 0; i < userGuildChannelsId.length; i += 100){
-            const embedTwo = new EmbedBuilder()
-                .setColor(0x161618)
-                .setTitle('Информация с серверов')
-                .setAuthor({ name: `Bottomless Hat`, iconURL: `https://cdn.discordapp.com/icons/1053295032762908782/c349d0ecbd2d23859aba5b0f7bbec1ae.png` })
-                .setDescription(`\`\`\`${userGuildChannelsId.slice(0 + i, 100 + i)}\`\`\``)
-			client.channels.cache.get(`${m.channel.id}`).send({content: ``, embeds: [embedTwo], ephemeral: true});
-		}
-	}
-
-	if (m.content != ``) {
-		const say = `!say`
-		const msg = m.content
-		const stringSay = msg[0]+msg[1]+msg[2]+msg[3]
-	if(stringSay.toLowerCase() === say & m.author.id === `877154902244216852`){
-		try {
-		const one = msg.indexOf(` `)
-		const two = msg.indexOf(` `, one+1)
-		const three = msg.indexOf(` [end text]`)
-		const id = msg.slice(one+1, two)
-		const mainMsg = msg.slice(two, three)
-		const channel = client.channels.cache.get(id)
-		console.log(`Id: ${id}`)
-		console.log(`Сообщение: ${mainMsg}`)
-		channel.send(mainMsg)
-		console.log(`Готово! Команда The Void отправила сообщение на <#${id}> (${channel.name} в ${channel.guild})`)
-	} catch (err) {
-		client.channels.cache.get(m.channel.id).send(`<@${m.author.id}> Введите корректный Id канала или правильно запищите концы и начала строк !
-		Ошибка: \`\`\`${err}\`\`\``)
-		console.log(`Error! - ${err}`)
-	}
-	}
-	}
-  }
+};
 
 client.on(Events.MessageCreate, (m) => sendMsgLogs(m, "send"));
 client.on(Events.MessageUpdate, (m, nm) => sendMsgLogs(m, "update", nm));
 client.on(Events.MessageDelete, (m) => sendMsgLogs(m, "delete"));
 
-client.on(Events.ClientReady, () => {
-	client.channels.cache.forEach(TextChannel => {
-		var TextChannelId = TextChannel.id
-		var TextChannelName = TextChannel.name
-		var TextChannelGuildId = TextChannel.guildId
-		var TextChannelGuild = TextChannel.guild
-		userGuildChannelsId.push(`\n${TextChannelId}/${`${TextChannelName}`.slice(0, 8)}-${`${TextChannelGuildId}`.slice(0, 2)}${`${TextChannelGuild}`.slice(0, 5)}`)
-		guildChannelsId.push(`${TextChannelId}`)
-	  })
-})
+client.on(Events.InteractionCreate, modalInteraction => {
+	const user = modalInteraction.user.globalName
+	const userIconURL = `https://cdn.discordapp.com/avatars/${modalInteraction.user.id}/${modalInteraction.user.avatar}.png`
+	const guildIconURL = `https://cdn.discordapp.com/icons/${modalInteraction.guild.id}/${modalInteraction.guild.icon}.png`
+	if(modalInteraction.type === InteractionType.ModalSubmit) {
+		modalInteraction.reply({content: `Ваша идея была доставлена!`, ephemeral: true});
+
+		const ideaTitle = modalInteraction.fields.getTextInputValue(`ideaTitle`);
+		const ideaDetails = modalInteraction.fields.getTextInputValue(`ideaDetails`);
+		
+		const embed = new EmbedBuilder()
+		.setColor(Number(color))
+		.setAuthor({name: `${user}`, iconURL: `${userIconURL}`})
+		.setTitle(`${ideaTitle}`)
+		.setThumbnail(`${userIconURL}`)
+		.setDescription(`${ideaDetails}`)
+		.setFields(
+			{name: `Пользователь:`, value: `<@${modalInteraction.user.id}>`, inline: true},
+			{name: `\n`, value: `\n`, inline: true},
+			{name: `Сервер:`, value: `${modalInteraction.guild.name}`, inline: true}
+		)
+		.setTimestamp();
+
+		client.channels.cache.get(`1171051517910986752`).send({content: ``, embeds: [embed]});
+		console.log(`Идея была доставлена\nИдея: ${ideaTitle}\nОписание: ${ideaDetails}\nНаписал: ${user} (${modalInteraction.user.id})\nС сервера: ${modalInteraction.guild.name} (${modalInteraction.guild.id})`);
+		};
+	});
 
 client.login(token)
