@@ -1,7 +1,11 @@
 # My files
 start.bat
 config.json
-src/lMusic/*
+.vscode/
+.vs/
+start.bat.lnk
+sounds/
+music/
 
 # Logs
 logs
