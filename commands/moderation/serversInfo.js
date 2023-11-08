@@ -21,16 +21,18 @@ const clientGuilds = [];
             var clientGuildId = guild.id;
             var clientGuildName = guild;
             var clientGuildOwner = guild.ownerId;
-            clientGuilds.push(`\nId: "${clientGuildId}", name: "${clientGuildName}", owner: "<@${clientGuildOwner}>"`)
+            clientGuilds.push(`\n### Name: ${clientGuildName}\n> **Id:** ${clientGuildId}\n> **Owner:** <@${clientGuildOwner}>`)
         });
 
         for(i = 0; i < clientGuilds.length; i += 100){
             const embedTwo = new EmbedBuilder()
                 .setColor(0x161618)
                 .setTitle('Информация о серверах')
-                .setAuthor({ name: `Bottomless Hat`, iconURL: `https://cdn.discordapp.com/icons/1053295032762908782/c349d0ecbd2d23859aba5b0f7bbec1ae.png` })
-                .setDescription(`\`\`\`${clientGuilds.slice(0 + i, 100 + i)}\`\`\``)
-			client.channels.cache.get(`${int.channel.id}`).send({content: ``, embeds: [embedTwo], ephemeral: true});
+                .setAuthor({ name: `The Void`, iconURL: `https://cdn.discordapp.com/icons/1169284741846016061/63ff0e27c4c5de492894df065ef72266.png` })
+                .setDescription(`${clientGuilds.slice(0 + i, 100 + i)}`)
+                .setTimestamp()
+                .setFooter({text: `The Void`, iconURL: `https://cdn.discordapp.com/icons/1169284741846016061/63ff0e27c4c5de492894df065ef72266.png`})
+            await int.followUp({content: ``, embeds: [embedTwo], ephemeral: true})
 		}} else {
             await int.reply({
                 content: `У Вас нет прав`,

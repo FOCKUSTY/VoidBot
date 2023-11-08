@@ -1,6 +1,30 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { Random } = require("random-js");
 const random = new Random();
+const texts = [
+	`# :tophat:\n## Готовим печеньки...`,
+	`# :tophat:\n## Вырезаем поделки...`,
+	`# :tophat:\n## Пишем код...`,
+	`# :tophat:\n## Обновляем Windows...`,
+	`# :tophat:\n## Жмакаем на клавиши...`,
+	`# :tophat:\n## Думаем о великом...`,
+	`# :tophat:\n## Валя лох..!||Он сам сказал!!||`,
+	`# :tophat:\n## Обновляем Linux...`,
+	`# :tophat:\n## Обновляем MacOS...`,
+	`# :tophat:\n## Примеряет шляпу...`,
+	`# :tophat:\n## Удаление Bottomless Hat...`,
+	`# :tophat:\n## Не забудьте про [The Void Community!](<https://discord.gg/5MJrRjzPec>)...`,
+	`# :tophat:\n## Собираем кубик Рубика...`,
+	`# :tophat:\n## Ждем компиляции...`,
+	`# :tophat:\n## Ищем ошибки...`,
+	`# :tophat:\n## А также попробуйте **[Kristy](<https://discord.com/api/oauth2/authorize?client_id=1164228812217790565&permissions=275414976512&scope=applications.commands%20bot>)** !`,
+	`# :tophat:\n## TypeScript...`,
+	`# :tophat:\n## Переводим текст...`,
+	`# :tophat:\n## Пельмени...`,
+	`# :tophat:\n## А также попробуйте FarySD !`,
+	`# :tophat:\n## Загружаем в Github...`,
+]
+let text = `Всё это фейк`
 
 module.exports = {
 	cooldown: 0,
@@ -9,31 +33,8 @@ module.exports = {
 		.setDescription('Информация о The Void !'),
 	async execute(interaction) {
 
-		let text = `Грязный читер, как ты получил это сообщение ?`
-		const rnum = random.integer(0, 20) 
-
-		if(rnum===0) {text=`# :tophat:\n## Готовим печеньки...`
-		}else if(rnum===1){text=`# :tophat:\n## Вырезаем поделки...`
-		}else if(rnum===2){text=`# :tophat:\n## Пишем код...`
-		}else if(rnum===3){text=`# :tophat:\n## Обновляем Windows...`
-		}else if(rnum===4){text=`# :tophat:\n## Жмакаем на клавиши...`
-		}else if(rnum===5){text=`# :tophat:\n## Думаем о великом...`
-		}else if(rnum===6){text=`# :tophat:\n## Валя лох..!||Он сам сказал!!||`
-		}else if(rnum===7){text=`# :tophat:\n## Обновляем Linux...`
-		}else if(rnum===8){text=`# :tophat:\n## Обновляем MacOS...`
-		}else if(rnum===9){text=`# :tophat:\n## А также попробуйте **[Kristy](<https://discord.com/api/oauth2/authorize?client_id=1164228812217790565&permissions=275414976512&scope=applications.commands%20bot>)** !`
-		}else if(rnum===10){text=`# :tophat:\n## Примеряет шляпу...`
-		}else if(rnum===11){text=`# :tophat:\n## Удаление Bottomless Hat...`
-		}else if(rnum===12){text=`# :tophat:\n## Не забудьте про [The Void Community!](<https://discord.gg/5MJrRjzPec>)...`
-		}else if(rnum===13){text=`# :tophat:\n## Собираем кубик Рубика...`
-		}else if(rnum===14){text=`# :tophat:\n## Ждем компиляции...`
-		}else if(rnum===15){text=`# :tophat:\n## Ищем ошибки...`
-		}else if(rnum===16){text=`# :tophat:\n## TypeScript...`
-		}else if(rnum===17){text=`# :tophat:\n## Переводим текст...`
-		}else if(rnum===18){text=`# :tophat:\n## Пельмени...`
-		}else if(rnum===19){text=`# :tophat:\n## А также попробуйте FarySD !`
-		}else if(rnum===20){text=`# :tophat:\n## Загружаем в Github...`
-		}else{text=`# :tophat:\n## Признаемся в любви...`}
+		const rnum = random.integer(0, texts.length-1)
+		text = texts[rnum]
 
 		await interaction.reply({
 			content: `${text}`, fetchReply: true, ephemeral: true
@@ -93,6 +94,6 @@ module.exports = {
 
 		setTimeout(() => {
 			interaction.editReply({content: ``, embeds: [embed], ephemeral: true})
-		}, 2000);
+		}, 2400);
 	},
 };

@@ -1,6 +1,7 @@
 const { Events, Client, GatewayIntentBits, Collection, InteractionType, EmbedBuilder } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 const { color } = require(`../developing.json`);
+const { colors } = require(`colors`)
 
 client.cooldowns = new Collection();
 
@@ -20,30 +21,22 @@ module.exports = {
 
 		for (let key in int.options) {
 			if (int.options.hasOwnProperty(key)) {
-				subcommands.push(key+" -> "+`"${int.options[key]}"`);
+				if(int.options[`_group`]!=null){subcommands.push(`Группа: ${int.options[`_group`]}`)};
+				if(int.options[`_subcommand`]!=null){subcommands.push(`Подкоманда: ${int.options[`_subcommand`]}`)};
+				if(int.options[`_group`]===null && int.options[`_subcommand`]===null) {subcommands.push(`Нет подкоманд`)};
+				break;
 			}
 		}
 
-const textLog = `
--------[Команда была использована] -------
-Команда была запущена !:
-Command name   : /${int.commandName}
-Command used   : ${int.user}
-Command used   : ${int.user.username}
-Command used   : ${int.user.globalName}
-Command channel: ${int.channel}
-Command channel: ${int.channel.name}
-Command guild  : ${int.guild.id}
-Command guild  : ${int.guild.name}
-Command time   : <t:${Math.floor(int.createdTimestamp / 1000 - 35)}>
-Command time   : <t:${Math.floor(int.createdTimestamp / 1000 - 35)}:R>
-Subcommand     :\n${subcommands}\n
--------[Команда была использована] -------
-`
-
-		// fsLog.write(textLog)
-		console.log(textLog)
-
+console.log(
+	`Было замечено использование команды`.bold + `\n` +
+	`Название команды: ` + `/${int.commandName}`.red + `\n` +
+	`${subcommands}` + `\n` +
+	`Команду использовал: ` + `${int.user} - ${int.user.username} (${int.user.globalName})`.green + `\n` +
+	`В канале: ` + `${int.channel} - (${int.channel.name})`.yellow + `\n` +
+	`Время использования: ` + `<t:${Math.floor(int.createdTimestamp / 1000 - 35)}> (<t:${Math.floor(int.createdTimestamp / 1000 - 35)}:R>)`.cyan + `\n` +
+	`Время в часах: ` + ``+`${new Date().toLocaleString()}`.magenta+`` + '\n'
+)
 		
 		if (!command) {
 			console.error(`No command matching ${int.commandName} was found.`);

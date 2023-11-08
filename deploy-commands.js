@@ -2,6 +2,7 @@ const { REST, Routes } = require('discord.js');
 const { clientId, token } = require('./config.json');
 const fs = require('node:fs');
 const path = require('node:path');
+const { colors } = require(`colors`)
 
 const commands = [];
 const foldersPath = path.join(__dirname, 'commands');
@@ -16,7 +17,7 @@ for (const folder of commandFolders) {
 		if ('data' in command && 'execute' in command) {
 			commands.push(command.data.toJSON());
 		} else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+			console.log(`[WARNING] The command at `+`${filePath}`.bold+` is missing a required "data" or "execute" property.`);
 		}
 	}
 };
@@ -25,13 +26,13 @@ const rest = new REST().setToken(token);
 
 (async () => {
 	try {
-		console.log(`Начало обновления ${commands.length} (/) commands`);
+		console.log(`Начало обновления `+`${commands.length} (/)`.cyan+` команд(ы)`);
 
 		const data = await rest.put(
 			Routes.applicationCommands(clientId),
 			{ body: commands },
 		)
-		console.log(`Успешно обновлено ${data.length} (/) commands`);
+		console.log(`Успешно обновлено `+`${data.length} (/)`.cyan+` команд(ы)`);
 	} catch (error) {
 		console.error(error);
 	}

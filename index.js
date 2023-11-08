@@ -162,4 +162,6 @@ client.on(Events.InteractionCreate, modalInteraction => {
 		};
 	});
 
+// console.log(new Date().getSeconds())
+
 client.login(token)

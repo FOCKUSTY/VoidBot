@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('node:fs');
 const { Random } = require("random-js");
 const random = new Random();
+const { colors } = require(`colors`)
 
 const player = createAudioPlayer({
     behaviors: {
@@ -36,7 +37,7 @@ module.exports = {
             musics.push(e);
         })}
 
-        const music = random.integer(0, musics.length - 1);
+        const music = random.integer(0, musics.length-1);
 
         const int = interaction;
 
@@ -47,7 +48,7 @@ module.exports = {
         if(int.options.getSubcommand()  === `disconnect`) {
             const connection = getVoiceConnection(voice.guild.id);
             if(connection===undefined) {
-                await int.reply({content: `Я не подключен к голосовому каналу`, ephemeral: true})
+                await int.reply({content: `Нет подключения к голосовому каналу`, ephemeral: true})
             } else {
                 player.on(AudioPlayerStatus.Idle, () => {player.stop()});
                 connection.disconnect();
@@ -57,7 +58,7 @@ module.exports = {
 
         else if(int.options.getSubcommand() === `play`) {
 
-        console.log(`Сейчас играет: ${musics[music]} (Индекс: ${music})`)
+        console.log(`Сейчас играет: `+`${musics[music]}`.cyan+` (Индекс: `+`${music}`.red+`)`+`\n`)
 
         const connection = joinVoiceChannel({
             channelId: voice.channel.id,

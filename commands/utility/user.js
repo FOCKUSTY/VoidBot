@@ -46,7 +46,7 @@ module.exports = {
 			value: `${int.user} (${int.user.username})\n\n**Участник ${member.user.username} присоединился:**\n${member.joinedAt}`, inline: true	},
 			{	name: `Роли участника:`, value: `${guildUserRoles}`, inline: true},
 		)
-		.setThumbnail(`https://cdn.discordapp.com/avatars/${int.user.id}/${int.user.avatar}.png`)
+		.setThumbnail(`https://cdn.discordapp.com/avatars/${member.user.id}/${member.user.avatar}.png`)
 		.setTimestamp()
 		.setFooter({ text: `${int.guild.id} - ${int.guild.name}`, iconURL: `https://cdn.discordapp.com/icons/${int.guild.id}/${int.guild.icon}.png` });
 
