@@ -1,5 +1,6 @@
 # My files
 start.bat
+config.json
 src/lMusic/*
 
 # Logs
