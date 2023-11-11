@@ -1,13 +1,23 @@
 const { AudioPlayerStatus, NoSubscriberBehavior, createAudioPlayer, createAudioResource, joinVoiceChannel } = require("@discordjs/voice");
 const { Events } = require("discord.js");
+const { featureUsers } = require(`../whiteList`);
 const path = require('path');
-
-const authorBotId = `877154902244216852`;
+const botId = `1122199797449904179`;
+let booleanVar = false;
 
 module.exports = {
   name: Events.VoiceStateUpdate,
   async execute(oldVS, vs) {
-    if (vs.member?.id != authorBotId) return;
+    
+    if (vs.member.id === botId) return;
+    
+    featureUsers.forEach(featureUser => {
+      if(vs.member?.id===featureUser) {
+          booleanVar = true;
+          return;
+      }
+    });
+    if (booleanVar!=true) return;
 
     const connectionHelper = (vs, off) => {
 

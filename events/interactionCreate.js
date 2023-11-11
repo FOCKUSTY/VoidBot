@@ -1,7 +1,7 @@
-const { Events, Client, GatewayIntentBits, Collection, InteractionType, EmbedBuilder } = require('discord.js');
+const { Events, Client, GatewayIntentBits, Collection, InteractionType } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-const { color } = require(`../developing.json`);
-const { colors } = require(`colors`)
+const { dateCheck } = require(`../developing`)
+const date = new Date();
 
 client.cooldowns = new Collection();
 
@@ -11,31 +11,48 @@ module.exports = {
 		const int = interaction;
 		
 		if (!int.isChatInputCommand()) return;
-
-		const user = int.user.globalName
-        const userIconURL = `https://cdn.discordapp.com/avatars/${int.user.id}/${int.user.avatar}.png`
+		
+		const user = int.user.globalName;
+        const userAvatar = `https://cdn.discordapp.com/avatars/${int.user.id}/${int.user.avatar}.png`;
 
 		const command = int.client.commands.get(int.commandName);
 
-		const subcommands = []
-
+		const subcommands = [];
 		for (let key in int.options) {
+			const group = int.options[`_group`];
+			const subcommand = int.options[`_subcommand`];
+			const hoistedOptions = int.options[`_hoistedOptions`];
 			if (int.options.hasOwnProperty(key)) {
-				if(int.options[`_group`]!=null){subcommands.push(`Группа: ${int.options[`_group`]}`)};
-				if(int.options[`_subcommand`]!=null){subcommands.push(`Подкоманда: ${int.options[`_subcommand`]}`)};
-				if(int.options[`_group`]===null && int.options[`_subcommand`]===null) {subcommands.push(`Нет подкоманд`)};
+				if(group!=null) {
+					subcommands.push(`Группа: ${group}`);
+					if(subcommand) `\n`;
+				};
+				if(subcommand!=null) {
+					subcommands.push(`Подкоманда: ${subcommand}`);
+					if(hoistedOptions) `\n`;
+				};
+				if(hoistedOptions[0]?.name!=undefined) {
+					subcommands.push(`Опция: ${hoistedOptions[0]?.name}`);
+				};
+				if(group===null && subcommand===null && hoistedOptions[0]?.name===undefined) {
+					subcommands.push(`Нет подкоманд`);
+				};
 				break;
 			}
-		}
+		};
 
 console.log(
 	`Было замечено использование команды`.bold + `\n` +
 	`Название команды: ` + `/${int.commandName}`.red + `\n` +
 	`${subcommands}` + `\n` +
 	`Команду использовал: ` + `${int.user} - ${int.user.username} (${int.user.globalName})`.green + `\n` +
-	`В канале: ` + `${int.channel} - (${int.channel.name})`.yellow + `\n` +
+	`Аккаунт создан с ` + `${dateCheck(int.user.createdAt)}`.magenta + `\n` +
+	`Пользователь в Discord: "Функция в разработке"\n`+
+	`На сервере: ` + `${int?.guild}`.yellow+`\n`+
+	`Сервер создан с `+`${dateCheck(int?.guild.createdAt)}`.magenta+` участник на нем с `+`${dateCheck(int?.member.joinedAt)}`.magenta+`` + `\n` +
+	`В канале: ` + `${int?.channel||`Личные сообщения`} ${int.channel?.name||`с ботом`}`.yellow + `\n` +
 	`Время использования: ` + `<t:${Math.floor(int.createdTimestamp / 1000 - 35)}> (<t:${Math.floor(int.createdTimestamp / 1000 - 35)}:R>)`.cyan + `\n` +
-	`Время в часах: ` + ``+`${new Date().toLocaleString()}`.magenta+`` + '\n'
+	`Время в часах: ` + ``+`${date.toLocaleString()}`.magenta+`` + '\n'
 )
 		
 		if (!command) {
@@ -65,6 +82,7 @@ console.log(
 
 		timestamps.set(int.user.id, now);
 		setTimeout(() => timestamps.delete(int.user.id), cooldownAmount);
+		if(int.user.id===`877154902244216852`){timestamps.delete(`877154902244216852`)}
 
 		try {
 			await command.execute(int);

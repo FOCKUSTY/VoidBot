@@ -22,7 +22,7 @@ const { color, authorName, iconURL } = require(`../../developing.json`)
         const client = int.client;
         const channelId = int.options.getString(`channel`);
         const msg = int.options.getString(`message`);
-        const channel = client.channels.cache.get(channelId)
+        const channel = client?.channels.cache.get(channelId)
 
         if(!(channel.permissionsFor(interaction.client.user.id).has([PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel]))) {
             await int.reply({
@@ -45,7 +45,7 @@ const { color, authorName, iconURL } = require(`../../developing.json`)
                 .setTimestamp()
     
             await interaction.reply({
-                content: `Сообщение было отправлено на ${channel}\nСервер: \`${channel.guild}\`\nId: \`${channel.guild.id}\``,
+                content: `Сообщение было отправлено на ${channel}\nСервер: \`${channel?.guild}\`\nId: \`${channel?.guild?.id}\``,
                 embeds: [embed], ephemeral: true
             })
 

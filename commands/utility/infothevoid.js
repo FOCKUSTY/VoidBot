@@ -1,29 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { Random } = require("random-js");
+const { download } = require(`../../developing`)
 const random = new Random();
-const texts = [
-	`# :tophat:\n## Готовим печеньки...`,
-	`# :tophat:\n## Вырезаем поделки...`,
-	`# :tophat:\n## Пишем код...`,
-	`# :tophat:\n## Обновляем Windows...`,
-	`# :tophat:\n## Жмакаем на клавиши...`,
-	`# :tophat:\n## Думаем о великом...`,
-	`# :tophat:\n## Валя лох..!||Он сам сказал!!||`,
-	`# :tophat:\n## Обновляем Linux...`,
-	`# :tophat:\n## Обновляем MacOS...`,
-	`# :tophat:\n## Примеряет шляпу...`,
-	`# :tophat:\n## Удаление Bottomless Hat...`,
-	`# :tophat:\n## Не забудьте про [The Void Community!](<https://discord.gg/5MJrRjzPec>)...`,
-	`# :tophat:\n## Собираем кубик Рубика...`,
-	`# :tophat:\n## Ждем компиляции...`,
-	`# :tophat:\n## Ищем ошибки...`,
-	`# :tophat:\n## А также попробуйте **[Kristy](<https://discord.com/api/oauth2/authorize?client_id=1164228812217790565&permissions=275414976512&scope=applications.commands%20bot>)** !`,
-	`# :tophat:\n## TypeScript...`,
-	`# :tophat:\n## Переводим текст...`,
-	`# :tophat:\n## Пельмени...`,
-	`# :tophat:\n## А также попробуйте FarySD !`,
-	`# :tophat:\n## Загружаем в Github...`,
-]
 let text = `Всё это фейк`
 
 module.exports = {
@@ -33,8 +11,8 @@ module.exports = {
 		.setDescription('Информация о The Void !'),
 	async execute(interaction) {
 
-		const rnum = random.integer(0, texts.length-1)
-		text = texts[rnum]
+		const rnum = random.integer(0, download.length-1)
+		text = download[rnum]
 
 		await interaction.reply({
 			content: `${text}`, fetchReply: true, ephemeral: true

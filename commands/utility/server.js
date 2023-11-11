@@ -20,11 +20,11 @@ module.exports = {
 
 		var guildDescriptionName
 		var guildDescriptionValue
-		if(int.guild.description == null) {
+		if(int.guild?.description == null) {
 			guildDescriptionName = `На сервере нет описания`
 			guildDescriptionValue = `**Даже не ищите его**`
 		} else {guildDescriptionName = `Описание сервера: `
-				guildDescriptionValue = int.guild.description}
+				guildDescriptionValue = int.guild?.description}
 		
 		await int.reply({ content: '# :tophat:\n Ищем информацию...', fetchReply: true, ephemeral: true});
 

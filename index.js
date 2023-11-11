@@ -137,7 +137,7 @@ client.on(Events.MessageDelete, (m) => sendMsgLogs(m, "delete"));
 client.on(Events.InteractionCreate, modalInteraction => {
 	const user = modalInteraction.user.globalName
 	const userIconURL = `https://cdn.discordapp.com/avatars/${modalInteraction.user.id}/${modalInteraction.user.avatar}.png`
-	const guildIconURL = `https://cdn.discordapp.com/icons/${modalInteraction.guild.id}/${modalInteraction.guild.icon}.png`
+	const guildIconURL = `https://cdn.discordapp.com/icons/${modalInteraction.guild?.id||modalInteraction.user.id}/${modalInteraction.guild?.icon||modalInteraction.user.avatar}.png`
 	if(modalInteraction.type === InteractionType.ModalSubmit) {
 		modalInteraction.reply({content: `Ваша идея была доставлена!`, ephemeral: true});
 
@@ -149,19 +149,17 @@ client.on(Events.InteractionCreate, modalInteraction => {
 		.setAuthor({name: `${user}`, iconURL: `${userIconURL}`})
 		.setTitle(`${ideaTitle}`)
 		.setThumbnail(`${userIconURL}`)
-		.setDescription(`${ideaDetails}`)
+		.setDescription(`${guildIconURL}`)
 		.setFields(
 			{name: `Пользователь:`, value: `<@${modalInteraction.user.id}>`, inline: true},
 			{name: `\n`, value: `\n`, inline: true},
-			{name: `Сервер:`, value: `${modalInteraction.guild.name}`, inline: true}
+			{name: `Сервер:`, value: `${modalInteraction.guild?.name||`Не на сервере`}`, inline: true}
 		)
 		.setTimestamp();
-
+		
 		client.channels.cache.get(`1171051517910986752`).send({content: ``, embeds: [embed]});
-		console.log(`Идея была доставлена\nИдея: ${ideaTitle}\nОписание: ${ideaDetails}\nНаписал: ${user} (${modalInteraction.user.id})\nС сервера: ${modalInteraction.guild.name} (${modalInteraction.guild.id})`);
+		console.log(`Идея была доставлена\nИдея: ${ideaTitle}\nОписание: ${ideaDetails}\nНаписал: ${user} (${modalInteraction.user.id})\nС сервера: ${modalInteraction.guild?.name||`Не на сервере`} (${modalInteraction.guild?.id||``})\n`);
 		};
 	});
-
-// console.log(new Date().getSeconds())
 
 client.login(token)
