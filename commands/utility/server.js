@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, time } = require('discord.js');
 let verLevel = [
 	`Нет`,
 	`Маленький`,
@@ -14,6 +14,7 @@ module.exports = {
 		.setDescription('Информация о сервере.'),
 	async execute(interaction) {
 		const int = interaction
+		if(int.guild!=undefined||int.guild!=null) {
 
 		const numerVerLevel = int.guild.verificationLevel
 		let textVerLevel = verLevel[numerVerLevel]
@@ -36,7 +37,7 @@ module.exports = {
 	.setAuthor({ name: int.guild.name, iconURL: `https://cdn.discordapp.com/icons/${int.guild.id}/${int.guild.icon}.png` })
 	.setDescription(`Информация о сервере ${int.guild.name}`)
     .addFields(
-		{ name: `Сервер создан`, value: `${int.guild.createdAt}`, inline: true },
+		{ name: `Сервер создан`, value: `${time(int.guild.createdAt)}\nЭто:\n${time(int.guild.createdAt, `R`)}`, inline: true },
 		{ name: `${guildDescriptionName}`, value: `${guildDescriptionValue}`, inline: true },
         { name: `На сервере`, value: `${int.guild.memberCount} участника`, inline: true },
 		{ name: 'Количество ролей на сервере:', value: `${totalRoles}`, inline: true },
@@ -51,6 +52,6 @@ module.exports = {
 				content: ``,
 				embeds: [embed],
 				ephemeral: true
-				})
+				})} else {await int.reply({content: `Данный тип команд работает только на сервере`, ephemeral: true})}
 		}
 	};

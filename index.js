@@ -51,7 +51,6 @@ function sendMsgLogs(m, reason, m2) {
 	let attachmentUrl;
 	let attachmentProxyUrl;
 	let color;
-	const r = reason;
 
 	m.attachments.forEach(attachment => {
 		attachmentName = attachment.name
@@ -83,51 +82,72 @@ function sendMsgLogs(m, reason, m2) {
   
 	if (m.author.bot) return;
 
-	let fields = [
-	  {
-		name: `${m2 ? "Старое с" : "С"}одержание`,
-		value: `\`\`\` ${m.content
-			.replaceAll('```', ` <script> `)
-			.replaceAll('`', `"`)
+	const fields = [
+		{
+		  name: `${m2 ? "Старое с" : "С"}одержание`,
+		  value: `\`\`\`${m.content ? m.content
+			.replaceAll("```", "<code>")
+			.replaceAll("`", "\"")
+			:
+			"<Пусто>"
 			}\`\`\``,
-		inline: false
-	  }
-	];
-  
-	if (m2) fields.push({
-	  name: "Новое содержание",
-	  value: `\`\`\` ${m2.content
-		.replaceAll('```', `<script>`)
-		.replaceAll('`', `"`)}\`\`\``,
-	  inline: false
-	});
-
-	if(attachmentName != undefined & attachmentUrl != undefined) {
+		  inline: false,
+		},
+	  ];
+	  if (m.attachments.size > 0) {
 		fields.push({
-			name: `Вложения:`,
-			value: `\`\`\`FileName: ${attachmentName}\nUrl: ${attachmentUrl}\nProxyUrl: ${attachmentProxyUrl}\`\`\``,
-			inline: false
-		})
-	}
+		  name: `${m2 ? "Старые в" : "В"}ложения`,
+		  value: m.attachments
+			.map((att) => `\`\`\`${att.url}\`\`\``)
+			.join(`\n&&\n`),
+		  inline: false,
+		});
+	  }
+	
+	  if (m2) {
+		fields.push({
+		  name: "Новое содержание",
+		  value: `\`\`\`${m2.content ? m2.content
+			.replaceAll("```", "<code>")
+			.replaceAll("`", "\"")
+			:
+			"<Пусто>"
+			}\`\`\``,
+		  inline: false,
+		});
+		if (m2.attachments.size > 0) {
+		  fields.push({
+			name: "Новые вложения",
+			value: `${m2.attachments
+			  .map((att) => `\`\`\`${att.url}\`\`\``)
+			  .join(`\n&&\n`)}`,
+			inline: false,
+		  });
+		}
+	  }
 
-	(m.client.channels.cache.get(logChannelId)).send({
-	  embeds: [new EmbedBuilder()
-		.setColor(color)
-		.setAuthor({
-		  name: `${m.author.username} (${m.author.id})`,
-		  iconURL: m.author.avatarURL() ? m.author.avatarURL() : m.author.defaultAvatarURL
-		})
-		.setTitle(`${m.client.guilds.cache.get(logGuildId)?.name}`)
-		.setDescription(
-			`**[Сообщение](${m.url})** было ${reason} от ${m.author} (${m.url})\n
-			На сервере ${m.guild} - ${m.guildId}\n
-			В канале **[${m.channel.name}](${m.channel.url})** (${m.channel.url})`
-			)
-		.setThumbnail(m.guild?.iconURL())
-		.setTimestamp()
-		.addFields(fields)
-	  ]
-	});
+	  try {
+		(m.client.channels.cache.get(logChannelId)).send({
+			embeds: [new EmbedBuilder()
+			  .setColor(color)
+			  .setAuthor({
+				name: `${m.author.username} (${m.author.id})`,
+				iconURL: m.author.avatarURL() ? m.author.avatarURL() : m.author.defaultAvatarURL
+			  })
+			  .setTitle(`${m.client.guilds.cache.get(logGuildId)?.name}`)
+			  .setDescription(
+				  `**[Сообщение](${m.url})** было ${reason} от ${m.author} (${m.url})\n
+				  На сервере ${m.guild} - ${m.guildId}\n
+				  В канале **[${m.channel.name}](${m.channel.url})** (${m.channel.url})`
+				  )
+			  .setThumbnail(m.guild?.iconURL())
+			  .setTimestamp()
+			  .addFields(fields)
+			]
+		  });
+	  } catch (error) {
+		console.log(error)
+	  }
 };
 
 client.on(Events.MessageCreate, (m) => sendMsgLogs(m, "send"));
@@ -136,29 +156,33 @@ client.on(Events.MessageDelete, (m) => sendMsgLogs(m, "delete"));
 
 client.on(Events.InteractionCreate, modalInteraction => {
 	const user = modalInteraction.user.globalName
-	const userIconURL = `https://cdn.discordapp.com/avatars/${modalInteraction.user.id}/${modalInteraction.user.avatar}.png`
-	const guildIconURL = `https://cdn.discordapp.com/icons/${modalInteraction.guild?.id||modalInteraction.user.id}/${modalInteraction.guild?.icon||modalInteraction.user.avatar}.png`
+	let iconURL
+	if(modalInteraction.guild!=undefined||modalInteraction!=null) {
+		iconURL = `https://cdn.discordapp.com/avatars/${modalInteraction.user.id}/${modalInteraction.user.avatar}.png`
+	} else {
+		iconURL = `https://cdn.discordapp.com/icons/${modalInteraction?.guild.id}/${modalInteraction?.guild.icon}.png`
+	}
 	if(modalInteraction.type === InteractionType.ModalSubmit) {
 		modalInteraction.reply({content: `Ваша идея была доставлена!`, ephemeral: true});
 
 		const ideaTitle = modalInteraction.fields.getTextInputValue(`ideaTitle`);
 		const ideaDetails = modalInteraction.fields.getTextInputValue(`ideaDetails`);
-		
-		const embed = new EmbedBuilder()
-		.setColor(Number(color))
-		.setAuthor({name: `${user}`, iconURL: `${userIconURL}`})
-		.setTitle(`${ideaTitle}`)
-		.setThumbnail(`${userIconURL}`)
-		.setDescription(`${guildIconURL}`)
-		.setFields(
-			{name: `Пользователь:`, value: `<@${modalInteraction.user.id}>`, inline: true},
-			{name: `\n`, value: `\n`, inline: true},
-			{name: `Сервер:`, value: `${modalInteraction.guild?.name||`Не на сервере`}`, inline: true}
-		)
-		.setTimestamp();
-		
-		client.channels.cache.get(`1171051517910986752`).send({content: ``, embeds: [embed]});
-		console.log(`Идея была доставлена\nИдея: ${ideaTitle}\nОписание: ${ideaDetails}\nНаписал: ${user} (${modalInteraction.user.id})\nС сервера: ${modalInteraction.guild?.name||`Не на сервере`} (${modalInteraction.guild?.id||``})\n`);
+				
+			const embed = new EmbedBuilder()
+			.setColor(Number(color))
+			.setAuthor({name: `${user}`, iconURL: `${iconURL}`})
+			.setTitle(`${ideaTitle}`)
+			.setThumbnail(`${iconURL}`)
+			.setDescription(`${ideaDetails}`)
+			.setFields(
+				{name: `Пользователь:`, value: `<@${modalInteraction.user.id}>`, inline: true},
+				{name: `\n`, value: `\n`, inline: true},
+				{name: `Сервер:`, value: `${modalInteraction.guild?.name||`Не на сервере`}`, inline: true}
+			)
+			.setTimestamp();
+			
+			client.channels.cache.get(`1171051517910986752`).send({content: ``, embeds: [embed]});
+			console.log(`Идея была доставлена\nИдея: ${ideaTitle}\nОписание: ${ideaDetails}\nНаписал: ${user} (${modalInteraction.user.id})\nС сервера: ${modalInteraction.guild?.name||`Не на сервере`} (${modalInteraction.guild?.id||``})\n`);
 		};
 	});
 

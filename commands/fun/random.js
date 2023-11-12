@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const { randomNames } = require(`../../developing`)
 const { Random } = require("random-js");
 const random = new Random();
 
@@ -7,20 +8,39 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('random')
 		.setDescription('Выбирает случайное число между двумя!')
-		.addIntegerOption(option => (
-			option
-			.setName(`first`)
-			.setDescription(`Первое число`)
-			.setRequired(true)
-		))
-		.addIntegerOption(option => (
-			option
-			.setName(`second`)
-			.setDescription(`Второе число`)
-			.setRequired(true)
-		)),
+		.addSubcommand(subcommand =>
+			subcommand
+			.setName(`number`)
+			.setDescription(`Рандомное число`)
+			.addIntegerOption(option => (
+				option
+				.setName(`first`)
+				.setDescription(`Первое число`)
+				.setRequired(true)
+			))
+			.addIntegerOption(option => (
+				option
+				.setName(`second`)
+				.setDescription(`Второе число`)
+				.setRequired(true)
+			)))
+		.addSubcommand(subcommand =>
+			subcommand
+			.setName(`name`)
+			.setDescription(`Рандомное имя`)),
 	async execute(interaction) {
-	
+
+		const subcommand = interaction.options.getSubcommand()
+
+		if(subcommand===`name`) {
+			await interaction.reply(`# :tophat:\n## Выбираю случайно имя...`)
+
+			const rNum = random.integer(0, randomNames.length-1)
+			const rName = randomNames[rNum]
+			await interaction.editReply(`Ваше имя: ${rName}`)
+		}
+
+		if(subcommand===`number`) {
 		await interaction.reply(`# :tophat:\n## Выбираю между двух чисел...`)
 
 		const first = interaction.options.getInteger(`first`)
@@ -30,11 +50,7 @@ module.exports = {
 		if(first != second) {
 
 		if(second>first){randomNumber = random.integer(first, second)}
-		else if(second<first){randomNumber = random.integer(second, first)
-			setTimeout(() => {
-				interaction.editReply(`# :tophat:\n## Ой кажется первое число больше\n## Меняю местами...`)
-			}, 500)
-		}
+		else if(second<first){randomNumber = random.integer(second, first)}
 
 		setTimeout(() => {
 			interaction.editReply(`Ваше число: \`${randomNumber}\``)
@@ -62,5 +78,5 @@ module.exports = {
 			interaction.editReply(`# :tophat:\n## И мои числа одинаковые...(`)
 		}
 	}
-	},
+	}}
 };

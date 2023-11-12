@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, ActivityType } = require('discord.js');
-const { randomActivity, functionRandomActivity } = require(`../../developing`)
-const guilds = []
+const { randomActivity, functionRandomActivity, randomNames } = require(`../../developing`);
+const guilds = [];
 
     module.exports = {
         cooldown: 43200,
@@ -8,9 +8,14 @@ const guilds = []
 		.setName('randomact')
 		.setDescription('Изменить активность бота'),
         async execute(interaction) {
-        const client = interaction.client;
+            
+            const client = interaction.client;
+            
+            client.guilds.cache.forEach(guild => {
+                guilds.push(guild.name)
+            });
 
-        functionRandomActivity(client, randomActivity, guilds);
+        functionRandomActivity(client, randomActivity, randomNames, guilds);
 
         await interaction.reply({
 		content: `Активность успешно изменена`,

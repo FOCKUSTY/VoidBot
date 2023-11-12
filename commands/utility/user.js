@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, time } = require('discord.js');
 const { iconURL } = require(`../../developing.json`)
 
 module.exports = {
@@ -13,9 +13,11 @@ module.exports = {
 	async execute(interaction) {
 		const int = interaction
 		if(int.guild!=null && int.guild!=undefined) {
-		let member = int.member
+			let userO = int.user
+			let member = int.member
 		if (int.options.getUser(`member`)) {
 			const user = int.options.getUser(`member`).id
+			userO = int.options.getUser(`member`)
 			member = int.guild.members.cache.get(user)
 		}
 			
@@ -45,7 +47,8 @@ module.exports = {
 			.setDescription(`Информация об участнике ${member?.user.username} на сервере ${int.guild?.name}`)
 			.addFields(
 				{	name: `Команда запущена:`,
-				value: `${int.user} (${int.user.username})\n\n**Участник ${member?.user.username} присоединился:**\n${member?.joinedAt}`, inline: true	},
+				value: `${int.user} (${int.user.username})\n\n**Участник ${member?.user.username} присоединился:**\n${time(member?.joinedAt)}\nЭто:\n${time(member?.joinedAt, `R`)}
+				\n**Пользователь в Discord: **\n${time(userO.createdAt)}\nЭто:\n${time(userO.createdAt, `R`)}`, inline: true	},
 				{	name: `Роли участника:`, value: `${guildUserRoles}`, inline: true},
 			)
 			.setThumbnail(`https://cdn.discordapp.com/avatars/${member.user.id}/${member.user.avatar}.png`)
@@ -77,7 +80,7 @@ module.exports = {
 				.setDescription(`Информация об участнике ${user?.globalName || user.username}`)
 				.addFields(
 					{name: `Команда запущена:`, value: `${int.user} (${int.user.username})`, inline: true	},
-					{name: `Пользователь ${user.username} присоединился:`, value: `${user.createdAt}`, inline: true}
+					{name: `Пользователь ${user.username} присоединился:`, value: `${time(user.createdAt)}\nЭто:\n${time(user.createdAt, `R`)}`, inline: true}
 				)
 				.setThumbnail(`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`)
 				.setTimestamp()

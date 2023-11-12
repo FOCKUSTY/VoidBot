@@ -1,6 +1,7 @@
 const { Events, Client, GatewayIntentBits, Collection, InteractionType } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 const { dateCheck } = require(`../developing`)
+const { Color, color, bold } = require(`colors`);
 const date = new Date();
 
 client.cooldowns = new Collection();
@@ -42,23 +43,23 @@ module.exports = {
 		};
 
 console.log(
-	`Было замечено использование команды`.bold + `\n` +
+	`Было замечено использование команды` + `\n` +
 	`Название команды: ` + `/${int.commandName}`.red + `\n` +
-	`${subcommands}` + `\n` +
+	`${subcommands.join(`\n`)}` + `\n` +
 	`Команду использовал: ` + `${int.user} - ${int.user.username} (${int.user.globalName})`.green + `\n` +
-	`Аккаунт создан с ` + `${dateCheck(int.user.createdAt)}`.magenta + `\n` +
-	`Пользователь в Discord: "Функция в разработке"\n`+
+	`Аккаунт создан с ` + `${dateCheck(int.user.createdAt, int?.guild)}`.magenta + `\n` +
 	`На сервере: ` + `${int?.guild}`.yellow+`\n`+
-	`Сервер создан с `+`${dateCheck(int?.guild.createdAt)}`.magenta+` участник на нем с `+`${dateCheck(int?.member.joinedAt)}`.magenta+`` + `\n` +
-	`В канале: ` + `${int?.channel||`Личные сообщения`} ${int.channel?.name||`с ботом`}`.yellow + `\n` +
+	`Сервер создан с `+`${dateCheck(int?.guild?.createdAt, int?.guild)}`.magenta+ `\n` +
+	`Участник на сервере с `+`${dateCheck(int?.member?.joinedAt, int?.guild)}`.magenta+`` + `\n` +
+	`В канале: ` + `${int?.channel||`Личные сообщения`} ${int?.channel?.name||`с ботом`}`.yellow + `\n` +
 	`Время использования: ` + `<t:${Math.floor(int.createdTimestamp / 1000 - 35)}> (<t:${Math.floor(int.createdTimestamp / 1000 - 35)}:R>)`.cyan + `\n` +
 	`Время в часах: ` + ``+`${date.toLocaleString()}`.magenta+`` + '\n'
-)
+);
 		
 		if (!command) {
 			console.error(`No command matching ${int.commandName} was found.`);
 			return;
-		}
+		};
 
 		const { cooldowns } = client;
 
