@@ -82,10 +82,30 @@ function sendMsgLogs(m, reason, m2) {
   
 	if (m.author.bot) return;
 
+	let msg;
+	let msgAdd;
+	let msg2;
+	let msg2Add;
+
+	if(m.content.length>=1000) {
+		msg = m.content.slice(0, 1000);
+		msgAdd = m.content.slice(1000, m.content.length);
+	} else {
+		msg = m.content.slice(0, m.content.length);
+	}
+	if(m2) {
+		if(m2.content.length>=1000) {
+			msg2 = m2.content.slice(0, 1000);
+			msg2Add = m2.content.slice(1000, m2.content.length);
+		} else {
+			msg2 = m2.content.slice(0, m2.content.length);
+		}
+	}
+
 	const fields = [
 		{
 		  name: `${m2 ? "Старое с" : "С"}одержание`,
-		  value: `\`\`\`${m.content ? m.content
+		  value: `\`\`\`${msg ? msg
 			.replaceAll("```", "<code>")
 			.replaceAll("`", "\"")
 			:
@@ -107,7 +127,7 @@ function sendMsgLogs(m, reason, m2) {
 	  if (m2) {
 		fields.push({
 		  name: "Новое содержание",
-		  value: `\`\`\`${m2.content ? m2.content
+		  value: `\`\`\`${msg2 ? msg2
 			.replaceAll("```", "<code>")
 			.replaceAll("`", "\"")
 			:
@@ -125,6 +145,30 @@ function sendMsgLogs(m, reason, m2) {
 		  });
 		}
 	  }
+	  if(msgAdd) {
+		fields.push({
+			name: "Дополнительное содержание",
+			value: `\`\`\`${msgAdd ? msgAdd
+				.replaceAll("```", "<code>")
+				.replaceAll("`", "\"")
+				:
+				"<Пусто>"
+			}\`\`\``,
+			inline: false
+		})
+	  }
+	  if(msg2Add) {
+		fields.push({
+			name: "Дополнительное содержание",
+			value: `\`\`\`${msg2Add ? msg2Add
+				.replaceAll("```", "<code>")
+				.replaceAll("`", "\"")
+				:
+				"<Пусто>"
+			}\`\`\``,
+			inline: false
+		})
+	  }
 
 	  try {
 		(m.client.channels.cache.get(logChannelId)).send({
@@ -136,10 +180,10 @@ function sendMsgLogs(m, reason, m2) {
 			  })
 			  .setTitle(`${m.client.guilds.cache.get(logGuildId)?.name}`)
 			  .setDescription(
-				  `**[Сообщение](${m.url})** было ${reason} от ${m.author} (${m.url})\n
-				  На сервере ${m.guild} - ${m.guildId}\n
-				  В канале **[${m.channel.name}](${m.channel.url})** (${m.channel.url})`
-				  )
+				`**[Сообщение](${m.url})** было ${reason} от ${m.author} (${m.url})\n
+				**На сервере:** ${m.guild}\n**Id сервера: **${m.guildId}\n
+				**В канале:** **[${m.channel.name}](${m.channel.url})** (${m.channel.url})`
+				)
 			  .setThumbnail(m.guild?.iconURL())
 			  .setTimestamp()
 			  .addFields(fields)
@@ -156,23 +200,20 @@ client.on(Events.MessageDelete, (m) => sendMsgLogs(m, "delete"));
 
 client.on(Events.InteractionCreate, modalInteraction => {
 	const user = modalInteraction.user.globalName
-	let iconURL
-	if(modalInteraction.guild!=undefined||modalInteraction!=null) {
-		iconURL = `https://cdn.discordapp.com/avatars/${modalInteraction.user.id}/${modalInteraction.user.avatar}.png`
-	} else {
-		iconURL = `https://cdn.discordapp.com/icons/${modalInteraction?.guild.id}/${modalInteraction?.guild.icon}.png`
+	let iconURL = {
+		guild: `https://cdn.discordapp.com/icons/${modalInteraction?.guild?.id}/${modalInteraction?.guild?.icon}.png`,
+		user: `https://cdn.discordapp.com/avatars/${modalInteraction.user.id}/${modalInteraction.user.avatar}.png`
 	}
 	if(modalInteraction.type === InteractionType.ModalSubmit) {
-		modalInteraction.reply({content: `Ваша идея была доставлена!`, ephemeral: true});
 
 		const ideaTitle = modalInteraction.fields.getTextInputValue(`ideaTitle`);
 		const ideaDetails = modalInteraction.fields.getTextInputValue(`ideaDetails`);
 				
 			const embed = new EmbedBuilder()
 			.setColor(Number(color))
-			.setAuthor({name: `${user}`, iconURL: `${iconURL}`})
+			.setAuthor({name: `${user}`, iconURL: `${iconURL.user}`})
 			.setTitle(`${ideaTitle}`)
-			.setThumbnail(`${iconURL}`)
+			.setThumbnail(`${iconURL?.guild ? iconURL.user : iconURL.user}`)
 			.setDescription(`${ideaDetails}`)
 			.setFields(
 				{name: `Пользователь:`, value: `<@${modalInteraction.user.id}>`, inline: true},
@@ -182,6 +223,9 @@ client.on(Events.InteractionCreate, modalInteraction => {
 			.setTimestamp();
 			
 			client.channels.cache.get(`1171051517910986752`).send({content: ``, embeds: [embed]});
+
+			modalInteraction.reply({content: `Ваша идея была доставлена!`, embeds: [embed], ephemeral: true});
+
 			console.log(`Идея была доставлена\nИдея: ${ideaTitle}\nОписание: ${ideaDetails}\nНаписал: ${user} (${modalInteraction.user.id})\nС сервера: ${modalInteraction.guild?.name||`Не на сервере`} (${modalInteraction.guild?.id||``})\n`);
 		};
 	});

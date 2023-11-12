@@ -57,6 +57,11 @@ module.exports = {
         }
 
         else if(int.options.getSubcommand() === `play`) {
+            const channel = interaction?.member.voice.channelId
+            if (!channel) {
+                interaction.reply({content: 'Вы не находитесь в голосовом канале', ephemeral: true});
+            } else {
+            
 
         console.log(`Сейчас играет: `+`${musics[music]}`.cyan+` (Индекс: `+`${music}`.red+`)`+`\n`)
 
@@ -69,7 +74,7 @@ module.exports = {
 
         player.play(createAudioResource(path.join(`${musicsPath}\\${musics[music]}`)));
         // player.play(createAudioResource(path.join(`../../sounds/nea.mp3`)));
-              
+
         connection.subscribe(player);
 
         player.on('error', error => {
@@ -85,6 +90,6 @@ module.exports = {
             embeds: [developEmbed],
             ephemeral: true
         });
-        }
+        }}
     }
 };

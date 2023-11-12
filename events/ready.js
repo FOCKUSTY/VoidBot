@@ -8,6 +8,8 @@ module.exports = {
 	once: true,
 	execute(client) {
 
+		console.log(`Загружаю ${`${randomActivity.length}`.magenta} активность(ей)\n`)
+
 		client.user.setPresence({ activities: [{ name: 'activity' }], status: 'idle' }); 
 		client.user.setActivity('The Void Community~', { type: ActivityType.Custom});
 		client.guilds.cache.forEach(guild => {
@@ -18,8 +20,7 @@ module.exports = {
 		for (e of randomActivity) {
 			console.log(`${e[0]}`.magenta + ` - ${`${randomActivity.indexOf(e)}`.bold}`);
 		};
-		console.log();
-
+		console.log(`Успешно загружено ${`${randomActivity.length}`.magenta} активность(и)\n`)
 
 		console.log(`Готово!`.bold +` `+`The Void`.bgCyan.black+` готов к работе, как `+`${client.user.tag}`.red.bold+`\n`);
 
