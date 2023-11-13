@@ -47,6 +47,7 @@ module.exports = {
         [`Nomika - Русский шейх`, actTypes.cust],
         [`The Void Community~`, actTypes.cust],
         [`Я отображаю FOCKUSTY..?`, actTypes.cust],
+        [`Я помню чудное мнгновенье...`, actTypes.cust],
         [`Переписываю код...`, actTypes.cust],
         [`На грани между реальностью и магией...`, actTypes.cust],
         [`Мой создатель - Великий человек...`, actTypes.cust],
@@ -64,10 +65,13 @@ module.exports = {
         [`Ломаю голову...`, actTypes.cust],
         [`Bottomless Hat - Место чудес`, actTypes.cust],
         [`В поиске вдохновения... Может быть, оно спрятано под шляпой ?`, actTypes.cust],
+        [`Думаю, мы дополним друг друга...🖤🤍`, actTypes.cust],
+        [`А пусть The Voiya будет на js...🖤❤`, actTypes.cust],
         [`Мобби уже в команде The Void ?`, actTypes.cust],
         [`By FOCKUSTY~`, actTypes.cust],
         [`Я меломан... Люблю мел`, actTypes.cust],
         [`А Сора уже в команде The Void ?`, actTypes.cust],
+        [`Переведи меня на TypeScript!!!`, actTypes.cust],
         [`Честно...`, actTypes.cust],
         [`В мире фокусов с Bottomless Hat~. Поднимаем шляпу перед талантом !`, actTypes.cust],
         [`Люблю находить красоту в пустоте. А вы ?`, actTypes.cust],
@@ -78,6 +82,7 @@ module.exports = {
         [`У меня есть женская версия..?`, actTypes.cust],
         [`FOCKUSTY, жду свою женскую версию !!`, actTypes.cust],
         [`🎩~`, actTypes.cust],
+        [`Где моя женская версия~?`, actTypes.cust],
         [`The Void Community появился позже меня~`, actTypes.cust],
         [`Почему меня постоянно ломают..?`, actTypes.cust],
         [`Visual Studio Code`, actTypes.play],
@@ -127,7 +132,7 @@ module.exports = {
             console.log(`Активность изменена на: ${`${randomAct}`.magenta}, тип: "${`${numRandomActType}`.bgMagenta}"`);
         } else {
             if(rNum>=5) {
-                if(rNum<=2) {
+                if(rNum>=3) {
                     const guildsCount = `${guilds.length}`
                     let gcpeNums = [`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`]
                     let end;
