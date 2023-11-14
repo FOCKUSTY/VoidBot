@@ -66,7 +66,7 @@ module.exports = {
         [`Bottomless Hat - Место чудес`, actTypes.cust],
         [`В поиске вдохновения... Может быть, оно спрятано под шляпой ?`, actTypes.cust],
         [`Думаю, мы дополним друг друга...🖤🤍`, actTypes.cust],
-        [`А пусть The Voiya будет на js...🖤❤`, actTypes.cust],
+        [`А пусть The Voiya будет на js...🖤`, actTypes.cust],
         [`Мобби уже в команде The Void ?`, actTypes.cust],
         [`By FOCKUSTY~`, actTypes.cust],
         [`Я меломан... Люблю мел`, actTypes.cust],
@@ -77,6 +77,7 @@ module.exports = {
         [`Люблю находить красоту в пустоте. А вы ?`, actTypes.cust],
         [`Сора...`, actTypes.cust],
         [`FOCKUSTY — мой девиз`, actTypes.cust],
+        [`Мне же не игнорировать..?`, actTypes.cust],
         [`Вот бы и мне быть счастливым...`, actTypes.cust],
         [`Домик Kristy - мое уютное убежище`, actTypes.cust],
         [`У меня есть женская версия..?`, actTypes.cust],
@@ -95,6 +96,7 @@ module.exports = {
         [`Тепло...`, actTypes.cust],
         [`Жду компиляции кода...`, actTypes.cust],
         [`Пишу обновления...`, actTypes.cust],
+        [`Считаю, что Kristy классная, а Вы ?`, actTypes.cust],
         [`В пустоте... Классно...`, actTypes.cust],
         [`Придумываю идеи...`, actTypes.cust],
         [`🎩FarySD~`, actTypes.cust],
@@ -120,7 +122,7 @@ module.exports = {
         const actType = [`Играет`, `Стримит`, `Слушает`, `Смотрит`, `Кастомный`, `Соревнуется`]
         console.log(`Рандомное число: ${`${rNum}`.magenta} из "${`100`.bgMagenta}"`)
     
-        if(rNum>=10) {
+        if(rNum>=15) {
             const i = random.integer(0, randomActivity.length-1);
             const randomAct = randomActivity[i][0];
             const randomActType = randomActivity[i][1];
@@ -130,29 +132,40 @@ module.exports = {
     
             console.log(`Рандомное число: ${`${i}`.magenta} из "${`${randomActivity.length}`.bgMagenta}"`);
             console.log(`Активность изменена на: ${`${randomAct}`.magenta}, тип: "${`${numRandomActType}`.bgMagenta}"`);
-        } else {
-            if(rNum>=5) {
-                if(rNum>=3) {
-                    const guildsCount = `${guilds.length}`
-                    let gcpeNums = [`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`]
-                    let end;
-                    let gcpe = guildsCount[guildsCount.length-2];
-                    let gce = guildsCount[guildsCount.length-1];
-                    if(guildsCount===1){end=`е`}
-                    else {
-                        end=`ах`
-                        if(guildsCount>=10){
-                            for (gcpeNum in gcpeNums) {
-                                if(gcpe===gcpeNum) {
-                                    if(gce===`1`) {
-                                        end=`е`
-                                    }
+        }
+            else if(rNum<15) {
+                if(rNum>=8) {
+                    const guildsLength = `${guilds.length}`;
+                    const nums = [`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`];
+                    let end = `е`;
+                    let text = `Я на ${guilds.length} сервер${end}`
+                    if(guilds.length>=10) {
+                        let one = guildsLength[guildsLength.length-2];
+                        let two = guildsLength[guildsLength.length-1];
+                        for (num of nums) {
+                            if (`${num}`===one) {
+                                if (`${two}`===`1`) {
+                                    end=`е`;
+                                    text = `Я на ${guildsLength} сервер${end}`;
+                                    console.log(`${text}`);
+                                    client.user.setActivity(`${text}`, actTypes.cust);
                                 }
+                            } else {
+                                client.user.setActivity(`${text}`, actTypes.cust);
+                                return;
                             }
                         }
+                    } else {
+                        if(guilds.length!=1) {
+                            text = `Я на ${guilds.length} серверах`;
+                            console.log(`Активность изменена на: ${text}, тип: ${actType[4]}`);
+                            client.user.setActivity(`${text}`, actTypes.cust);
+                        } else {
+                            text = `Я на ${guilds.length} сервере`;
+                            console.log(`Активность изменена на: ${text}, тип: ${actType[4]}`);
+                            client.user.setActivity(`${text}`, actTypes.cust);
+                        }
                     }
-                    const text = `сервер` + end;
-                    client.user.setActivity(`Я на ` + `${guildsCount}`.magenta + `${text}`)
                 } else {
                     const rGuild = random.integer(0, guilds.length-1);
                     const rGuildName = guilds[rGuild];
@@ -166,7 +179,7 @@ module.exports = {
 			const rName = randomNames[rNum];
             client.user.setActivity(`Рандомное имя: ${rName}`, {type: ActivityType.Custom});
             console.log(`Рандомное имя: ` + `${rName}`.magenta + `, ` + `тип: "` + `${actType[4]}`.bgMagenta + `"`);
-        }}
+        }
     console.log()
     },
 

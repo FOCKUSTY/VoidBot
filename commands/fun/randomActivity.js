@@ -11,6 +11,7 @@ const guilds = [];
             
             const client = interaction.client;
             
+            guilds.splice(0,guilds.length);
             client.guilds.cache.forEach(guild => {
                 guilds.push(guild.name)
             });
