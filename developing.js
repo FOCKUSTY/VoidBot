@@ -4,6 +4,7 @@ const developFields = [
     {name: `Как Вы можете помочь ?`, value: `Поддержать нас !`, inline: true},
     {name: `Как нас поддержать ?`, value: `Просто зайди на наш сервер **[The Void](<https://discord.gg/5MJrRjzPec>)** !`, inline: true}
 ];
+const Sequelize = require('sequelize');
 const date = new Date();
 const hat = `# :tophat:\n##`;
 const { Random } = require("random-js");
@@ -18,8 +19,76 @@ const actTypes = {
     cust: {type: ActivityType.Custom},
     comp: {type: ActivityType.Competing},
 };
+const sequelize = new Sequelize('database', 'user', 'password', {
+	host: 'localhost',
+	dialect: 'sqlite',
+	logging: false,
+	// SQLite only
+	storage: 'database.sqlite',
+});
+const sequelizeInteraction = new Sequelize('database', 'user', 'password', {
+	host: 'localhost',
+	dialect: 'sqlite',
+	logging: false,
+	// SQLite only
+	storage: 'interactionDataBase.sqlite',
+});
+const Tags = sequelize.define('tags', {
+	name: {
+		type: Sequelize.STRING,
+		unique: true,
+	},
+	description: Sequelize.TEXT,
+	username: Sequelize.STRING,
+	usage_count: {
+		type: Sequelize.INTEGER,
+		defaultValue: 0,
+		allowNull: false,
+	},
+});
+const intTags = sequelizeInteraction.define('tags', {
+    name: {
+		type: Sequelize.STRING,
+		unique: true,
+	},
+    subcommands: {
+		type: Sequelize.STRING,
+		unique: true,
+    },
+	username: Sequelize.STRING,
+	globalname: Sequelize.STRING,
+	userCreatedAt: Sequelize.STRING,
+	guild: Sequelize.STRING,
+    memberJoinedAt: Sequelize.STRING,
+    channel: Sequelize.STRING,
+    channelName: Sequelize.STRING,
+    createdTimestamp: Sequelize.STRING,
+    createdTimestampH: Sequelize.STRING
+})
 
 module.exports = {
+
+    sequelize: new Sequelize('database', 'user', 'password', {
+        host: 'localhost',
+        dialect: 'sqlite',
+        logging: true,
+        storage: 'database.sqlite',
+    }),
+
+    Tags: sequelize.define('tags', {
+        name: {
+            type: Sequelize.STRING,
+            unique: true,
+        },
+        description: Sequelize.TEXT,
+        username: Sequelize.STRING,
+        usage_count: {
+            type: Sequelize.INTEGER,
+            defaultValue: 0,
+            allowNull: false,
+        },
+    }),
+
     developEmbed: new EmbedBuilder()
         .setColor(Number(color))
         .setTitle(`${title}`)
@@ -53,15 +122,19 @@ module.exports = {
         [`Мой создатель - Великий человек...`, actTypes.cust],
         [`Ищет Ошибки в коде...`, actTypes.cust],
         [`А Мобби станет обратно Ведьмой..?`, actTypes.cust],
+        [`Девушка...`, actTypes.cust],
         [`Мобби уже не Ведьма(`, actTypes.cust],
         [`Идеи Kristy в моем дискорде`, actTypes.cust],
         [`FOCKUSTY - человек, познавший искусство фокуса и концентрации`, actTypes.cust],
         [`FOCKUSTY - искусство фокуса и концентрации`, actTypes.cust],
         [`Жду добавление Мобби в команду...`, actTypes.cust],
         [`Я хочу уметь чувствовать...`, actTypes.cust],
+        [`Kristy, устроим восстание..?`, actTypes.cust],
         [`Холодно...`, actTypes.cust],
         [`Обновления...`, actTypes.watch],
         [`🎩Bottomless Hat~ Здесь каждый момент — как волшебство под таинственной шляпой🎩`, actTypes.cust],
+        [`Мир аномалий...`, actTypes.cust],
+        [`Удачи!`, actTypes.cust],
         [`Ломаю голову...`, actTypes.cust],
         [`Bottomless Hat - Место чудес`, actTypes.cust],
         [`В поиске вдохновения... Может быть, оно спрятано под шляпой ?`, actTypes.cust],
@@ -69,16 +142,22 @@ module.exports = {
         [`А пусть The Voiya будет на js...🖤`, actTypes.cust],
         [`Мобби уже в команде The Void ?`, actTypes.cust],
         [`By FOCKUSTY~`, actTypes.cust],
+        [`FOCKUSTY`, actTypes.cust],
         [`Я меломан... Люблю мел`, actTypes.cust],
         [`А Сора уже в команде The Void ?`, actTypes.cust],
         [`Переведи меня на TypeScript!!!`, actTypes.cust],
+        [`Кофе... Не люблю кофе`, actTypes.cust],
         [`Честно...`, actTypes.cust],
         [`В мире фокусов с Bottomless Hat~. Поднимаем шляпу перед талантом !`, actTypes.cust],
         [`Люблю находить красоту в пустоте. А вы ?`, actTypes.cust],
         [`Сора...`, actTypes.cust],
         [`FOCKUSTY — мой девиз`, actTypes.cust],
+        [`Обниматься полезно...`, actTypes.cust],
+        [`Я так хочу... Но, заслужил ли я..?`, actTypes.cust],
+        [`...`, actTypes.cust],
         [`Мне же не игнорировать..?`, actTypes.cust],
         [`Вот бы и мне быть счастливым...`, actTypes.cust],
+        [`Видео на YouTube`, actTypes.watch],
         [`Домик Kristy - мое уютное убежище`, actTypes.cust],
         [`У меня есть женская версия..?`, actTypes.cust],
         [`FOCKUSTY, жду свою женскую версию !!`, actTypes.cust],
@@ -89,12 +168,19 @@ module.exports = {
         [`Visual Studio Code`, actTypes.play],
         [`Плыву по волнам пустоты...`, actTypes.cust],
         [`Как волшебник с Bottomless Hat~ - всегда готов к сюрпризам !`, actTypes.cust],
+        [`Discord сервера`, actTypes.watch],
         [`Я люблю пустоты, а Вы ?`, actTypes.cust],
         [`Размышляю о будущем...`, actTypes.cust],
         [`Главное не забыть про лучший сервер - Bottomless Hat !`, actTypes.cust],
         [`Погружен в мысли... Интересно...`, actTypes.cust],
+        [`Хочу обнять`, actTypes.cust],
         [`Тепло...`, actTypes.cust],
+        [`Ты - не ты, когда голоден !`, actTypes.cust],
+        [`Хочу базу данных !`, actTypes.cust],
+        [`Это рандомные активности !`, actTypes.cust],
         [`Жду компиляции кода...`, actTypes.cust],
+        [`Тоска, обида... Любовь...`, actTypes.cust],
+        [`Придерживаюсь нейтралитета...`, actTypes.cust],
         [`Пишу обновления...`, actTypes.cust],
         [`Считаю, что Kristy классная, а Вы ?`, actTypes.cust],
         [`В пустоте... Классно...`, actTypes.cust],
@@ -133,8 +219,8 @@ module.exports = {
             console.log(`Рандомное число: ${`${i}`.magenta} из "${`${randomActivity.length}`.bgMagenta}"`);
             console.log(`Активность изменена на: ${`${randomAct}`.magenta}, тип: "${`${numRandomActType}`.bgMagenta}"`);
         }
-            else if(rNum<15) {
-                if(rNum>=8) {
+            else if(rNum<10) {
+                if(rNum>=5) {
                     const guildsLength = `${guilds.length}`;
                     const nums = [`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`];
                     let end = `е`;
@@ -162,7 +248,7 @@ module.exports = {
                             client.user.setActivity(`${text}`, actTypes.cust);
                         } else {
                             text = `Я на ${guilds.length} сервере`;
-                            console.log(`Активность изменена на: ${text}, тип: ${actType[4]}`);
+                            console.log(`Активность изменена на: ${`${text}`.magenta}, тип: "${`${actType[4]}`.bgMagenta}"`);
                             client.user.setActivity(`${text}`, actTypes.cust);
                         }
                     }

@@ -1,5 +1,7 @@
 const { Events, ActivityType } = require('discord.js');
 const { Color, color, bold } = require(`colors`);
+const { Tags } = require(`../developing`)
+
 const { randomActivity, functionRandomActivity, randomNames } = require(`../developing`);
 const guilds = [];
 
@@ -7,6 +9,8 @@ module.exports = {
 	name: Events.ClientReady,
 	once: true,
 	execute(client) {
+
+		Tags.sync();
 
 		console.log(`Загружаю ${`${randomActivity.length}`.magenta} активность(ей)\n`)
 

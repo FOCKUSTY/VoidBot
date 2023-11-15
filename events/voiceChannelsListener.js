@@ -12,7 +12,7 @@ module.exports = {
   async execute(oldVS, vs) {
     
     if (vs.member.id===Kristy) return;
-    booleanVar = false;    
+    booleanVar = false;
     if (vs.member.id===TheVoid) return;
 
     featureUsers.forEach(featureUser => {

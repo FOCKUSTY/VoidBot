@@ -18,6 +18,8 @@ module.exports = {
 
 		const command = int.client.commands.get(int.commandName);
 
+		const commandName = int.commandName;
+
 		const subcommands = [];
 		for (let key in int.options) {
 			const group = int.options[`_group`];
