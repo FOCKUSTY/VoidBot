@@ -1,10 +1,9 @@
 const { Client, Collection, GatewayIntentBits, Events, InteractionType, EmbedBuilder } = require('discord.js');
 const { token } = require('./config.json');
 const { color } = require(`./developing.json`);
+const { Tags, sendMsgLogs } = require(`./developing`)
 const fs = require('node:fs');
 const path = require('node:path');
-const logChannelId = `1171197868909015102`;
-const logGuildId = `1169284741846016061`;
 
 const client = new Client({
 	intents: [
@@ -46,156 +45,57 @@ for (const file of eventFiles) {
 	}
 }
 
-function sendMsgLogs(m, reason, m2) {
-	let attachmentName;
-	let attachmentUrl;
-	let attachmentProxyUrl;
-	let color;
-
-	m.attachments.forEach(attachment => {
-		attachmentName = attachment.name
-		attachmentUrl = attachment.url
-		attachmentProxyUrl = attachment.proxyURL
-	});
-  
-	switch (reason) {
-	  case "send":
-		reason = "отправлено";
-		color = "#7fdf7f";
-		break;
-  
-	  case "update":
-		reason = "обновлено";
-		color = "#7f7f7f";
-		break;
-  
-	  case "delete":
-		reason = "удалено";
-		color = "#df7f7f";
-		break;
-  
-	  default:
-		reason = "||`{ошибка в коде}`||"
-		color = "#7f7f7f"
-		break;
-	}
-  
-	if (m.author.bot) return;
-
-	let msg;
-	let msgAdd;
-	let msg2;
-	let msg2Add;
-
-	if(m.content.length>=1000) {
-		msg = m.content.slice(0, 1000);
-		msgAdd = m.content.slice(1000, m.content.length);
-	} else {
-		msg = m.content.slice(0, m.content.length);
-	}
-	if(m2) {
-		if(m2.content.length>=1000) {
-			msg2 = m2.content.slice(0, 1000);
-			msg2Add = m2.content.slice(1000, m2.content.length);
-		} else {
-			msg2 = m2.content.slice(0, m2.content.length);
-		}
-	}
-
-	const fields = [
-		{
-		  name: `${m2 ? "Старое с" : "С"}одержание`,
-		  value: `\`\`\`${msg ? msg
-			.replaceAll("```", "<code>")
-			.replaceAll("`", "\"")
-			:
-			"<Пусто>"
-			}\`\`\``,
-		  inline: false,
-		},
-	  ];
-	  if (m.attachments.size > 0) {
-		fields.push({
-		  name: `${m2 ? "Старые в" : "В"}ложения`,
-		  value: m.attachments
-			.map((att) => `\`\`\`${att.url}\`\`\``)
-			.join(`\n&&\n`),
-		  inline: false,
-		});
-	  }
-	
-	  if (m2) {
-		fields.push({
-		  name: "Новое содержание",
-		  value: `\`\`\`${msg2 ? msg2
-			.replaceAll("```", "<code>")
-			.replaceAll("`", "\"")
-			:
-			"<Пусто>"
-			}\`\`\``,
-		  inline: false,
-		});
-		if (m2.attachments.size > 0) {
-		  fields.push({
-			name: "Новые вложения",
-			value: `${m2.attachments
-			  .map((att) => `\`\`\`${att.url}\`\`\``)
-			  .join(`\n&&\n`)}`,
-			inline: false,
-		  });
-		}
-	  }
-	  if(msgAdd) {
-		fields.push({
-			name: "Дополнительное содержание",
-			value: `\`\`\`${msgAdd ? msgAdd
-				.replaceAll("```", "<code>")
-				.replaceAll("`", "\"")
-				:
-				"<Пусто>"
-			}\`\`\``,
-			inline: false
-		})
-	  }
-	  if(msg2Add) {
-		fields.push({
-			name: "Дополнительное содержание",
-			value: `\`\`\`${msg2Add ? msg2Add
-				.replaceAll("```", "<code>")
-				.replaceAll("`", "\"")
-				:
-				"<Пусто>"
-			}\`\`\``,
-			inline: false
-		})
-	  }
-
-	  try {
-		(m.client.channels.cache.get(logChannelId)).send({
-			embeds: [new EmbedBuilder()
-			  .setColor(color)
-			  .setAuthor({
-				name: `${m.author.username} (${m.author.id})`,
-				iconURL: m.author.avatarURL() ? m.author.avatarURL() : m.author.defaultAvatarURL
-			  })
-			  .setTitle(`${m.client.guilds.cache.get(logGuildId)?.name}`)
-			  .setDescription(
-				`**[Сообщение](${m.url})** было ${reason} от ${m.author} (${m.url})\n
-				**На сервере:** ${m.guild}\n**Id сервера: **${m.guildId}\n
-				**В канале:** **[${m.channel.name}](${m.channel.url})** (${m.channel.url})`
-				)
-			  .setThumbnail(m.guild?.iconURL())
-			  .setTimestamp()
-			  .addFields(fields)
-			]
-		  });
-	  } catch (error) {
-		console.log(error)
-	  }
-};
-
 client.on(Events.MessageCreate, (m) => sendMsgLogs(m, "send"));
 client.on(Events.MessageUpdate, (m, nm) => sendMsgLogs(m, "update", nm));
 client.on(Events.MessageDelete, (m) => sendMsgLogs(m, "delete"));
+
+client.on(Events.InteractionCreate, async int => {
+	const user = int.user.globalName;
+	const userAvatar = `https://cdn.discordapp.com/avatars/${int.user.id}/${int.user.avatar}.png`;
+	let iconURL;
+	if(int.guild!=undefined||int.guild!=null) {
+		iconURL = `https://cdn.discordapp.com/icons/${int?.guild?.id}/${int?.guild?.icon}.png`
+	} else {
+		iconURL = `https://cdn.discordapp.com/avatars/${int.user.id}/${int.user.avatar}.png`
+	}
+	
+	if(int.type === InteractionType.ModalSubmit) {
+
+		const ideaTitle = int.fields.getTextInputValue(`ideaTitle`);
+		const ideaDetails = int.fields.getTextInputValue(`ideaDetails`);
+
+			const embed = new EmbedBuilder()
+			.setColor(Number(color))
+			.setAuthor({name: `${user}`, iconURL: `${userAvatar}`})
+			.setTitle(`${ideaTitle}`)
+			.setThumbnail(`${iconURL}`)
+			.setDescription(`${ideaDetails}`)
+			.setFields(
+				{name: `Пользователь:`, value: `<@${int.user.id}>`, inline: true},
+				{name: `\n`, value: `\n`, inline: true},
+				{name: `Сервер:`, value: `${int.guild?.name||`Не на сервере`}`, inline: true}
+			)
+			.setTimestamp();
+
+			client.channels.cache.get(`1171051517910986752`).send({content: ``, embeds: [embed]});
+
+			int.reply({content: `Ваша идея была доставлена!`, embeds: [embed], ephemeral: true});
+
+			console.log(`Идея была доставлена\nИдея: ${ideaTitle}\nОписание: ${ideaDetails}\nНаписал: ${user} (${int.user.id})\nС сервера: ${int.guild?.name||`Не на сервере`} (${int.guild?.id||``})\n`);
+			
+			try {
+				const tag = await Tags.create({
+					name: ideaTitle,
+					username: int.user.username,
+					globalname: int.user.globalName,
+					description: ideaDetails,
+					guildname: int?.guild?.name||`Не на сервере`
+				});
+				console.log(`Тег идеи успешно добавлен\nНазвание: ${tag.name}\nОписание: ${tag.description}\nОтправил: ${tag.username}\nС сервера: ${tag.guildname}`)
+			} catch (error) {
+				console.log(`Ошибка с добавление тега\n${error}`)
+			}
+		};
+})
 
 client.login(token)

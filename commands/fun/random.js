@@ -7,7 +7,7 @@ module.exports = {
 	cooldown: 5,
 	data: new SlashCommandBuilder()
 		.setName('random')
-		.setDescription('Выбирает случайное число между двумя!')
+		.setDescription('Случайно выбор !')
 		.addSubcommand(subcommand =>
 			subcommand
 			.setName(`number`)

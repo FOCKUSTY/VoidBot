@@ -35,5 +35,6 @@ const rest = new REST().setToken(token);
 		console.log(`Успешно обновлено `+`${data.length} (/)`.cyan+` команд(ы)`);
 	} catch (error) {
 		console.error(error);
+		return;
 	}
 })();

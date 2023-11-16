@@ -14,7 +14,7 @@ module.exports = {
 		if (!int.isChatInputCommand()) return;
 		
 		const user = int.user.globalName;
-        const userAvatar = `https://cdn.discordapp.com/avatars/${int.user.id}/${int.user.avatar}.png`;
+		const userAvatar = `https://cdn.discordapp.com/avatars/${int.user.id}/${int.user.avatar}.png`;
 
 		const command = int.client.commands.get(int.commandName);
 

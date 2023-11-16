@@ -7,11 +7,12 @@ module.exports = {
 		.setDescription('Все доступные команды !'),
 	async execute(interaction) {
 
-		const hat = `\n:tophat:`
+		const hat = `:tophat:`
 
 		const commands = [
+			`${hat} /8ball`,
 			`${hat} /ping`,
-			`${hat} /random`,
+			`${hat} /random (И подкоманды)`,
 			`${hat} /voice (И подкоманды)`
 			`${hat} /ban`
 			`${hat} /help`,
@@ -25,7 +26,7 @@ module.exports = {
 		]
 		
 		await interaction.reply({
-			content: `${commands}`,
+			content: `${commands.join(`\n`)}`,
 			ephemeral: true
 		})
 	},

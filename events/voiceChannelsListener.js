@@ -14,6 +14,7 @@ module.exports = {
     if (vs.member.id===Kristy) return;
     booleanVar = false;
     if (vs.member.id===TheVoid) return;
+    if(!(oldVS.channel===undefined||oldVS.channel===null)) return;
 
     featureUsers.forEach(featureUser => {
       if(vs.member?.id===featureUser.id) {
@@ -38,9 +39,8 @@ module.exports = {
         } else {
             player.on(AudioPlayerStatus.Idle, () => {
               if (vs.member.id===TheVoid) return;
-              console.log(`Отключаюсь от голосового канала ` + `${vs?.channel.name}`.cyan + `...\n`);
               player.stop()
-              con.destroy();
+              con.disconnect();
               return;
             });
         };
@@ -52,26 +52,24 @@ module.exports = {
         });
     
         player.on(AudioPlayerStatus.Idle, () => {
-          console.log(`Отключаюсь от голосового канала ` + `${vs?.channel.name}`.cyan + `...\n`);
           player.stop();
-          connection.destroy();
+          connection.disconnect();
         });
         
         const connection = joinVoiceChannel({
-          channelId: vs.channel.id,
-          guildId: vs.channel.guild.id,
-          adapterCreator: vs.channel.guild.voiceAdapterCreator,
+          channelId: vs?.channel?.id,
+          guildId: vs?.channel?.guild.id,
+          adapterCreator: vs?.channel?.guild.voiceAdapterCreator,
         });
 
         if(booleanVar!=false){
-          console.log(`Присоединяюсь к голосовому каналу...\nПользователь: `+`${user}`.cyan);
           booleanVar=false
         }
 
         connection.subscribe(player);
         if (off === true) {
           if (player) player.stop()
-          if (connection) connection.destroy()
+          if (connection) connection.disconnect()
         }
       }
     }
