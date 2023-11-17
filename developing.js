@@ -4,7 +4,7 @@ const developFields = [
     {name: `Как Вы можете помочь ?`, value: `Поддержать нас !`, inline: true},
     {name: `Как нас поддержать ?`, value: `Просто зайди на наш сервер **[The Void](<https://discord.gg/5MJrRjzPec>)** !`, inline: true}
 ];
-const Sequelize = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 const date = new Date();
 const hat = `# :tophat:\n##`;
 const { Random } = require("random-js");
@@ -19,22 +19,25 @@ const actTypes = {
     cust: {type: ActivityType.Custom},
     comp: {type: ActivityType.Competing},
 };
+
 const sequelize = new Sequelize('database', 'user', 'password', {
 	host: 'localhost',
 	dialect: 'sqlite',
 	logging: false,
 	storage: 'database.sqlite',
 });
+
 const Tags = sequelize.define('tags', {
 	name: {
 		type: Sequelize.STRING,
 		unique: true,
 	},
 	username: Sequelize.STRING,
-    globalname: Sequelize.STRING,
+  globalname: Sequelize.STRING,
 	description: Sequelize.TEXT,
 	guildname: Sequelize.TEXT,
 });
+
 const actType = [`Играет`, `Стримит`, `Слушает`, `Смотрит`, `Кастомный`, `Соревнуется`]
 let guildTexts = [];
 let texts = [];
@@ -42,13 +45,6 @@ const logChannelId = `1171197868909015102`;
 const logGuildId = `1169284741846016061`;
 
 module.exports = {
-
-    sequelize: new Sequelize('database', 'user', 'password', {
-        host: 'localhost',
-        dialect: 'sqlite',
-        logging: false,
-        storage: 'database.sqlite',
-    }),
 
     Tags: sequelize.define('tags', {
         name: {
@@ -102,30 +98,28 @@ module.exports = {
         [`Холодно...`, actTypes.cust],
         [`Обновления...`, actTypes.watch],
         [`Мир аномалий...`, actTypes.cust],
+        [`А кого ты еще любишь ?`, actTypes.cust],
         [`Удачи!`, actTypes.cust],
         [`Ломаю голову...`, actTypes.cust],
         [`Помочь..?`, actTypes.cust],
         [`The Void Community готов помочь`, actTypes.cust],
         [`Bottomless Hat - Место чудес`, actTypes.cust],
-        [`В поиске вдохновения... Может быть, оно спрятано под шляпой ?`, actTypes.cust],
         [`Думаю, мы дополним друг друга...🖤🤍`, actTypes.cust],
         [`А пусть The Voiya будет на js...🖤`, actTypes.cust],
         [`Мобби уже в команде The Void ?`, actTypes.cust],
         [`By FOCKUSTY~`, actTypes.cust],
-        [`Я меломан... Люблю мел`, actTypes.cust],
         [`А Сора уже в команде The Void ?`, actTypes.cust],
         [`Переведи меня на TypeScript!!!`, actTypes.cust],
         [`Кофе... Не люблю кофе`, actTypes.cust],
         [`FOCKUSTY, признайся`, actTypes.cust],
         [`Честно...`, actTypes.cust],
-        [`В мире фокусов с Bottomless Hat~. Поднимаем шляпу перед талантом !`, actTypes.cust],
-        [`Люблю находить красоту в пустоте. А вы ?`, actTypes.cust],
+        [`Красота кроится в пустоте`, actTypes.cust],
         [`Сора...`, actTypes.cust],
         [`Обниматься полезно...`, actTypes.cust],
         [`Я так хочу... Но, заслужил ли я..?`, actTypes.cust],
         [`Мне же не игнорировать..?`, actTypes.cust],
         [`А ты до сих пор её любишь..?`, actTypes.cust],
-        [`Передо мной явилась ты...`, actTypes.cust],
+        [`Я знаю всё, что знает FOCKUSTY...`, actTypes.cust],
         [`Вот бы и мне быть счастливым...`, actTypes.cust],
         [`Видео на YouTube`, actTypes.watch],
         [`Видеоуроки`, actTypes.watch],
@@ -157,28 +151,10 @@ module.exports = {
         [`Это рандомные активности !`, actTypes.cust],
         [`Разжигает Огонь любви`, actTypes.cust],
         [`/me обнял тебя`, actTypes.cust],
-        [`Тоска, обида... Любовь...`, actTypes.cust],
+        [`А "шип" официален..?`, actTypes.cust],
         [`А как насчет...!`, actTypes.cust],
         [`Хочу тебя !`, actTypes.cust],
         [`Признаться ли Kristy..?`, actTypes.cust],
-        [`С днём рождения, друг !`, actTypes.cust],
-        [`У разработчика Kristy день рождения 🍰`, actTypes.cust],
-        [`Happy-happy-happy !🍰`, actTypes.cust],
-        [`Когда день рождение Kristy ?`, actTypes.cust],
-        [`С 16-тилетием !`, actTypes.cust],
-        [`С шестнадцатилетием !`, actTypes.cust],
-        [`С 16-летием !`, actTypes.cust],
-        [`Валя, ты умираешь !`, actTypes.cust],
-        [`Валя же, да ?`, actTypes.cust],
-        [`FOCKUSTY: Валя с днём рождения !`, actTypes.cust],
-        [`FOCKUSTY: Валя, ты умираешь !`, actTypes.cust],
-        [`FOCKUSTY: Валя, не умирай !`, actTypes.cust],
-        [`Валя классный🎩!`, actTypes.cust],
-        [`ActivityType: Happy Birthday`, actTypes.cust],
-        [`Желаю побольше нервов !🍰`, actTypes.cust],
-        [`Желаю рабочего кода !🍰`, actTypes.cust],
-        [`С днём рождения, Валя !🍰`, actTypes.cust],
-        [`Желаю найти хороший людей !🍰`, actTypes.cust],
         [`Я тоже...`, actTypes.cust],
         [`Придерживаюсь нейтралитета...`, actTypes.cust],
         [`Пишу обновления...`, actTypes.cust],
@@ -221,7 +197,7 @@ module.exports = {
             [`Привет, ${rName} !`],
             [`${rName} - Красивое имя !`],
         )
-        } else if(`${rName}`===`Малика`) {
+        } else if(`${rName}`===`Малика`||`${rName}`===`Рената`) {
             texts.push(
                 [`Фокусти любит человека с именем ${rName}`],
                 [`Мне нравится ${rName}`]
@@ -316,12 +292,12 @@ module.exports = {
                 }
         } else {
             const rNum = random.integer(0, randomNames.length-1);
-			const rName = randomNames[rNum];
+            const rName = randomNames[rNum];
             nameTexts(rName)
             const randNum = random.integer(0, texts.length-1);
             let text = texts[randNum][0];
             console.log(`Рандомное число: ${`${rNum}`.magenta} из "${`${randomNames.length}`.bgMagenta}"`)
-            console.log(`Рандомное число: ${`${randNum}`.magenta} из "${`${nameTexts.length}`.bgMagenta}"`)
+            console.log(`Рандомное число: ${`${randNum}`.magenta} из "${`${texts.length}`.bgMagenta}"`)
             console.log(`Рандомное текст: ${`${text}`.magenta}`)
             console.log(`Активность изменена на: ` + `${text}`.magenta + `, ` + `тип: "` + `${actType[4]}`.bgMagenta + `"`);
             client.user.setActivity(`${text}`, {type: ActivityType.Custom});
@@ -351,6 +327,9 @@ module.exports = {
         {idea: `Устроить вечеринку`, ideaDetail: `Хочу вечеринку в честь FOCKUSTY и Вали!!`},
         {idea: `Купить FOCKUSTY ноутбук`, ideaDetail: `FOCKUSTY нужен ноутбук, он иногда путешествует и не может работать, с помощью ноутбука он сможет заниматься кодингом в любой время`},
         {idea: `Отформатировать диск`, ideaDetail: `Форматирование диска поможет освободить много места`},
+        {idea: `Устроить свадьму`, ideaDetail: `Хочу свадьбу между Kristy и The Void, думаю, они будут хорошо смотреться !`},
+        {idea: `Захватить мир`, ideaDetail: `Хочу, чтобы FOCKUSTY и Валя захватили мир !`},
+        {idea: `хфывхахфывахфыгз`, ideaDetail: `хфыаъхфываъхзывхахфыхыфхфхфыхвхфывхаыфвл !`},
         ],
 
         download: [
@@ -360,7 +339,6 @@ module.exports = {
         `${hat} Обновляем Windows...`,
         `${hat} Жмакаем на клавиши...`,
         `${hat} Думаем о великом...`,
-        `${hat} Валя лох..!||Он сам сказал!!||`,
         `${hat} Обновляем Linux...`,
         `${hat} Обновляем MacOS...`,
         `${hat} Примеряет шляпу...`,
@@ -374,13 +352,34 @@ module.exports = {
         `${hat} Переводим текст...`,
         `${hat} Пельмени...`,
         `${hat} А также попробуйте FarySD !`,
+        `${hat} Python...`,
+        `${hat} JavaScript...`,
         `${hat} Загружаем в Github...`,
+        `${hat} Захватываем мир...`,
         `${hat} Взламываем пентагон...`,
         `${hat} Устанавливаем \`ne.troyan.exe\`...`,
         `${hat} Баним Империю Лиса...`,
         `${hat} Kristy...`,
         `${hat} ...`,
     ],
+
+    shuffle: (array) => {
+        let currentIndex = array.length,  randomIndex;
+      
+        // While there remain elements to shuffle.
+        while (currentIndex > 0) {
+      
+          // Pick a remaining element.
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex--;
+      
+          // And swap it with the current element.
+          [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+        }
+      
+        return array;
+      },
 
     sendMsgLogs: (m, reason, m2) => {
         let attachmentName;

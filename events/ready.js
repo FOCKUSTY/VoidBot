@@ -10,7 +10,7 @@ module.exports = {
 	execute(client) {
 
 		Tags.sync();
-		console.log(`Загружаю ${`${randomActivity.length}`.magenta} активность(ей)\n`)
+		console.log(`Загружаю ${`${randomActivity.length}`.magenta} активность(и)(ей)\n`)
 
 		client.user.setPresence({activities: [{ name: 'activity' }], status: 'idle'}); 
 		client.user.setActivity('The Void Community~', {type: ActivityType.Playing});
@@ -22,7 +22,7 @@ module.exports = {
 		for (e of randomActivity) {
 			console.log(`${e[0]}`.magenta + ` - ${`${randomActivity.indexOf(e)}`.bold}`);
 		};
-		console.log(`Успешно загружено ${`${randomActivity.length}`.magenta} активность(и)\n`)
+		console.log(`Успешно загружено ${`${randomActivity.length}`.magenta} активность(и)(ей)\n`)
 
 		console.log(`Готово!`.bold +` `+`The Void`.bgCyan.black+` готов к работе, как `+`${client.user.tag}`.red.bold+`\n`);
 

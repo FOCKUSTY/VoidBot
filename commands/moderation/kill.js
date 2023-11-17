@@ -15,8 +15,6 @@ const { SlashCommandBuilder } = require('discord.js');
         })
 
         console.log(`Бот сбит...`)
-        setInterval(() => {
-        }, 500);
             await client.destroy();
             setTimeout(() => {
                 process.exit();}, 1000)

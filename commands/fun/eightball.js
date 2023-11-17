@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { Random, shuffle } = require("random-js");
+const { Random } = require("random-js");
+const { shuffle } = require(`../../developing`)
 const random = new Random();
 
     module.exports = {
@@ -13,21 +14,28 @@ const random = new Random();
 
         await interaction.reply({content: `Предсказываю...`, ephemeral: true})
 
-        const texts = [
-            'Бесспорно', 'Предрешено', 'Никаких сомнений', 'Определённо да', 'Можешь быть уверен в этом',
-            'Мне кажется да', 'Вероятнее всего', 'Хорошие перспективы', 'Знаки говорят да', 'Да',
-            'Пока не ясно, попробуй снова', 'Спроси позже', 'Лучше не рассказывать', 'Сейчас нельзя предсказать', 'Сконцентрируйся и спроси опять',
+        let texts = [
+            'Бесспорно', 'Это было предрешено', 'Никаких сомнений', 'Определённо да', 'Можешь быть уверен в этом',
+            'Думаю да...', 'Наверное...', 'Хорошие перспективыююю', 'Знаки говорят да...', 'Да',
+            'Звезд на небе не видно, попробуй позже', 'Спроси позже', 'Лучше не рассказывать', 'Погода для предсказывание плохая', 'Сконцентрируйся и спроси опять',
             'Даже не думай', 'Мой ответ нет', 'По моим данным нет', 'Перспективы не очень хорошие',
         ];
 
-        shuffle(texts)
+        for (el of texts) {
+            shuffle(texts)
+        }
 
         const rNum = random.integer(0, texts.length-1)
         const text = texts[rNum]
 
-        await interaction.editReply({
-		content: `${text}`,
-		ephemeral: true});
+        const question = interaction.options.getString(`question`)
+
+        setTimeout(async () => {            
+            await interaction.editReply({
+            content: `Ваш вопрос: ${question}\nМой ответ: ${text}`,
+            ephemeral: true});
+        }, 1000);
+
 
 	},
 };
