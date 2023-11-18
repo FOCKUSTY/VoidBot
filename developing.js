@@ -225,6 +225,7 @@ module.exports = {
       cFH++
       let iMin;
       let iMax;
+
       function check() {
         for(i of arr) {
           iMin = i-1
@@ -235,16 +236,22 @@ module.exports = {
           }
         }
       }
-      for (i of arr) {
+
+      for (someNum of arr) {
         check()
       }
+      
+      check()
+
       arr.push(num);
+
       if(cFH>n) {
         cFH=n
         arr.reverse()
         arr.pop()
         arr.reverse()
       }
+
       return num
     },
 
@@ -328,10 +335,10 @@ module.exports = {
                     console.log(`Активность изменена на: ${`${text}`.magenta} тип: "${`${textActType}`.bgMagenta}"`);
                 }
         } else {
-            let rNum = random.integer(0, randomNames.length-1);
-            rNum = historyRandom(rNum, 0, randomNames-1, randNumName, 5)
+            let rn = random.integer(0, randomNames.length-1);
+            rn = historyRandom(rn, 0, randomNames.length-1, randNumName, 5)
 
-            const rName = randomNames[rNum];
+            const rName = randomNames[rn];
             nameTexts(rName)
             const randNum = random.integer(0, texts.length-1);
             let text = texts[randNum][0];
