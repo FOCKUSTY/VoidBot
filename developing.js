@@ -81,7 +81,6 @@ module.exports = {
         [`🎩Bottomless Hat~`, actTypes.cust],
         [`The Void Community~`, actTypes.cust],
         [`Я отображаю FOCKUSTY..?`, actTypes.cust],
-        [`Я помню чудное мнгновенье...`, actTypes.cust],
         [`Переписываю код...`, actTypes.cust],
         [`На грани между реальностью и магией...`, actTypes.cust],
         [`Ищет Ошибки в коде...`, actTypes.cust],

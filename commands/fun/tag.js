@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { ActivityData, Tags } = require(`../../developing`);
+const { Tags } = require(`../../developing`);
 
     module.exports = {
         cooldown: 5,
@@ -13,40 +13,12 @@ const { ActivityData, Tags } = require(`../../developing`);
                 option.setName(`name`).setDescription(`Название тега (Идеи)`).setRequired(true)))
 
         .addSubcommand(subcommand =>
-            subcommand.setName(`ideas`).setDescription(`Вывести все идеи (Имени идей)`))
-        
-/*         .addSubcommand(subcommand =>
-            subcommand.setName(`activity`).setDescription(`Активность`)
-
-            .addStringOption(option =>
-                option.setName(`actname`).setDescription(`Название активности`).setRequired(true))
-
-            .addStringOption(option =>
-                option.setName(`acttype`).setDescription('Тип активности(actTypes.(play|stream|listen|watch|cust|comp))').setRequired(true))
-                ) */,
+            subcommand.setName(`ideas`).setDescription(`Вывести все идеи (Имени идей)`)),
         async execute(interaction) {
 
             const int = interaction
             const subcommand = interaction.options.getSubcommand()
 
-/*             if(subcommand==='activity') {
-                if(int.user.id===`877154902244216852`) {
-                    const tagName = interaction.options.getString('actname');
-                    const tagType = interaction.options.getString('acttype');
-    
-                    const tag = await ActivityData.create({
-                        name: tagName,
-                        acttype: tagType
-                    });
-    
-                    console.log(`Был успешно создан тег\n${tagName}\n${tagType}`)
-    
-                    await int.reply({content: `Тег успешно создан\nНазвание: ${tagName}\nТип: ${tagType}`, ephemeral: true})
-                }
-                } else {
-                    await int.reply({content: `У Вас нет прав`, ephemeral: true})
-                }
- */
             if(subcommand===`ideaname`) {
 
             const tagName = interaction.options.getString('name');

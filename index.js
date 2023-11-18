@@ -1,7 +1,8 @@
 const { Client, Collection, GatewayIntentBits, Events, InteractionType, EmbedBuilder } = require('discord.js');
 const { token } = require('./config.json');
-const { color } = require(`./developing.json`);
+const { Color, color, bold } = require(`colors`);
 const { Tags, sendMsgLogs } = require(`./developing`)
+const { chatbot } = require('./chatbot')
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -49,6 +50,30 @@ client.on(Events.MessageCreate, (m) => sendMsgLogs(m, "send"));
 client.on(Events.MessageUpdate, (m, nm) => sendMsgLogs(m, "update", nm));
 client.on(Events.MessageDelete, (m) => sendMsgLogs(m, "delete"));
 
+/* client.on(Events.MessageCreate, (m) => {
+	const msg = `${m.content.toLowerCase()}`;
+	const channel = m.client?.channels.cache.get(m.channelId);
+
+	if(msg.slice(0, 22)==='<@1122199797449904179>') {
+
+		console.log('Меня упомянули в: ' + `${m.channel.name}`.magenta +' - "'+ `${m.channel.id}`.bgMagenta + '"');
+		console.log('С сервера: ' + `${m?.guild.name}`.magenta +' - "'+ `${m?.guild.id}`.bgMagenta + '"');
+		console.log('Пользователь: ' + `${m.author.globalName}`.magenta +' - "'+ `${m.author.id}`.bgMagenta + '"');
+		console.log();
+		
+		if(
+		msg.slice(22, msg.length)==='как дела?'||
+		msg.slice(22, msg.length)==='как дела ?'||
+		msg.slice(22, msg.length)===' как дела?'||
+		msg.slice(22, msg.length)===' как дела ?'
+		) {
+			channel.send(`<@${m.author.id}>, все хорошо !`)
+		} else {
+			channel.send(`Привет, <@${m.author.id}> !`)
+		}
+	}
+}) */
+
 client.on(Events.InteractionCreate, async int => {
 	const user = int.user.globalName;
 	const userAvatar = `https://cdn.discordapp.com/avatars/${int.user.id}/${int.user.avatar}.png`;
@@ -65,7 +90,7 @@ client.on(Events.InteractionCreate, async int => {
 		const ideaDetails = int.fields.getTextInputValue(`ideaDetails`);
 
 			const embed = new EmbedBuilder()
-			.setColor(Number(color))
+			.setColor(0x161618)
 			.setAuthor({name: `${user}`, iconURL: `${userAvatar}`})
 			.setTitle(`${ideaTitle}`)
 			.setThumbnail(`${iconURL}`)
