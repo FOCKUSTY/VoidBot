@@ -221,7 +221,7 @@ module.exports = {
         }
 },
 
-    historyRandom: (num, min, max, arr) => {
+    historyRandom: (num, min, max, arr, n=3) => {
       cFH++
       let iMin;
       let iMax;
@@ -239,8 +239,8 @@ module.exports = {
         check()
       }
       arr.push(num);
-      if(cFH>3) {
-        cFH=3
+      if(cFH>n) {
+        cFH=n
         arr.reverse()
         arr.pop()
         arr.reverse()
@@ -264,7 +264,7 @@ module.exports = {
 
     functionRandomActivity: (client, randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom) => {
         let rNum = random.integer(0, 100);
-        rNum = historyRandom(rNum, 0, 100, randNum);
+        rNum = historyRandom(rNum, 0, 100, randNum, 5);
 
         console.log(`Рандомное число: ${`${rNum}`.magenta} из "${`100`.bgMagenta}"`);
     
@@ -314,7 +314,7 @@ module.exports = {
                     }
                 } else {
                     let rGuild = random.integer(0, guilds.length-1);
-                    rGuild = historyRandom(rGuild, 0, guilds.length-1, randNumGuild)
+                    rGuild = historyRandom(rGuild, 0, guilds.length-1, randNumGuild, 4)
 
                     const rGuildName = guilds[rGuild];
                     funcGuildTexts(rGuildName);
@@ -329,7 +329,7 @@ module.exports = {
                 }
         } else {
             let rNum = random.integer(0, randomNames.length-1);
-            rNum = historyRandom(rNum, 0, randomNames-1, randNumName)
+            rNum = historyRandom(rNum, 0, randomNames-1, randNumName, 5)
 
             const rName = randomNames[rNum];
             nameTexts(rName)
