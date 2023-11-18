@@ -1,7 +1,7 @@
 const { Events, ActivityType } = require('discord.js');
 const { Color, color, bold } = require(`colors`);
 const { Tags } = require(`../developing`)
-const { randomActivity, functionRandomActivity, randomNames, funcGuildTexts, nameTexts } = require(`../developing`);
+const { randomActivity, functionRandomActivity, randomNames, funcGuildTexts, nameTexts, historyRandom } = require(`../developing`);
 const guilds = [];
 
 module.exports = {
@@ -26,10 +26,10 @@ module.exports = {
 
 		console.log(`Готово!`.bold +` `+`The Void`.bgCyan.black+` готов к работе, как `+`${client.user.tag}`.red.bold+`\n`);
 
-		functionRandomActivity(client, randomActivity, randomNames, guilds, funcGuildTexts, nameTexts );
+		functionRandomActivity(client, randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom);
 
 		setInterval(() => {
-			functionRandomActivity(client, randomActivity, randomNames, guilds, funcGuildTexts, nameTexts);
+			functionRandomActivity(client, randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom);
         }, 60000);
 	},
 };

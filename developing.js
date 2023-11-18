@@ -41,6 +41,10 @@ const Tags = sequelize.define('tags', {
 const actType = [`Играет`, `Стримит`, `Слушает`, `Смотрит`, `Кастомный`, `Соревнуется`]
 let guildTexts = [];
 let texts = [];
+let cFH=0;
+let randNum = [];
+let randNumGuild = [];
+let randNumName = [];
 const logChannelId = `1171197868909015102`;
 const logGuildId = `1169284741846016061`;
 
@@ -217,6 +221,33 @@ module.exports = {
         }
 },
 
+    historyRandom: (num, min, max, arr) => {
+      cFH++
+      let iMin;
+      let iMax;
+      function check() {
+        for(i of arr) {
+          iMin = i-1
+          iMax = i+1
+          if(num===i||(num>iMin&&num<iMax)){
+            console.log('Были зафиксированы одинаковые или близкие активности')
+            num = random.integer(min, max);
+          }
+        }
+      }
+      for (i of arr) {
+        check()
+      }
+      arr.push(num);
+      if(cFH>3) {
+        cFH=3
+        arr.reverse()
+        arr.pop()
+        arr.reverse()
+      }
+      return num
+    },
+
     randomNames: [
         `Пётр`, `Алиса`, `София`, `Мирослава`, `Дарья`, `Светлана`, `Иван`, `Алёна`, `Яна`, `Евгений`, `Алексей`,
         `Вероника`, `Софья`, `Виктория`, `Ева`, `Тимофей`, `Анастасия`, `Андрей`, `Арсений`, `Маргарита`, `Борис`, `Елизавета`, `Егор`, `Юлия`,
@@ -231,9 +262,11 @@ module.exports = {
         `Соня`, `Сора`, `Малика`, `Айдар`, `Рената`, 'Валя', 'Кристи', 'Пустота'
     ],
 
-    functionRandomActivity: (client, randomActivity, randomNames, guilds, funcGuildTexts, nameTexts) => {
-        const rNum = random.integer(0, 100); 
-        console.log(`Рандомное число: ${`${rNum}`.magenta} из "${`100`.bgMagenta}"`)
+    functionRandomActivity: (client, randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom) => {
+        let rNum = random.integer(0, 100);
+        rNum = historyRandom(rNum, 0, 100, randNum);
+
+        console.log(`Рандомное число: ${`${rNum}`.magenta} из "${`100`.bgMagenta}"`);
     
         if(rNum>=15) {
             const i = random.integer(0, randomActivity.length-1);
@@ -280,7 +313,9 @@ module.exports = {
                         }
                     }
                 } else {
-                    const rGuild = random.integer(0, guilds.length-1);
+                    let rGuild = random.integer(0, guilds.length-1);
+                    rGuild = historyRandom(rGuild, 0, guilds.length-1, randNumGuild)
+
                     const rGuildName = guilds[rGuild];
                     funcGuildTexts(rGuildName);
                     const randNum = random.integer(0, guildTexts.length-1);
@@ -293,7 +328,9 @@ module.exports = {
                     console.log(`Активность изменена на: ${`${text}`.magenta} тип: "${`${textActType}`.bgMagenta}"`);
                 }
         } else {
-            const rNum = random.integer(0, randomNames.length-1);
+            let rNum = random.integer(0, randomNames.length-1);
+            rNum = historyRandom(rNum, 0, randomNames-1, randNumName)
+
             const rName = randomNames[rNum];
             nameTexts(rName)
             const randNum = random.integer(0, texts.length-1);

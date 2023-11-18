@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, ActivityType } = require('discord.js');
-const { randomActivity, functionRandomActivity, randomNames, funcGuildTexts, nameTexts } = require(`../../developing`);
+const { randomActivity, functionRandomActivity, randomNames, funcGuildTexts, nameTexts, historyRandom } = require(`../../developing`);
 const guilds = [];
 
     module.exports = {
@@ -16,7 +16,7 @@ const guilds = [];
                 guilds.push(guild.name)
             });
 
-        functionRandomActivity(client, randomActivity, randomNames, guilds, funcGuildTexts, nameTexts );
+        functionRandomActivity(client, randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom);
 
         await interaction.reply({
 		content: `Активность успешно изменена`,
