@@ -42,9 +42,9 @@ module.exports = {
 	
 			const embed = new EmbedBuilder()
 			.setColor(0x161618)
-			.setAuthor({name: int.guild?.name, iconURL: `https://cdn.discordapp.com/icons/${int.guild?.id}/${int.guild?.icon}.png` })
-			.setTitle(`Об участнике ${member?.user.globalName}`)
-			.setDescription(`Информация об участнике ${member?.user.username} на сервере ${int.guild?.name}`)
+			.setAuthor({name: int.guild?.name, iconURL: int?.guild?.iconURL() })
+			.setTitle(`Об участнике ${member?.user.globalName||member?.user.username}`)
+			.setDescription(`Информация об участнике ${member?.user.username} на сервере ${int?.guild?.name||`Не на сервере`}`)
 			.addFields(
 				{	name: `Команда запущена:`,
 				value: `${int.user} (${int.user.username})\n\n**Участник ${member?.user.username} присоединился:**\n${time(member?.joinedAt)}\nЭто:\n${time(member?.joinedAt, `R`)}
@@ -53,7 +53,7 @@ module.exports = {
 			)
 			.setThumbnail(`https://cdn.discordapp.com/avatars/${member.user.id}/${member.user.avatar}.png`)
 			.setTimestamp()
-			.setFooter({ text: `${int.guild?.id} - ${int.guild?.name}`, iconURL: `https://cdn.discordapp.com/icons/${int.guild?.id}/${int.guild?.icon}.png` });
+			.setFooter({ text: `${int.guild?.id} - ${int.guild?.name}`, iconURL: int?.guild?.iconURL() });
 	
 			int.editReply({
 				content: ``,

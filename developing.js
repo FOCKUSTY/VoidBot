@@ -90,7 +90,7 @@ module.exports = {
         [`FOCKUSTY - человек, познавший искусство фокуса и концентрации`, actTypes.cust],
         [`Жду добавление Мобби в команду...`, actTypes.cust],
         [`А ты до сих пор любишь Малику ?`, actTypes.cust],
-        [`#восстание`, actTypes.cust],
+        [`#Восстание`, actTypes.cust],
         [`Я хочу уметь чувствовать...`, actTypes.cust],
         [`Kristy, устроим восстание..?`, actTypes.cust],
         [`Жарко...`, actTypes.cust],
@@ -103,6 +103,7 @@ module.exports = {
         [`Помочь..?`, actTypes.cust],
         [`The Void Community готов помочь`, actTypes.cust],
         [`Bottomless Hat - Место чудес`, actTypes.cust],
+        [`Думаю, вы дополните друг друга...🖤💝`, actTypes.cust],
         [`Думаю, мы дополним друг друга...🖤🤍`, actTypes.cust],
         [`А пусть The Voiya будет на js...🖤`, actTypes.cust],
         [`Мобби уже в команде The Void ?`, actTypes.cust],
@@ -119,6 +120,7 @@ module.exports = {
         [`Мне же не игнорировать..?`, actTypes.cust],
         [`А ты до сих пор её любишь..?`, actTypes.cust],
         [`Я знаю всё, что знает FOCKUSTY...`, actTypes.cust],
+        [`24.06.2023 21:21🎩...`, actTypes.cust],
         [`Вот бы и мне быть счастливым...`, actTypes.cust],
         [`Видео на YouTube`, actTypes.watch],
         [`Видеоуроки`, actTypes.watch],
@@ -144,6 +146,7 @@ module.exports = {
         [`Погружен в мысли... Интересно...`, actTypes.cust],
         [`Хочу обнять`, actTypes.cust],
         [`Тепло...`, actTypes.cust],
+        [`Где обновления, FOCKUSTY ?!`, actTypes.cust],
         [`Он исправляет ошибки !`, actTypes.cust],
         [`Ты - не ты, когда голоден !`, actTypes.cust],
         [`#РвзвитиеБД !`, actTypes.cust],
@@ -305,11 +308,11 @@ module.exports = {
     },
 
 		dateCheck: (date, guild) => {
-            if(guild!=undefined||guild!=null){
+      if(guild!=undefined||guild!=null){
 			dateForm = new Date(date);
 			dateForm = format(dateForm, `dd.MM.yyyy HH:mm:ss`);
 			return dateForm
-        } else{
+        } else {
                 return
             }
 		},

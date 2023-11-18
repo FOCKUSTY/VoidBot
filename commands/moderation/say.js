@@ -1,4 +1,5 @@
-const { SlashCommandBuilder, PermissionFlagsBits, ChannelType, PermissionsBitField, Permissions } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, ChannelType, PermissionsBitField, EmbedBuilder } = require('discord.js');
+const { color, authorName, iconURL } = require(`../../developing.json`)
 
     module.exports = {
         cooldown: 5,
@@ -34,10 +35,17 @@ const { SlashCommandBuilder, PermissionFlagsBits, ChannelType, PermissionsBitFie
         channel.send(`${msg.replaceAll(`\\n`, `\n`)}`)
         
         try {
+
+        const embed = new EmbedBuilder()
+        .setColor(Number(color))
+        .setAuthor({name: `${authorName}`, iconURL: `${iconURL}`})
+        .setTitle(`Сообщение:`)
+        .setDescription(`${msg.replaceAll(`\\n`, `\n`)}`)
+        .setTimestamp()
         
         await int.reply({
 		content: `Сообщение было доставлено на: ${channel}`,
-		ephemeral: true});
+		embeds: [embed], ephemeral: true});
 
     } catch (err) {
         

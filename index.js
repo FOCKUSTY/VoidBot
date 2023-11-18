@@ -2,7 +2,6 @@ const { Client, Collection, GatewayIntentBits, Events, InteractionType, EmbedBui
 const { token } = require('./config.json');
 const { Color, color, bold } = require(`colors`);
 const { Tags, sendMsgLogs } = require(`./developing`)
-const { chatbot } = require('./chatbot')
 const fs = require('node:fs');
 const path = require('node:path');
 
