@@ -15,7 +15,7 @@ module.exports = {
 		client.user.setPresence({activities: [{ name: 'activity' }], status: 'idle'}); 
 		client.user.setActivity('The Void Community~', {type: ActivityType.Playing});
 		client.guilds.cache.forEach(guild => {
-			guilds.push(guild.name)
+			guilds.push(guild)
 		});
 
 		console.log(`Рандомные активности:`.bold + `\n`);

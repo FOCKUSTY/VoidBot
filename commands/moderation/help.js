@@ -4,7 +4,9 @@ module.exports = {
 	cooldown: 5,
 	data: new SlashCommandBuilder()
 		.setName('help')
-		.setDescription('Все доступные команды !'),
+		.setDescription('Все доступные команды !')
+		.setNameLocalizations({ru:'помощь',"en-US":'help'})
+		.setDescriptionLocalizations({ru:'Все доступные команды',"en-US":'All commands'}),
 	async execute(interaction) {
 
 		const hat = `:tophat:`

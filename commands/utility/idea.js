@@ -9,7 +9,9 @@ module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
 	.setName('idea')
-	.setDescription('Предложить свою идею !'),
+	.setDescription('Предложить свою идею !')
+    .setNameLocalizations({ru:'идея',"en-US":'idea'})
+    .setDescriptionLocalizations({ru:'Предложить свою идею',"en-US":'Suggest your idea'}),
     async execute(interaction) {
     bannedUsers.forEach(async bannedUser => {
         if(interaction.user.id === bannedUser.id) {

@@ -4,7 +4,9 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
         cooldown: 5,
         data: new SlashCommandBuilder()
 		.setName('roles')
-		.setDescription('Все роли на сервере !'),
+		.setDescription('Все роли на сервере !')
+		.setNameLocalizations({ru:'роли',"en-US":'roles'})
+		.setDescriptionLocalizations({ru:'Все роли на сервере',"en-US":'All roles on guild'}),
         async execute(interaction) {
 			const int = interaction
 

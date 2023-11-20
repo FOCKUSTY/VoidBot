@@ -11,7 +11,9 @@ module.exports = {
 	cooldown: 5,
 	data: new SlashCommandBuilder()
 		.setName('server')
-		.setDescription('Информация о сервере.'),
+		.setDescription('Информация о сервере')
+		.setNameLocalizations({ru:'сервер',"en-US":'server'})
+		.setDescriptionLocalizations({ru:'Информация о сервере',"en-US":'Info about server'}),
 	async execute(interaction) {
 		const int = interaction
 		if(int.guild!=undefined||int.guild!=null) {

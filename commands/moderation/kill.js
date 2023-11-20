@@ -4,7 +4,9 @@ const { SlashCommandBuilder } = require('discord.js');
         cooldown: 5,
         data: new SlashCommandBuilder()
 		.setName('kill')
-		.setDescription('Убить бота !'),
+		.setDescription('Убить бота !')
+        .setDescriptionLocalizations({ru:'убить','en-US':'kill'})
+        .setDescriptionLocalizations({ru:'Убить бота !',"en-US":'Kill the bot !'}),
         async execute(interaction) {
             const client = interaction.client;
             

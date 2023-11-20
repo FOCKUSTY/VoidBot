@@ -1,9 +1,15 @@
 const { Client, Collection, GatewayIntentBits, Events, InteractionType, EmbedBuilder } = require('discord.js');
 const { token } = require('./config.json');
 const { Color, color, bold } = require(`colors`);
-const { Tags, sendMsgLogs } = require(`./developing`)
+const { Tags, sendMsgLogs, randomActivity, randomNames, nameTexts, historyRandom, funcGuildTexts, randomText } = require(`./developing`)
+const { Random } = require('random-js')
 const fs = require('node:fs');
 const path = require('node:path');
+const r = new Random();
+const actH = [];
+const actType = [`Играет в `, `Стримит `, `Слушает `, `Смотрит `, ``, `Соревнуется в `]
+const guilds = [];
+const members = [];
 
 const client = new Client({
 	intents: [
@@ -48,30 +54,6 @@ for (const file of eventFiles) {
 client.on(Events.MessageCreate, (m) => sendMsgLogs(m, "send"));
 client.on(Events.MessageUpdate, (m, nm) => sendMsgLogs(m, "update", nm));
 client.on(Events.MessageDelete, (m) => sendMsgLogs(m, "delete"));
-
-/* client.on(Events.MessageCreate, (m) => {
-	const msg = `${m.content.toLowerCase()}`;
-	const channel = m.client?.channels.cache.get(m.channelId);
-
-	if(msg.slice(0, 22)==='<@1122199797449904179>') {
-
-		console.log('Меня упомянули в: ' + `${m.channel.name}`.magenta +' - "'+ `${m.channel.id}`.bgMagenta + '"');
-		console.log('С сервера: ' + `${m?.guild.name}`.magenta +' - "'+ `${m?.guild.id}`.bgMagenta + '"');
-		console.log('Пользователь: ' + `${m.author.globalName}`.magenta +' - "'+ `${m.author.id}`.bgMagenta + '"');
-		console.log();
-		
-		if(
-		msg.slice(22, msg.length)==='как дела?'||
-		msg.slice(22, msg.length)==='как дела ?'||
-		msg.slice(22, msg.length)===' как дела?'||
-		msg.slice(22, msg.length)===' как дела ?'
-		) {
-			channel.send(`<@${m.author.id}>, все хорошо !`)
-		} else {
-			channel.send(`Привет, <@${m.author.id}> !`)
-		}
-	}
-}) */
 
 client.on(Events.InteractionCreate, async int => {
 	const user = int.user.globalName;
@@ -120,6 +102,30 @@ client.on(Events.InteractionCreate, async int => {
 				console.log(`Ошибка с добавление тега\n${error}`)
 			}
 		};
+})
+
+client.on(Events.MessageCreate, async (m) => {
+	if(m.channel?.id!=`1175738843203391550`) return;
+	if(m.author.id!=`1164228812217790565`) return;
+
+	m.client.guilds.cache.forEach(guild => {
+		guilds.push(guild)
+	});
+	
+	m.guild.members.cache.forEach(member => {
+		if(member.id===`1122199797449904179`||member.id===`1020329590612308089`) return;	
+		members.push(member.id)
+	})
+
+	const member = members[r.integer(0, members.length-1)]
+
+	const text = randomText(randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom)
+
+	m.client.channels.cache.get(m.channel.id).sendTyping()
+	
+	setTimeout( async () => {
+		await m.client.channels.cache.get(m.channel.id).send(`${text}\nИ не забыть <@${member}> !`)
+	}, 2000);
 })
 
 client.login(token)

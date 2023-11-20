@@ -4,7 +4,9 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
         cooldown: 5,
         data: new SlashCommandBuilder()
 		.setName('test')
-		.setDescription('Тестовая команда !'),
+		.setDescription('Тестовая команда !')
+        .setNameLocalizations({ru:'тест',"en-US":'test'})
+        .setDescriptionLocalizations({ru:'Тестовая команда',"en-US":'Test command'}),
         async execute(interaction) {
 
         

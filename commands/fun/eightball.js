@@ -8,8 +8,12 @@ const random = new Random();
         data: new SlashCommandBuilder()
 		.setName('8ball')
 		.setDescription('Предсказание будущего !')
+        .setNameLocalizations({ru:'шар', "en-US":'8ball'})
+		.setDescriptionLocalizations({ru:'Предсказание будущего', "en-US":'Predicting the future'})
         .addStringOption(option =>
-            option.setName('question').setDescription('Ваш вопрос').setRequired(true)),
+            option.setName('question').setDescription('Ваш вопрос').setRequired(true)
+            .setNameLocalizations({ru:'вопрос', "en-US":'question'})
+            .setDescriptionLocalizations({ru:'Ваш вопрос', "en-US":'Your question'})),
         async execute(interaction) {
 
         await interaction.reply({content: `Предсказываю...`, ephemeral: true})

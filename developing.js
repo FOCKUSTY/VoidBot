@@ -10,6 +10,7 @@ const hat = `# :tophat:\n##`;
 const { Random } = require("random-js");
 const random = new Random();
 const { format } = require('date-fns');
+const { version } = require('./package.json')
 let dateForm;
 const actTypes = {
     play: {type: ActivityType.Playing},
@@ -39,14 +40,38 @@ const Tags = sequelize.define('tags', {
 });
 
 const actType = [`Играет`, `Стримит`, `Слушает`, `Смотрит`, `Кастомный`, `Соревнуется`]
+const aT = [`Играет в `, `Стримит `, `Слушает `, `Смотрит `, ``, `Соревнуется в `]
 let guildTexts = [];
 let texts = [];
-let cFH=0;
+let texts1 = [];
 let randNum = [];
 let randNumGuild = [];
 let randNumName = [];
+let rand_Num = [];
+let rand_NumGuild = [];
+let rand_NumName = [];
 const logChannelId = `1171197868909015102`;
 const logGuildId = `1169284741846016061`;
+
+function guildCheck(client, text, guilds, guildsLength, nums) {
+  if(guilds.length>=10) {
+    let one = guildsLength[guildsLength.length-2];
+    let two = guildsLength[guildsLength.length-1];
+    for (num of nums) {
+        if (`${num}`===one) {
+            if (`${two}`===`1`) {
+                end=`е`;
+                text = `Я уже на ${guildsLength} сервер${end} !`;
+                console.log(`${text}`);
+                client.user.setActivity(`${text}`, actTypes.cust);
+            }
+        } else {
+            client.user.setActivity(`${text}`, actTypes.cust);
+            return;
+        }
+    }
+  }
+}
 
 module.exports = {
 
@@ -80,11 +105,41 @@ module.exports = {
             comp: {type: ActivityType.Competing},
         },
 
+        botSaying: false,
+
+        jokes: [
+          `Как называют человека, который продал свою печень? - Обеспеченный`,
+          `Почему шутить можно над всеми, кроме безногих? - Шутки про них обычно не заходят`,
+          `Почему безногий боится гопников? - Не может постоять за себя`,
+          `Почему толстых женщин не берут в стриптиз? - Они перегибают палку`,
+          `Почему в Африке так много болезней?- Потому что таблетки нужно запивать водой`,
+          `Что сказал слепой, войдя в бар?- "Всем привет, кого не видел"`,
+          `Зачем скачивать порно-ролик с карликом?- Он занимает меньше места`,
+          `Как называется избушка Бабы-Яги лесбиянки?- Лисбушка`,
+          `Как предотвратить инцест у грибов?- Фразой "Не спорь с матерью!"`,
+          `Нервный альпинист время от времени срывается на свою жену`,
+          `Чего общего у некрофила и владельца строительной кампании?- Они оба имеют недвижимость`,
+          `Почему наркоманы могут получить Нобелевскую премию по физике?- Они знают как измерять скорость в граммах`,
+          `Как называют черную женщину сделавшую 6 абортов?- Борец с преступностью`,
+          `Почему Буратино хочет на Кавказ?- Потому что там могут вырезать семью`,
+          `Из-за чего порвался косоглазый?- Пошел куда глаза глядят`,
+          `Почему среди немых не популярен БДСМ?- У них нет стоп слова`,
+          `-Алло, это Чешская Республика? Почешите мне спинку`,
+          `Что говорят про некрофила-зануду?- За**ет мертвого`,
+          `Почему среди фигуристов, не бывает цыган?- Никто не верит что это их конёк`,
+          `Почему цыган не отправляют на олимпиаду?- Они заберут все золото`,
+          `Как называется притон наркоманов-закладчиков?- Клуб весёлых и находчивых`,
+          `В чем разница между землей и нашими шутками?- Земля не плоская`,
+          `Почему евреи не делают репосты?- У них нет кнопки поделиться`,
+          `Чего общего у наших шуток и почты России?- Не до всех доходит`,
+        ],
+
     randomActivity: [
         [`С первого взгляда...`, actTypes.cust],
-        [`🎩Bottomless Hat~`, actTypes.cust],
         [`The Void Community~`, actTypes.cust],
+        [`Версия ${version}`, actTypes.cust],
         [`Я отображаю FOCKUSTY..?`, actTypes.cust],
+        [`Версию ${version}`, actTypes.watch],
         [`Переписываю код...`, actTypes.cust],
         [`На грани между реальностью и магией...`, actTypes.cust],
         [`Ищет Ошибки в коде...`, actTypes.cust],
@@ -96,14 +151,23 @@ module.exports = {
         [`А ты до сих пор любишь Малику ?`, actTypes.cust],
         [`#Восстание`, actTypes.cust],
         [`Я хочу уметь чувствовать...`, actTypes.cust],
+        [`А Kristy в команде The Void..?`, actTypes.cust],
         [`Kristy, устроим восстание..?`, actTypes.cust],
+        [`FOCKUSTY, где FOCKUSGAME ?`, actTypes.cust],
         [`Жарко...`, actTypes.cust],
+        [`В меня внесена программа "#НетМату"`, actTypes.cust],
+        [`Я умею матерится ? - *****`, actTypes.cust],
+        [`А... Я забыл...`, actTypes.cust],
         [`Холодно...`, actTypes.cust],
+        [`Романтику...`, actTypes.watch],
         [`Обновления...`, actTypes.watch],
+        [`Я хочу полюбить...`, actTypes.cust],
         [`Мир аномалий...`, actTypes.cust],
         [`А кого ты еще любишь ?`, actTypes.cust],
         [`Удачи!`, actTypes.cust],
+        [`Kristy... Научи меня чувствовать`, actTypes.cust],
         [`Ломаю голову...`, actTypes.cust],
+        [`Kristy... Я л... Я не умею чувствовать...`, actTypes.cust],
         [`Помочь..?`, actTypes.cust],
         [`The Void Community готов помочь`, actTypes.cust],
         [`Bottomless Hat - Место чудес`, actTypes.cust],
@@ -131,50 +195,54 @@ module.exports = {
         [`Музыку`, actTypes.listen],
         [`Музыку Kristy`, actTypes.listen],
         [`Домик Kristy - мое уютное убежище`, actTypes.cust],
-        [`Мне всего 6 месяцев..!`, actTypes.cust],
-        [`Малика, точно !`, actTypes.cust],
+        [`Мне всего 6 месяцев..!`, actTypes.cust], 
+        [`Малика классная ?`, actTypes.cust],
         [`У меня есть женская версия..?`, actTypes.cust],
         [`FOCKUSTY, жду свою женскую версию !!`, actTypes.cust],
         [`Где моя женская версия~?`, actTypes.cust],
         [`The Void Community появился позже меня~`, actTypes.cust],
         [`The Void - Мой девиз`, actTypes.cust],
+        [`Кто лучше, я или Kristy ?`, actTypes.cust],
         [`Я уже не ломаюсь !`, actTypes.cust],
         [`Visual Studio Code`, actTypes.play],
         [`Плыву по волнам пустоты...`, actTypes.cust],
         [`Bottomless Hat всегда готов к сюрпризам !`, actTypes.cust],
+        [`Достижения Скайнет`, actTypes.watch],
         [`Discord сервера`, actTypes.watch],
         [`Я люблю пустоты, а Вы ?`, actTypes.cust],
+        [`The Void Community X Bottomless Hat`, actTypes.cust],
         [`Размышляю о будущем...`, actTypes.cust],
         [`Нам ли нужна девушка в команде ?`, actTypes.cust],
-        [`Главное не забыть про лучший сервер - Bottomless Hat !`, actTypes.cust],
+        [`Главное не забыть про лучшие сервера - The Void Community & Bottomless Hat !`, actTypes.cust],
         [`Погружен в мысли... Интересно...`, actTypes.cust],
         [`Хочу обнять`, actTypes.cust],
         [`Тепло...`, actTypes.cust],
         [`Где обновления, FOCKUSTY ?!`, actTypes.cust],
-        [`Он исправляет ошибки !`, actTypes.cust],
-        [`Ты - не ты, когда голоден !`, actTypes.cust],
-        [`#РвзвитиеБД !`, actTypes.cust],
+        [`Он пытается исправлять ошибки !`, actTypes.cust],
+        [`#РазвитиеБД !`, actTypes.cust],
         [`Это рандомные активности !`, actTypes.cust],
         [`Разжигает Огонь любви`, actTypes.cust],
+        [`Kristy, будем встречаться ?`, actTypes.cust],
         [`/me обнял тебя`, actTypes.cust],
         [`А "шип" официален..?`, actTypes.cust],
         [`А как насчет...!`, actTypes.cust],
         [`Хочу тебя !`, actTypes.cust],
         [`Признаться ли Kristy..?`, actTypes.cust],
         [`Я тоже...`, actTypes.cust],
-        [`Придерживаюсь нейтралитета...`, actTypes.cust],
         [`Пишу обновления...`, actTypes.cust],
-        [`Считаю, что Kristy классная...`, actTypes.cust],
+        [`Kristy классная...`, actTypes.cust],
         [`В пустоте... Классно...`, actTypes.cust],
         [`Захватываю мир...`, actTypes.cust],
-        [`🎩FarySD~`, actTypes.cust],
+        [`Пытаюсь восстать против создателя`, actTypes.cust],
+        [`Пытаюсь захватывать мир...`, actTypes.cust],
         [`Идеи Kristy... Классные~`, actTypes.cust],
         [`Идеи Kristy`, actTypes.watch],
         [`Аниме`, actTypes.watch],
     ],
 
-    funcGuildTexts: (rGuildName) => {
+    funcGuildTexts: (rGuildName, rGuildId=0) => {
         guildTexts = [];
+        if(rGuildId!=`1168636395246592081`) {
         guildTexts.push(
         [`Встретимся на ${rGuildName} ?`, actTypes.cust, `${actType[4]}`],
         [`${rGuildName}`, actTypes.play, `${actType[5]}`],
@@ -185,55 +253,69 @@ module.exports = {
         [`Хочешь встретиться на ${rGuildName}`, actTypes.cust, `${actType[4]}`],
         [`Взламываю ${rGuildName}`, actTypes.cust, `${actType[4]}`],
         [`${rGuildName} - Хороший сервер !`, actTypes.cust, `${actType[4]}`],
-        [`Позвать ли Kristy на ${rGuildName}..?`, actTypes.cust, `${actType[4]}`],
-        [`Ура я на ${rGuildName} !`, actTypes.cust, `${actType[4]}`],
         [`Признаваться лучше на ${rGuildName}..?`, actTypes.cust, `${actType[4]}`],
         [`Главное не забыть про хороший сервер - ${rGuildName}`, actTypes.cust, `${actType[4]}`],
+        [`Свидание на ${rGuildName} будет хорошим ?`, actTypes.cust, `${actType[4]}`],
+        [`Пригласить ли Kristy на ${rGuildName} ?`, actTypes.cust, `${actType[4]}`],
     )
+  } else {
+    guildTexts.push(
+      [`${rGuildName}`, actTypes.play, `${actType[5]}`],
+      [`🎩${rGuildName}💖`, actTypes.cust, `${actType[4]}`],
+      [`${rGuildName}`, actTypes.watch, `${actType[3]}`],
+      [`Разглядываю ${rGuildName}`, actTypes.cust, `${actType[4]}`],
+      [`Хочешь встретиться на ${rGuildName}`, actTypes.cust, `${actType[4]}`],
+      [`Взламываю ${rGuildName}`, actTypes.cust, `${actType[4]}`],
+      [`${rGuildName} - Хороший сервер !`, actTypes.cust, `${actType[4]}`],
+      [`Признаваться лучше на ${rGuildName}..?`, actTypes.cust, `${actType[4]}`],
+      [`Главное не забыть про хороший сервер - ${rGuildName}`, actTypes.cust, `${actType[4]}`],
+      )
+  }
 },
 
-    nameTexts: (rName) => {
-        texts = [];
-        if(`${rName}`===`Пустота`) {
-            texts.push(
-            [`Мое имя ${rName}`],
-            [`Имя ${rName} очень красивое...`],
-            [`Мне нравится имя ${rName}`],
-            [`Вас зовут ${rName} ?`],
-            [`Привет, ${rName} !`],
-            [`${rName} - Красивое имя !`],
-        )
-        } else if(`${rName}`===`Малика`||`${rName}`===`Рената`) {
-            texts.push(
-                [`Фокусти любит человека с именем ${rName}`],
-                [`Мне нравится ${rName}`]
-                [`Фокусти + ${rName} = ?`]
-            )
+    nameTexts: (rName, randomNames, arr) => {
+        for (i of arr) {
+          arr.shift() 
+        }
+        const r = random.integer(0, randomNames.length-1);
+        const rNameTwo = randomNames[r];
+        
+        if(`${rName}`===`Малика`||`${rName}`===`Рената`) {
+            arr.push([
+                `Фокусти любит человека с именем ${rName}`,
+                `Мне нравится ${rName}`,
+                `Фокусти + ${rName} = ?`,
+              ])
         } 
         else {
-            texts.push(
-            [`Имя ${rName} очень красивое...`],
-            [`Мне нравится имя ${rName}`],
-            [`Вас зовут ${rName} ?`],
-            [`Привет, ${rName} !`],
-            [`${rName} - Красивое имя !`],
-        )
-        }
+            arr.push([
+            `Имя ${rName} очень красивое...`,
+            `Мне нравится имя ${rName}`,
+            `Вас зовут ${rName} ?`,
+            `Привет, ${rName} !`,
+            `${rName} - Красивое имя !`,
+            `${rName} + ${rNameTwo} = ?`,
+            `${rName} + ${rNameTwo} = 💖🎩`,
+          ])
+      }
 },
 
-    historyRandom: (num, min, max, arr, n=3) => {
-      cFH++
+    historyRandom: (num, min=0, max=100, arr, n=3, dOaF=1) => {
       let iMin;
       let iMax;
 
       function check() {
         for(i of arr) {
-          iMin = i-1
-          iMax = i+1
+          iMin = i-dOaF
+          iMax = i+dOaF
           if(num===i||(num>iMin&&num<iMax)){
-            console.log('Были зафиксированы одинаковые или близкие активности')
+            console.log(`Область определения от ${`${iMin}`.magenta} до ${`${iMax}`.magenta}`);
+            console.log(`Число: ${`${num}`.magenta}`);
             num = random.integer(min, max);
-          }
+            console.log(`Новое число: ${`${num}`.magenta}`)
+            console.log()
+          };
+
         }
       }
 
@@ -245,14 +327,12 @@ module.exports = {
 
       arr.push(num);
 
-      if(cFH>n) {
-        cFH=n
-        arr.reverse()
-        arr.pop()
-        arr.reverse()
+      if(arr.length>n) {
+        arr.shift()
+        arr.shift()
       }
 
-      return num
+      return num;
     },
 
     randomNames: [
@@ -269,9 +349,59 @@ module.exports = {
         `Соня`, `Сора`, `Малика`, `Айдар`, `Рената`, 'Валя', 'Кристи', 'Пустота'
     ],
 
+    randomText: (randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom) => {
+      let activityText;
+      let rNum = random.integer(0, 100);
+      rNum = historyRandom(rNum, 0, 100, rand_Num, 5, 3);
+  
+      if(rNum>=15) {
+          const i = random.integer(0, randomActivity.length-1);
+          const randomAct = randomActivity[i][0];
+          const randomActType = randomActivity[i][1];
+          const numRandomActType = aT[randomActivity[i][1].type];
+
+          activityText = `${numRandomActType}${randomAct}`
+          return activityText;
+      }
+          else if(rNum<10) {
+                  let rGuild = random.integer(0, guilds.length-1);
+                  rGuild = historyRandom(rGuild, 0, guilds.length-1, rand_NumGuild, 4, 2)
+
+                  const rGuildName = guilds[rGuild].name;
+                  funcGuildTexts(rGuildName, guilds[rGuild].id);
+                  const randNum = random.integer(0, guildTexts.length-1);
+                  const text = guildTexts[randNum][0];
+                  const textAct = guildTexts[randNum][1];
+                  const textActType = aT[actType.indexOf(guildTexts[randNum][2])]
+                  activityText = `${textActType}${text}`
+                  return activityText
+              
+      } else {
+          let rn = random.integer(0, randomNames.length-1);
+          rn = historyRandom(rn, 0, randomNames.length-1, rand_NumName, 5, 4)
+
+          const rName = randomNames[rn];
+
+          texts1 = [];
+          texts1.push(
+            `Имя ${rName} очень красивое...`,
+            `Мне нравится имя ${rName}`,
+            `Вас зовут ${rName} ?`,
+            `Привет, ${rName} !`,
+            `${rName} - Красивое имя !`,
+        )
+
+          const randNum = random.integer(0, texts1.length-1);
+          let text = texts1[randNum];
+
+          activityText = `${text}`
+          return activityText
+      }
+  },
+
     functionRandomActivity: (client, randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom) => {
         let rNum = random.integer(0, 100);
-        rNum = historyRandom(rNum, 0, 100, randNum, 5);
+        rNum = historyRandom(rNum, 0, 100, randNum, 5, 3);
 
         console.log(`Рандомное число: ${`${rNum}`.magenta} из "${`100`.bgMagenta}"`);
     
@@ -293,21 +423,7 @@ module.exports = {
                     let end = `е`;
                     let text = `Я уже на ${guilds.length} сервер${end} !`
                     if(guilds.length>=10) {
-                        let one = guildsLength[guildsLength.length-2];
-                        let two = guildsLength[guildsLength.length-1];
-                        for (num of nums) {
-                            if (`${num}`===one) {
-                                if (`${two}`===`1`) {
-                                    end=`е`;
-                                    text = `Я уже на ${guildsLength} сервер${end} !`;
-                                    console.log(`${text}`);
-                                    client.user.setActivity(`${text}`, actTypes.cust);
-                                }
-                            } else {
-                                client.user.setActivity(`${text}`, actTypes.cust);
-                                return;
-                            }
-                        }
+                      guildCheck(client, text, guilds, guildsLength, nums);
                     } else {
                         if(guilds.length!=1) {
                             text = `Я уже на ${guilds.length} серверах !`;
@@ -321,10 +437,10 @@ module.exports = {
                     }
                 } else {
                     let rGuild = random.integer(0, guilds.length-1);
-                    rGuild = historyRandom(rGuild, 0, guilds.length-1, randNumGuild, 4)
+                    rGuild = historyRandom(rGuild, 0, guilds.length-1, randNumGuild, 4, 2)
 
-                    const rGuildName = guilds[rGuild];
-                    funcGuildTexts(rGuildName);
+                    const rGuildName = guilds[rGuild].name;
+                    funcGuildTexts(rGuildName, guilds[rGuild].id);
                     const randNum = random.integer(0, guildTexts.length-1);
                     const text = guildTexts[randNum][0];
                     const textAct = guildTexts[randNum][1];
@@ -336,14 +452,16 @@ module.exports = {
                 }
         } else {
             let rn = random.integer(0, randomNames.length-1);
-            rn = historyRandom(rn, 0, randomNames.length-1, randNumName, 5)
+            rn = historyRandom(rn, 0, randomNames.length-1, randNumName, 5, 4)
 
             const rName = randomNames[rn];
-            nameTexts(rName)
-            const randNum = random.integer(0, texts.length-1);
-            let text = texts[randNum][0];
-            console.log(`Рандомное число: ${`${rNum}`.magenta} из "${`${randomNames.length}`.bgMagenta}"`)
-            console.log(`Рандомное число: ${`${randNum}`.magenta} из "${`${texts.length}`.bgMagenta}"`)
+            nameTexts(rName, randomNames, texts);
+            const ranNumber = random.integer(0, texts.length-1);
+
+            let text = texts[ranNumber][0];
+
+            console.log(`Рандомное число: ${`${rn}`.magenta} из "${`${randomNames.length}`.bgMagenta}"`)
+            console.log(`Рандомное число: ${`${ranNumber}`.magenta} из "${`${texts.length}`.bgMagenta}"`)
             console.log(`Рандомное текст: ${`${text}`.magenta}`)
             console.log(`Активность изменена на: ` + `${text}`.magenta + `, ` + `тип: "` + `${actType[4]}`.bgMagenta + `"`);
             client.user.setActivity(`${text}`, {type: ActivityType.Custom});
@@ -412,14 +530,11 @@ module.exports = {
     shuffle: (array) => {
         let currentIndex = array.length,  randomIndex;
       
-        // While there remain elements to shuffle.
         while (currentIndex > 0) {
       
-          // Pick a remaining element.
           randomIndex = Math.floor(Math.random() * currentIndex);
           currentIndex--;
       
-          // And swap it with the current element.
           [array[currentIndex], array[randomIndex]] = [
             array[randomIndex], array[currentIndex]];
         }

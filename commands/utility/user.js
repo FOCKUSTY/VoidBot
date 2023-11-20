@@ -5,11 +5,21 @@ module.exports = {
 	cooldown: 5,
 	data: new SlashCommandBuilder()
 	.setName('user')
-	.setDescription('Информация о пользователе.')
+	.setDescription('Информация о пользователе')
+	.setNameLocalizations({
+		ru: 'пользователь',
+		"en-US": 'user'
+	})
+	.setDescriptionLocalizations({
+		ru: 'Информация о пользователе',
+		"en-US": 'Info about user'
+	})
 	.addUserOption(option =>
 		option
 		.setName(`member`)
-		.setDescription(`Участник`)),
+		.setDescription(`Участник`)
+		.setNameLocalizations({ru:'участник',"en-US":'member'})
+		.setDescriptionLocalizations({ru:'Участник на сервере',"en-US":'Member on guild'})),
 	async execute(interaction) {
 		const int = interaction
 		if(int.guild!=null && int.guild!=undefined) {

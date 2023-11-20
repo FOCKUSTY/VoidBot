@@ -6,17 +6,23 @@ const { color, authorName, iconURL } = require(`../../developing.json`)
         data: new SlashCommandBuilder()
 		.setName('say')
 		.setDescription('Сообщение с помощью бота!')
+        .setNameLocalizations({ru:'отправить',"en-US":'say'})
+        .setDescriptionLocalizations({ru:'Сообщение с помощью бота',"en-US":'Message using a bot'})
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels & PermissionFlagsBits.ManageMessages)
         .addChannelOption(option =>
             option
                 .setName(`channel`)
                 .setDescription(`Канал на который вы хотите отправить сообщение`)
+                .setNameLocalizations({ru:'канал',"en-US":'channel'})
+                .setDescriptionLocalizations({ru:'Канал на который вы хотите отправить сообщение',"en-US":'The channel you want to send a message to'})
                 .setRequired(true)
                 .addChannelTypes(ChannelType.GuildText))
         .addStringOption(option =>
             option
                 .setName('message')
                 .setDescription('Ваше сообщение !')
+                .setNameLocalizations({ru:'сообщение',"en-US":'message'})
+                .setDescriptionLocalizations({ru:'Ваше сообщение',"en-US":'Your message'})
                 .setRequired(true)),
         async execute(interaction) {
 

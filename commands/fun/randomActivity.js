@@ -3,17 +3,19 @@ const { randomActivity, functionRandomActivity, randomNames, funcGuildTexts, nam
 const guilds = [];
 
     module.exports = {
-        cooldown: 43200,
+        cooldown: 9600,
         data: new SlashCommandBuilder()
 		.setName('randomact')
-		.setDescription('Изменить активность бота'),
+		.setDescription('Изменить активность бота')
+        .setNameLocalizations({ru:'случ-активность',"en-US":'random-act'})
+        .setDescriptionLocalizations({ru:'Изменить активность бота',"en-US":'Change bot activity'}),
         async execute(interaction) {
             
             const client = interaction.client;
             
             guilds.splice(0,guilds.length);
             client.guilds.cache.forEach(guild => {
-                guilds.push(guild.name)
+                guilds.push(guild)
             });
 
         functionRandomActivity(client, randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom);

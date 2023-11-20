@@ -8,7 +8,8 @@ module.exports = {
 	cooldown: 0,
 	data: new SlashCommandBuilder()
 		.setName('thevoid')
-		.setDescription('Информация о The Void !'),
+		.setDescription('Информация о The Void !')
+		.setDescriptionLocalizations({ru:'Информация о The Void',"en-US":'Info about The Void'}),
 	async execute(interaction) {
 
 		const rnum = random.integer(0, download.length-1)

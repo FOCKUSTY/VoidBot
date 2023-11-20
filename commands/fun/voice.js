@@ -18,14 +18,20 @@ module.exports = {
     data: new SlashCommandBuilder()
 	.setName('voice')
 	.setDescription('Присоединиться в голосовой канал !')
+    .setNameLocalizations({ru:'голосовой',"en-US":'voice'})
+    .setDescriptionLocalizations({ru:'Присоединиться в голосовой канал',"en-US":'Join voice channel'})
     .addSubcommand(subcommand =>
         subcommand
         .setName(`play`)
-        .setDescription(`Проиграть музыку`))
+        .setDescription(`Проиграть музыку`)
+        .setNameLocalizations({ru:'возпроизвести',"en-US":'play'})
+        .setDescriptionLocalizations({ru:'Проиграть музыку',"en-US":'Play music'}))
     .addSubcommand(subcommand =>
         subcommand
         .setName(`disconnect`)
-        .setDescription(`Выйти из голосового канала`)),
+        .setDescription(`Выйти из голосового канала`)
+        .setNameLocalizations({ru:'отсоединиться',"en-US":'disconnect'})
+        .setDescriptionLocalizations({ru:'Выйти из голосового канала',"en-US":'Exit voice channel'})),
     async execute(interaction) {
 
         const musics = []

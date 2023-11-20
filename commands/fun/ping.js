@@ -4,7 +4,9 @@ module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('ping')
-        .setDescription('Ответит Pong!'),
+        .setDescription('Ответит Pong!')
+        .setNameLocalizations({ru:'пинг', "en-US":'ping'})
+		.setDescriptionLocalizations({ru:'Ответит понг !', "en-US":'Replyed pong !'}),
     async execute(interaction) {
         const sent = await interaction.reply({ content: '# Pong ! :tophat:\n Считаем время...', fetchReply: true, ephemeral: true});
         let awaitSecond = Math.round((sent.createdTimestamp - interaction.createdTimestamp) / 1000 * Math.pow(10, 1)) / Math.pow(10, 1)
