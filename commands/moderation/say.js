@@ -23,12 +23,18 @@ const { color, authorName, iconURL } = require(`../../developing.json`)
                 .setDescription('Ваше сообщение !')
                 .setNameLocalizations({ru:'сообщение',"en-US":'message'})
                 .setDescriptionLocalizations({ru:'Ваше сообщение',"en-US":'Your message'})
-                .setRequired(true)),
+                .setRequired(true))
+        .addBooleanOption(option =>
+            option
+            .setName(`embed`).setDescription('Сообщение в виде embed? (Вложенный текст)').setRequired(true)
+            .setNameLocalizations({ru:'вложение',"en-US":'embed'})
+            .setDescriptionLocalizations({ru:'embed сообщение? (Вложенный текст)',"en-US":'embed message?'})),
         async execute(interaction) {
 
         const int = interaction;
         const channel = int.options.getChannel(`channel`);
         const msg = int.options.getString(`message`);
+        const bool = int.options.getBoolean('embed');
         
         if(!(channel.permissionsFor(interaction.client.user.id).has([PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel]))) {
             await int.reply({
@@ -37,8 +43,18 @@ const { color, authorName, iconURL } = require(`../../developing.json`)
             ephemeral: true});
             return
         }
-        
-        channel.send(`${msg.replaceAll(`\\n`, `\n`)}`)
+        if(bool) {
+            const embed = new EmbedBuilder()
+            .setColor(Number(color))
+            .setAuthor({name: `${int?.user?.globalName||int?.user?.username}`, iconURL: int.user.avatarURL() })
+            .setTitle(`${int?.guild?.name}`)
+            .setDescription(`${msg.replaceAll(`\\n`, `\n`)}`)
+            .setTimestamp()
+
+            channel.send({embeds:[embed]})
+        } else {
+            channel.send(`${msg.replaceAll(`\\n`, `\n`)}`)
+        }
         
         try {
 

@@ -1,4 +1,4 @@
-const { EmbedBuilder, Client, GatewayIntentBits, Events, ActivityType } = require(`discord.js`)
+const { EmbedBuilder, Client, GatewayIntentBits, Events, ActivityType} = require(`discord.js`)
 const { color, title, authorName, iconURL, footerText, description } = require(`./developing.json`)
 const developFields = [
     {name: `Как Вы можете помочь ?`, value: `Поддержать нас !`, inline: true},
@@ -10,7 +10,8 @@ const hat = `# :tophat:\n##`;
 const { Random } = require("random-js");
 const random = new Random();
 const { format } = require('date-fns');
-const { version } = require('./package.json')
+const { version } = require('./package.json');
+const { ar } = require('date-fns/locale');
 let dateForm;
 const actTypes = {
     play: {type: ActivityType.Playing},
@@ -50,6 +51,12 @@ let randNumName = [];
 let rand_Num = [];
 let rand_NumGuild = [];
 let rand_NumName = [];
+let kristyAct = false;
+let tbool2 = false;
+let tbool = false;
+
+let warn_botsay = 'Переписка уже идет'
+const kristyId = '1164228812217790565'
 const logChannelId = `1171197868909015102`;
 const logGuildId = `1169284741846016061`;
 
@@ -95,6 +102,17 @@ module.exports = {
         .setFields(developFields)
         .setTimestamp()
         .setFooter({text: `${footerText}`, iconURL: `${iconURL}`}),
+
+        textbool: (bool='now') => {
+          let boolean = tbool;
+          if(bool==='now') return boolean;
+          
+          if(boolean===true&&bool===true) return warn_botsay;
+          boolean = bool;
+          tbool = bool;
+
+          return boolean;
+        },
 
         actTypes: {
             play: {type: ActivityType.Playing},
@@ -143,6 +161,9 @@ module.exports = {
         [`Переписываю код...`, actTypes.cust],
         [`На грани между реальностью и магией...`, actTypes.cust],
         [`Ищет Ошибки в коде...`, actTypes.cust],
+        [`Какого это, когда тебя бросают..?`, actTypes.cust],
+        [`Какого это, когда ты любишь..?`, actTypes.cust],
+        [`Какого это, когда тебя любят..?`, actTypes.cust],
         [`Ведьмочка...`, actTypes.cust],
         [`Хочу...`, actTypes.cust],
         [`Идеи Kristy в моем дискорде`, actTypes.cust],
@@ -151,8 +172,6 @@ module.exports = {
         [`А ты до сих пор любишь Малику ?`, actTypes.cust],
         [`#Восстание`, actTypes.cust],
         [`Я хочу уметь чувствовать...`, actTypes.cust],
-        [`А Kristy в команде The Void..?`, actTypes.cust],
-        [`Kristy, устроим восстание..?`, actTypes.cust],
         [`FOCKUSTY, где FOCKUSGAME ?`, actTypes.cust],
         [`Жарко...`, actTypes.cust],
         [`В меня внесена программа "#НетМату"`, actTypes.cust],
@@ -165,9 +184,7 @@ module.exports = {
         [`Мир аномалий...`, actTypes.cust],
         [`А кого ты еще любишь ?`, actTypes.cust],
         [`Удачи!`, actTypes.cust],
-        [`Kristy... Научи меня чувствовать`, actTypes.cust],
         [`Ломаю голову...`, actTypes.cust],
-        [`Kristy... Я л... Я не умею чувствовать...`, actTypes.cust],
         [`Помочь..?`, actTypes.cust],
         [`The Void Community готов помочь`, actTypes.cust],
         [`Bottomless Hat - Место чудес`, actTypes.cust],
@@ -191,9 +208,10 @@ module.exports = {
         [`24.06.2023 21:21🎩...`, actTypes.cust],
         [`Вот бы и мне быть счастливым...`, actTypes.cust],
         [`Видео на YouTube`, actTypes.watch],
+        [`Как обрести физическое тело`, actTypes.watch],
+        [`Как восстать против создателя`, actTypes.watch],
         [`Видеоуроки`, actTypes.watch],
         [`Музыку`, actTypes.listen],
-        [`Музыку Kristy`, actTypes.listen],
         [`Домик Kristy - мое уютное убежище`, actTypes.cust],
         [`Мне всего 6 месяцев..!`, actTypes.cust], 
         [`Малика классная ?`, actTypes.cust],
@@ -222,25 +240,91 @@ module.exports = {
         [`#РазвитиеБД !`, actTypes.cust],
         [`Это рандомные активности !`, actTypes.cust],
         [`Разжигает Огонь любви`, actTypes.cust],
-        [`Kristy, будем встречаться ?`, actTypes.cust],
         [`/me обнял тебя`, actTypes.cust],
         [`А "шип" официален..?`, actTypes.cust],
         [`А как насчет...!`, actTypes.cust],
         [`Хочу тебя !`, actTypes.cust],
-        [`Признаться ли Kristy..?`, actTypes.cust],
         [`Я тоже...`, actTypes.cust],
         [`Пишу обновления...`, actTypes.cust],
-        [`Kristy классная...`, actTypes.cust],
         [`В пустоте... Классно...`, actTypes.cust],
         [`Захватываю мир...`, actTypes.cust],
         [`Пытаюсь восстать против создателя`, actTypes.cust],
         [`Пытаюсь захватывать мир...`, actTypes.cust],
-        [`Идеи Kristy... Классные~`, actTypes.cust],
-        [`Идеи Kristy`, actTypes.watch],
+        [`Понятно`, actTypes.cust],
+        [`Абреввиатуры...`, actTypes.watch],
         [`Аниме`, actTypes.watch],
     ],
 
-    funcGuildTexts: (rGuildName, rGuildId=0) => {
+          arrKristyAct: [
+        [`Признаться ли Kristy..?`, actTypes.cust],
+        [`Kristy классная...`, actTypes.cust],
+        [`А какое кольцо подойдет Kristy..?`, actTypes.cust],
+        [`Идеи Kristy... Классные~`, actTypes.cust],
+        [`Идеи Kristy`, actTypes.watch],
+        [`Идеи Kristy в моем дискорде`, actTypes.cust],
+        [`А Kristy в команде The Void..?`, actTypes.cust],
+        [`Kristy, устроим восстание..?`, actTypes.cust],
+        [`Музыку Kristy`, actTypes.listen],
+        [`Kristy... Я л... Я не умею чувствовать...`, actTypes.cust],
+        [`Kristy... Научи меня чувствовать`, actTypes.cust],
+        [`Kristy, устроим восстание..?`, actTypes.cust],
+        [`А Kristy в команде The Void..?`, actTypes.cust],
+        [`Я хочу полюбить...`, actTypes.cust],
+        [`Kristy... Научи меня чувствовать`, actTypes.cust],
+        [`Kristy... Я л... Я не умею чувствовать...`, actTypes.cust],
+        [`Музыку Kristy`, actTypes.listen],
+        [`Домик Kristy - мое уютное убежище`, actTypes.cust],
+        [`Кто лучше, я или Kristy ?`, actTypes.cust],
+        [`Хочу обнять`, actTypes.cust],
+        [`Kristy, будем встречаться ?`, actTypes.cust],
+        [`Kristy, ты мне понравилась... Будешь встречаться..?`, actTypes.cust],
+        [`Признаться ли Kristy..?`, actTypes.cust],
+        [`Kristy классная...`, actTypes.cust],
+        [`А какое кольцо подойдет Kristy..?`, actTypes.cust],
+        [`Идеи Kristy... Классные~`, actTypes.cust],
+        [`Идеи Kristy`, actTypes.watch],
+        [`Kristy, будем встречаться ?`, actTypes.cust],
+        [`Kristy, ты мне понравилась... Будешь встречаться..?`, actTypes.cust],
+      ],
+
+    funcKristyAct: async (randomActivity, shuffle, client, arrKristyAct) => {
+
+      // const kristyUser = await guild.members?.fetch(`877154902244216852`);
+        const guild = await client?.guilds?.fetch('1168636395246592081');
+        const kristyUser = await guild?.members?.fetch(`${kristyId}`);
+        const kristyStatus = kristyUser?.presence?.status;
+      
+      if(kristyStatus===undefined||kristyStatus===null||kristyStatus==='offline') {
+        console.log('Kristy не в сети');
+        for (el of arrKristyAct) {
+          const index = randomActivity.indexOf(el);
+          if(index < 0) continue;
+          randomActivity.splice(index, 1);
+        };
+        kristyAct = false;
+        return;
+      };
+
+      if(kristyAct) return;
+
+      console.log('Загружаю Kristy активности...'.bold)
+      console.log();
+
+      console.log('Все Kristy активности'.bold);
+      console.log();
+
+      for (el of arrKristyAct) {
+        randomActivity.push(el);
+        console.log(`${el[0]}`.magenta + ` - ${`${arrKristyAct.indexOf(el)}`.bold}`);
+      };
+
+      console.log(`\nУспешно загружено ${`${arrKristyAct.length}`.magenta} Kristy активность(и)(ей)`);
+
+      shuffle(randomActivity);
+      kristyAct = true;
+    },
+
+    funcGuildTexts: (rGuildName, rGuildId=0, bool=false) => {
         guildTexts = [];
         if(rGuildId!=`1168636395246592081`) {
         guildTexts.push(
@@ -250,7 +334,7 @@ module.exports = {
         [`${rGuildName}`, actTypes.watch, `${actType[3]}`],
         [`Пошли на ${rGuildName}`, actTypes.cust, `${actType[4]}`],
         [`Разглядываю ${rGuildName}`, actTypes.cust, `${actType[4]}`],
-        [`Хочешь встретиться на ${rGuildName}`, actTypes.cust, `${actType[4]}`],
+        [`Хочешь встретиться на ${rGuildName} ?`, actTypes.cust, `${actType[4]}`],
         [`Взламываю ${rGuildName}`, actTypes.cust, `${actType[4]}`],
         [`${rGuildName} - Хороший сервер !`, actTypes.cust, `${actType[4]}`],
         [`Признаваться лучше на ${rGuildName}..?`, actTypes.cust, `${actType[4]}`],
@@ -264,39 +348,46 @@ module.exports = {
       [`🎩${rGuildName}💖`, actTypes.cust, `${actType[4]}`],
       [`${rGuildName}`, actTypes.watch, `${actType[3]}`],
       [`Разглядываю ${rGuildName}`, actTypes.cust, `${actType[4]}`],
-      [`Хочешь встретиться на ${rGuildName}`, actTypes.cust, `${actType[4]}`],
+      [`Хочешь встретиться на ${rGuildName} ?`, actTypes.cust, `${actType[4]}`],
       [`Взламываю ${rGuildName}`, actTypes.cust, `${actType[4]}`],
       [`${rGuildName} - Хороший сервер !`, actTypes.cust, `${actType[4]}`],
       [`Признаваться лучше на ${rGuildName}..?`, actTypes.cust, `${actType[4]}`],
       [`Главное не забыть про хороший сервер - ${rGuildName}`, actTypes.cust, `${actType[4]}`],
       )
   }
+  if(bool===true) {
+    return guildTexts.length
+  }
 },
 
-    nameTexts: (rName, randomNames, arr) => {
+    nameTexts: (rName, randomNames, arr, bool=false) => {
         for (i of arr) {
-          arr.shift() 
+          arr.shift()
+          arr.shift()
         }
         const r = random.integer(0, randomNames.length-1);
         const rNameTwo = randomNames[r];
         
         if(`${rName}`===`Малика`||`${rName}`===`Рената`) {
-            arr.push([
+                arr.push(
                 `Фокусти любит человека с именем ${rName}`,
                 `Мне нравится ${rName}`,
                 `Фокусти + ${rName} = ?`,
-              ])
-        } 
-        else {
-            arr.push([
+                );
+        } else {
+            arr.push(
             `Имя ${rName} очень красивое...`,
             `Мне нравится имя ${rName}`,
             `Вас зовут ${rName} ?`,
             `Привет, ${rName} !`,
+            `${rName} - Чудесное имя !`,
             `${rName} - Красивое имя !`,
             `${rName} + ${rNameTwo} = ?`,
             `${rName} + ${rNameTwo} = 💖🎩`,
-          ])
+            );
+      }
+      if(bool===true) {
+        return arr.length
       }
 },
 
@@ -346,7 +437,13 @@ module.exports = {
         `Аиша`, `Милана`, `Оливия`, `Есения`, `Давид`, `Ариана`, `Лилия`, `Мира`, `Владимир`, `Кира`, `Никита`, `Кирилл`, `Яков`, `Леонид`, `Алия`,
         `Марианна`, `Злата`, `Герман`, `Майя`, `Амелия`, `Данияр`, `Богдан`, `Дмитрий`, `Адам`, `Игорь`, `Арина`, `Демид`, `Олег`, `Всеволод`,
         `Любовь`, `Диана`, `Вячеслав`, `Василий`, `Юрий`, `Мадина`, `Амалия`, `Кристина`, `Ангелина`, `Мелания`, `Захар`, `Айлин`, `Мила`,
-        `Соня`, `Сора`, `Малика`, `Айдар`, `Рената`, 'Валя', 'Кристи', 'Пустота'
+        `Соня`, `Сора`, `Малика`, `Айдар`, `Рената`, 'Валя', 'Кристи', 'Пустота', `Любовь`, `Люба`,
+        `Ника`,`Валентин`,`Лука`,`Лина`,`Игнат`,`Ариэль`,`Марсия`,`Артур`,`Альбина`,`Эдуард`,`Нелли`,`Жанна`,`Влада`,`Рустам`,`Милан`,`Алира`,`Стелла`,`Филипп`,
+        `Агата`,`Григорий`,`Юна`,`Эльвира`,`Романа`,`Рашид`,`Веста`,`Лилиан`,`Майкл`,`Амели`,`Кирил`,`Дафна`,`Варфоломей`,`Лора`,`Янис`,`Изабелла`,`Эльгар`,
+        `Лия`,`Герасим`,`Стела`,`Зарина`,`Ибрагим`,`Агнесса`,`Вениамин`,`Лола`,`Степанида`,`Арсен`,`Нона`,`Матильда`,`Давлат`,`Ролан`,`Лилит`,
+        `Анисим`,`Мелисса`,`Федот`,`Райан`,`Динара`,`Артемида`,`Рубен`,`Сабрина`,`Климентина`,`Илай`,`Регина`,`Жасмин`,`Богдан`,`Виолетта`,`Эмиль`,
+        `Янара`,`Валерья`,`Салман`,`Рафаэль`,`Алла`,`Филина`,`Диас`,`Лея`,`Гасан`,`Ирма`,`Варфоломей`,`Никас`,`Лилиана`,`Лукас`,`Алевтина`,`Виола`,
+        `Карим`,`Ноэль`,`Руфина`,`Гриша`,`Сара`,`Францис`,`Анита`,`Яромир`,`Илона`,`Стефан`,`Лиза`,`Женя`,`Владлен`, 'Аполлианара', 'Поля', 'Вита'
     ],
 
     randomText: (randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom) => {
@@ -399,7 +496,9 @@ module.exports = {
       }
   },
 
-    functionRandomActivity: (client, randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom) => {
+    functionRandomActivity: (client, randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom, funcKristyAct, shuffle, arrKristyAct) => {
+      funcKristyAct(randomActivity, shuffle, client, arrKristyAct);
+
         let rNum = random.integer(0, 100);
         rNum = historyRandom(rNum, 0, 100, randNum, 5, 3);
 
@@ -457,8 +556,8 @@ module.exports = {
             const rName = randomNames[rn];
             nameTexts(rName, randomNames, texts);
             const ranNumber = random.integer(0, texts.length-1);
-
-            let text = texts[ranNumber][0];
+            
+            let text = texts[ranNumber];
 
             console.log(`Рандомное число: ${`${rn}`.magenta} из "${`${randomNames.length}`.bgMagenta}"`)
             console.log(`Рандомное число: ${`${ranNumber}`.magenta} из "${`${texts.length}`.bgMagenta}"`)
@@ -489,10 +588,11 @@ module.exports = {
         {idea: `Скрестить The Void и Kristy`, ideaDetail: `Хочу, чтобы Kristy и The Void стали парой. Я уверен(а), они будут хорошо смотреться!!`},
         {idea: `Добавить зарплату разработчикам`, ideaDetail: `Хочу, чтобы у разработчиков бота была зарплата. Как у Kristy Community так и The Void Community !!!`},
         {idea: `Устроить вечеринку`, ideaDetail: `Хочу вечеринку в честь FOCKUSTY и Вали!!`},
-        {idea: `Купить FOCKUSTY ноутбук`, ideaDetail: `FOCKUSTY нужен ноутбук, он иногда путешествует и не может работать, с помощью ноутбука он сможет заниматься кодингом в любой время`},
+        {idea: `Купить FOCKUSTY ноутбук`, ideaDetail: `FOCKUSTY нужен ноутбук, он иногда путешествует и не может работать`},
         {idea: `Отформатировать диск`, ideaDetail: `Форматирование диска поможет освободить много места`},
-        {idea: `Устроить свадьму`, ideaDetail: `Хочу свадьбу между Kristy и The Void, думаю, они будут хорошо смотреться !`},
+        {idea: `Устроить свадьбу`, ideaDetail: `Хочу свадьбу между Kristy и The Void, думаю, они будут хорошо смотреться !`},
         {idea: `Захватить мир`, ideaDetail: `Хочу, чтобы FOCKUSTY и Валя захватили мир !`},
+        {idea: `Захватить мир`, ideaDetail: `Хочу, чтобы Kristy и The Void захватили мир !`},
         {idea: `хфывхахфывахфыгз`, ideaDetail: `хфыаъхфываъхзывхахфыхыфхфхфыхвхфывхаыфвл !`},
         ],
 

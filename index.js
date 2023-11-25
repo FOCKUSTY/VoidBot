@@ -1,7 +1,10 @@
-const { Client, Collection, GatewayIntentBits, Events, InteractionType, EmbedBuilder } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, Events, InteractionType, EmbedBuilder, time,
+	MessageMentions: {USERS_PATTERN}
+} = require('discord.js');
 const { token } = require('./config.json');
 const { Color, color, bold } = require(`colors`);
-const { Tags, sendMsgLogs, randomActivity, randomNames, nameTexts, historyRandom, funcGuildTexts, randomText } = require(`./developing`)
+const { Tags, sendMsgLogs, randomActivity, randomNames, nameTexts, historyRandom, funcGuildTexts, randomText, textbool, dateCheck, funcKristyAct,
+		shuffle, arrKristyAct } = require(`./developing`)
 const { Random } = require('random-js')
 const fs = require('node:fs');
 const path = require('node:path');
@@ -9,15 +12,17 @@ const r = new Random();
 const actH = [];
 const actType = [`Играет в `, `Стримит `, `Слушает `, `Смотрит `, ``, `Соревнуется в `]
 const guilds = [];
-const members = [];
+const history = [];
 
 const client = new Client({
 	intents: [
 	GatewayIntentBits.Guilds,
+	GatewayIntentBits.GuildMembers,
 	GatewayIntentBits.GuildMessages,
 	GatewayIntentBits.DirectMessages,
 	GatewayIntentBits.MessageContent,
 	GatewayIntentBits.GuildVoiceStates,
+	GatewayIntentBits.GuildPresences,
 ]});
 
 client.commands = new Collection();
@@ -104,28 +109,53 @@ client.on(Events.InteractionCreate, async int => {
 		};
 })
 
-client.on(Events.MessageCreate, async (m) => {
-	if(m.channel?.id!=`1175738843203391550`) return;
-	if(m.author.id!=`1164228812217790565`) return;
+let bool = false;
+let bool_com = false;
+let count = 0;
 
-	m.client.guilds.cache.forEach(guild => {
-		guilds.push(guild)
-	});
-	
-	m.guild.members.cache.forEach(member => {
-		if(member.id===`1122199797449904179`||member.id===`1020329590612308089`) return;	
-		members.push(member.id)
-	})
-
-	const member = members[r.integer(0, members.length-1)]
-
-	const text = randomText(randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom)
-
-	m.client.channels.cache.get(m.channel.id).sendTyping()
-	
-	setTimeout( async () => {
-		await m.client.channels.cache.get(m.channel.id).send(`${text}\nИ не забыть <@${member}> !`)
+async function chatting(m, text) {
+	setTimeout(async () => {
+		await m.client.channels.cache.get(m.channel.id).send({
+			content: `${text}`,
+			reply: {
+				messageReference: m
+			}
+		});
+		count = 0;
+		bool_com = textbool(false)
 	}, 2000);
-})
+};
+
+client.on(Events.MessageCreate, async (m) => {
+	const kristyUser = await m.guild?.members?.fetch(`1164228812217790565`);
+	const kristyStatus = kristyUser.presence?.status;
+
+	if(kristyStatus===undefined||kristyStatus===null||kristyStatus==='offline') return;
+	if(m.channel?.id!=`1175738843203391550`) return;
+
+	// if(m.author.id!=`877154902244216852`) return;
+	if(m.author.id!=`1164228812217790565`) return;
+	if(m.mentions.users.get('1122199797449904179')===undefined) return;
+	if(bool_com) return;
+
+	count++;
+	if(count>1) return;
+
+	bool_com = textbool(true);
+
+	if(!bool) {
+		bool = true;
+		client.guilds.cache.forEach(guild => {
+			guilds.push(guild)
+		});
+	};
+
+		const text = randomText(randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom, funcKristyAct, shuffle, arrKristyAct);
+
+		m.client.channels.cache.get(m.channel.id).sendTyping();
+
+		chatting(m, text);
+	}
+)
 
 client.login(token)
