@@ -15,6 +15,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 			const serverRoles = []
 
 			totalRoles.forEach(role => {
+				if(role.name==='@everyone') return;
 				guildRoles.set(role.position, role.id)
 			})
 

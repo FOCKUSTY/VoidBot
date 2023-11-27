@@ -37,7 +37,7 @@ module.exports = {
         const musics = []
 
         const formatFiles = [".mpeg", ".mp3", ".mp4", ".opus"]
-        const musicsPath = path.join(__dirname, '../../music');
+        const musicsPath = path.join(__dirname, '../../../voidMusic/music');
         for (let i = 0; i < formatFiles.length; i++) {
             fs.readdirSync(musicsPath).filter(file => file.endsWith(formatFiles[i])).forEach(e => {
             musics.push(e);

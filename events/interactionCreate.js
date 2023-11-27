@@ -1,8 +1,8 @@
 const { Events, Client, GatewayIntentBits, Collection, InteractionType } = require('discord.js');
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 const { dateCheck } = require(`../developing`)
 const { Color, color, bold } = require(`colors`);
 const date = new Date();
+const client = new Client({intents: [GatewayIntentBits.Guilds]})
 
 client.cooldowns = new Collection();
 

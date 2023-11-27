@@ -45,7 +45,7 @@ module.exports = {
             });
         };
     
-        player.play(createAudioResource(path.join(__dirname, "../sounds/nea.mp3")));
+        player.play(createAudioResource(path.join(__dirname, "../../VoidMusic/sounds/nea.mp3")));
     
         player.on('error', error => {
           console.error(error);

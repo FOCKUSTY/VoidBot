@@ -25,7 +25,7 @@ module.exports = {
 			`${hat} /server`,
 			`${hat} /user`,
 			`${hat} /version`
-		]
+		];
 		
 		await interaction.reply({
 			content: `${commands.join(`\n`)}`,

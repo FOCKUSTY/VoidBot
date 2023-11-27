@@ -3,8 +3,7 @@ const { Client, Collection, GatewayIntentBits, Events, InteractionType, EmbedBui
 } = require('discord.js');
 const { token } = require('./config.json');
 const { Color, color, bold } = require(`colors`);
-const { Tags, sendMsgLogs, randomActivity, randomNames, nameTexts, historyRandom, funcGuildTexts, randomText, textbool, dateCheck, funcKristyAct,
-		shuffle, arrKristyAct } = require(`./developing`)
+const { Tags, sendMsgLogs, randomText, textbool } = require(`./developing`)
 const { Random } = require('random-js')
 const fs = require('node:fs');
 const path = require('node:path');
@@ -127,12 +126,11 @@ async function chatting(m, text) {
 };
 
 client.on(Events.MessageCreate, async (m) => {
+	if(m.channel?.id!=`1175738843203391550`) return;
 	const kristyUser = await m.guild?.members?.fetch(`1164228812217790565`);
 	const kristyStatus = kristyUser.presence?.status;
 
 	if(kristyStatus===undefined||kristyStatus===null||kristyStatus==='offline') return;
-	if(m.channel?.id!=`1175738843203391550`) return;
-
 	// if(m.author.id!=`877154902244216852`) return;
 	if(m.author.id!=`1164228812217790565`) return;
 	if(m.mentions.users.get('1122199797449904179')===undefined) return;
@@ -150,7 +148,7 @@ client.on(Events.MessageCreate, async (m) => {
 		});
 	};
 
-		const text = randomText(randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom, funcKristyAct, shuffle, arrKristyAct);
+		const text = randomText(guilds);
 
 		m.client.channels.cache.get(m.channel.id).sendTyping();
 

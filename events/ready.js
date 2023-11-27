@@ -1,8 +1,7 @@
 const { Events, ActivityType, ActivityFlags, ActivityPlatform, GatewayActivityButton } = require('discord.js');
 const { Color, color, bold } = require(`colors`);
 const { Tags } = require(`../developing`)
-const { randomActivity, functionRandomActivity, randomNames, funcGuildTexts, nameTexts, historyRandom, funcKristyAct,
-		shuffle, arrKristyAct } = require(`../developing`);
+const { randomActivity, functionRandomActivity, randomNames, funcGuildTexts, nameTexts } = require(`../developing`);
 const guilds = [];
 const tName = [];
 
@@ -14,7 +13,7 @@ module.exports = {
 		Tags.sync();
 
 		const gTextLength = funcGuildTexts(`Nothing`, `00000`, true)
-		const nTextLength = nameTexts(`FOCKUSTY`, randomNames, tName, true)
+		const nTextLength = nameTexts(`FOCKUSTY`, tName, true)
 
 		console.log(`Загружаю ${`${randomActivity.length}`.magenta} активность(и)(ей)`);
 		console.log(`Загружаю ${`${randomNames.length}`.magenta} имен(имя)(имени)`);
@@ -43,10 +42,10 @@ module.exports = {
 
 		console.log(`Готово!`.bold +` `+`The Void`.bgCyan.black+` готов к работе, как `+`${client.user.tag}`.red.bold+`\n`);
 
-		functionRandomActivity(client, randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom, funcKristyAct, shuffle, arrKristyAct);
+		functionRandomActivity(client, guilds);
 
 		setInterval(() => {
-			functionRandomActivity(client, randomActivity, randomNames, guilds, funcGuildTexts, nameTexts, historyRandom, funcKristyAct, shuffle, arrKristyAct);
+			functionRandomActivity(client, guilds);
         }, 60000);
 	},
 };
