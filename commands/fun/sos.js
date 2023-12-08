@@ -14,18 +14,14 @@ const player = createAudioPlayer({
     module.exports = {
         cooldown: 5,
         data: new SlashCommandBuilder()
-		.setName('kristy')
-		.setDescription('Кристи команда !')
-        .setNameLocalizations({ru:'кристи',"en-US":'kristy'})
-        .setDescriptionLocalizations({ru:'Кристи команда',"en-US":'Kristy command'})
-        .addSubcommand(s=>s.setName('voice').setDescription('Воспроизведет звук')
-        .setNameLocalizations({ru:'голос',"en-US":'voice'}).setDescriptionLocalizations({ru:'Воспроизведет звук',"en-US":'Play sound'})),
+		.setName('sos')
+		.setDescription('Сигнал сос !')
+        .setNameLocalizations({ru:'сос',"en-US":'sos'})
+        .setDescriptionLocalizations({ru:'Сигнал сос',"en-US":'Sos signal'}),
         async execute(interaction) {
-        
-        const subcommand = interaction.options.getSubcommand()
-        
-        if(subcommand==='voice') {
-    
+                
+            const musics = []
+
             const int = interaction;
 
             const user = int.user;
@@ -45,7 +41,7 @@ const player = createAudioPlayer({
                     adapterCreator: voice.channel.guild.voiceAdapterCreator,
                 });
     
-            player.play(createAudioResource(path.join(`../../../voidMusic/morse/kristyLove.wav`)));
+            player.play(createAudioResource(path.join(`../../../voidMusic/morse/sos.wav`)));
     
             connection.subscribe(player);
     
@@ -60,9 +56,9 @@ const player = createAudioPlayer({
         }, 1000);
 
             await interaction.reply({
-            content: `Воспроизводиться код морзе !`,
+            content: `Воспроизводиться сигнал сос !`,
             ephemeral: true});
-        }}
+        }
 
 
 	},

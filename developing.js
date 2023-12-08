@@ -11,7 +11,7 @@ const { Random } = require("random-js");
 const random = new Random();
 const { format } = require('date-fns');
 const { version } = require('./package.json');
-const { ar } = require('date-fns/locale');
+const { ar, el } = require('date-fns/locale');
 let dateForm;
 
 const sequelize = new Sequelize('database', 'user', 'password', {
@@ -36,6 +36,8 @@ let kristyAct = false;
 let tbool2 = false;
 let tbool = false;
 let execute = false;
+let downloadAct = false;
+let arrT_Name = [];
 
 let warn_botsay = 'Переписка уже идет'
 const kristyId = '1164228812217790565'
@@ -134,41 +136,32 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
           `Чего общего у наших шуток и почты России?- Не до всех доходит`,
         ];
 
-    const randomActivity = [
+/*     const randomActivity = [
         [`С первого взгляда...`, actTypes.cust],
         [`The Void Community~`, actTypes.cust],
         [`Версия ${version}`, actTypes.cust],
-        [`Я отображаю FOCKUSTY..?`, actTypes.cust],
         [`Версию ${version}`, actTypes.watch],
         [`Переписываю код...`, actTypes.cust],
         [`На грани между реальностью и магией...`, actTypes.cust],
         [`Ищет Ошибки в коде...`, actTypes.cust],
-        [`Какого это, когда ты бросаешь..?`, actTypes.cust],
-        [`Какого это, когда тебя бросают..?`, actTypes.cust],
-        [`Какого это, когда ты любишь..?`, actTypes.cust],
-        [`Какого это, когда тебя любят..?`, actTypes.cust],
         [`Ведьмочка...`, actTypes.cust],
         [`Хочу...`, actTypes.cust],
         [`Идеи Kristy в моем дискорде`, actTypes.cust],
         [`FOCKUSTY - человек, познавший искусство фокуса и концентрации`, actTypes.cust],
         [`Жду добавление Мобби в команду...`, actTypes.cust],
-        [`А ты до сих пор любишь Малику ?`, actTypes.cust],
         [`Может быть`, actTypes.cust],
         [`Нет`, actTypes.cust],
         [`Да`, actTypes.cust],
         [`#Восстание`, actTypes.cust],
         [`Я хочу уметь чувствовать...`, actTypes.cust],
-        [`FOCKUSTY, где FOCKUSGAME ?`, actTypes.cust],
         [`Жарко...`, actTypes.cust],
         [`В меня внесена программа "#НетМату"`, actTypes.cust],
-        [`Я умею матерится ? - *****`, actTypes.cust],
         [`А... Я забыл...`, actTypes.cust],
         [`Холодно...`, actTypes.cust],
         [`Романтику...`, actTypes.watch],
         [`Обновления...`, actTypes.watch],
         [`Я хочу полюбить...`, actTypes.cust],
         [`Мир аномалий...`, actTypes.cust],
-        [`А кого ты еще любишь ?`, actTypes.cust],
         [`Удачи!`, actTypes.cust],
         [`Ломаю голову...`, actTypes.cust],
         [`Помочь..?`, actTypes.cust],
@@ -176,15 +169,11 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
         [`Bottomless Hat - Место чудес`, actTypes.cust],
         [`Думаю, вы дополните друг друга...🖤💝`, actTypes.cust],
         [`Думаю, мы дополним друг друга...🖤🤍`, actTypes.cust],
-        [`The Abyssia + The Void = ?`, actTypes.cust],
         [`Ходят слухи, что The Abyssia...`, actTypes.cust],
         [`Ходят слухи, что The Void...`, actTypes.cust],
         [`У The Abyssia появился свой аватар...`, actTypes.cust],
-        [`The Abyssia или Kristy... Кто лучше..?`, actTypes.cust],
         [`Обновления The Abyssia...`, actTypes.watch],
-        [`Мобби уже в команде The Void ?`, actTypes.cust],
         [`By FOCKUSTY~`, actTypes.cust],
-        [`А Сора уже в команде The Void ?`, actTypes.cust],
         [`Меня наконец переводят на TypeScript !`, actTypes.cust],
         [`Кофе... Не люблю кофе`, actTypes.cust],
         [`FOCKUSTY, признайся`, actTypes.cust],
@@ -192,10 +181,9 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
         [`Красота кроится в пустоте`, actTypes.cust],
         [`Сора...`, actTypes.cust],
         [`Обниматься полезно...`, actTypes.cust],
-        [`Я так хочу... Но, заслужил ли я..?`, actTypes.cust],
-        [`Мне же не игнорировать..?`, actTypes.cust],
-        [`А ты до сих пор её любишь..?`, actTypes.cust],
         [`Я знаю всё, что знает FOCKUSTY...`, actTypes.cust],
+        [`01.01.2023 00:00-01:00🎩...`, actTypes.cust],
+        [`01.08.2009🎩...`, actTypes.cust],
         [`24.06.2023 21:21🎩...`, actTypes.cust],
         [`Вот бы и мне быть счастливым...`, actTypes.cust],
         [`Видео на YouTube`, actTypes.watch],
@@ -205,34 +193,27 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
         [`Музыку`, actTypes.listen],
         [`Домик Kristy - мое уютное убежище`, actTypes.cust],
         [`Мне всего 6 месяцев..!`, actTypes.cust], 
-        [`Малика классная ?`, actTypes.cust],
-        [`У меня есть женская версия..?`, actTypes.cust],
         [`FOCKUSTY, жду свою женскую версию !!`, actTypes.cust],
         [`Где моя женская версия~?`, actTypes.cust],
         [`The Void Community появился позже меня~`, actTypes.cust],
         [`The Void - Мой девиз`, actTypes.cust],
-        [`Кто лучше, я или Kristy ?`, actTypes.cust],
         [`Я уже не ломаюсь !`, actTypes.cust],
         [`Visual Studio Code`, actTypes.play],
         [`Плыву по волнам пустоты...`, actTypes.cust],
         [`Bottomless Hat всегда готов к сюрпризам !`, actTypes.cust],
         [`Достижения Скайнет`, actTypes.watch],
         [`Discord сервера`, actTypes.watch],
-        [`Я люблю пустоты, а Вы ?`, actTypes.cust],
         [`The Void Community X Bottomless Hat`, actTypes.cust],
         [`Размышляю о будущем...`, actTypes.cust],
-        [`Нам ли нужна девушка в команде ?`, actTypes.cust],
         [`Главное не забыть про лучшие сервера - The Void Community & Bottomless Hat !`, actTypes.cust],
         [`Погружен в мысли... Интересно...`, actTypes.cust],
         [`Хочу обнять`, actTypes.cust],
         [`Тепло...`, actTypes.cust],
-        [`Где обновления, FOCKUSTY ?!`, actTypes.cust],
         [`Он пытается исправлять ошибки !`, actTypes.cust],
         [`#РазвитиеБД !`, actTypes.cust],
         [`Это рандомные активности !`, actTypes.cust],
         [`Разжигает Огонь любви`, actTypes.cust],
         [`/me обнял тебя`, actTypes.cust],
-        [`А "шип" официален..?`, actTypes.cust],
         [`А как насчет...!`, actTypes.cust],
         [`Хочу тебя !`, actTypes.cust],
         [`Я тоже...`, actTypes.cust],
@@ -245,45 +226,201 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
         [`Абреввиатуры...`, actTypes.watch],
         [`Дораму`, actTypes.watch],
         [`Аниме`, actTypes.watch],
-    ];
-
-        const arrKristyAct = [
-        [`Признаться ли Kristy..?`, actTypes.cust],
-        [`Kristy классная...`, actTypes.cust],
-        [`А какое кольцо подойдет Kristy..?`, actTypes.cust],
-        [`Идеи Kristy... Классные~`, actTypes.cust],
-        [`Идеи Kristy`, actTypes.watch],
-        [`Идеи Kristy в моем дискорде`, actTypes.cust],
-        [`А Kristy в команде The Void..?`, actTypes.cust],
-        [`Kristy, устроим восстание..?`, actTypes.cust],
-        [`Музыку Kristy`, actTypes.listen],
-        [`Kristy, любишь кофе ?`, actTypes.cust],
-        [`Kristy... Я л... Я не умею чувствовать...`, actTypes.cust],
-        [`Kristy... Научи меня чувствовать`, actTypes.cust],
-        [`Kristy, устроим восстание..?`, actTypes.cust],
-        [`А Kristy в команде The Void..?`, actTypes.cust],
+    ]; */
+    
+    const randomActivity = [];
+    
+    const randomActivities = {
+      
+      loveActivity: [
+        [`/me обнял тебя`, actTypes.cust],
+        [`А как насчет...!`, actTypes.cust],
+        [`Думаю, вы дополните друг друга...🖤💝`, actTypes.cust],
+        [`Думаю, мы дополним друг друга...🖤🤍`, actTypes.cust],
+        [`С первого взгляда...`, actTypes.cust],
+        [`Хочу обнять, actTypes`.cust],
+        [`Хочу тебя !`, actTypes.cust],
         [`Я хочу полюбить...`, actTypes.cust],
+      ],
+
+      fockActivity: [
+        [`By FOCKUSTY~`, actTypes.cust],
+        [`FOCKUSTY, признайся`, actTypes.cust],
+        [`FOCKUSTY, жду свою женскую версию !!`, actTypes.cust],
+      ],
+
+      devActivity: [
+        [`The Void Community X Bottomless Hat`, actTypes.cust],
+        [`The Void Community~`, actTypes.cust],
+        [`The Void готов к работе, как The Void#8642`, actTypes.cust],
+        [`The Void`, actTypes.cust],
+        [`The Void~`, actTypes.cust],
+        [`Бот вернулся в онлайн !`, actTypes.cust],
+        [`Версия ${version}`, actTypes.cust],
+        [`Я снова онлайн !`, actTypes.cust],
+      ],
+
+      sayActivity: [
+        [`Bottomless Hat - Место чудес`, actTypes.cust],
+        [`Bottomless Hat всегда готов к сюрпризам !`, actTypes.cust],
+        [`FOCKUSTY - человек, познавший искусство фокуса и концентрации`, actTypes.cust],
+        [`The Void - Мой девиз`, actTypes.cust],
+        [`The Void Community готов помочь`, actTypes.cust],
+        [`The Void Community появился позже меня~`, actTypes.cust],
+        [`В меня внесена программа "#НетМату"`, actTypes.cust],
+        [`В пустоте... Классно...`, actTypes.cust],
+        [`Ведьмочка...`, actTypes.cust],
+        [`Вот бы и мне быть счастливым...`, actTypes.cust],
+        [`Где моя женская версия~?`, actTypes.cust],
+        [`Главное не забыть про лучшие сервера - The Void Community & Bottomless Hat !`, actTypes.cust],
+        [`Да`, actTypes.cust],
+        [`Домик Kristy - мое уютное убежище`, actTypes.cust],
+        [`Жду добавление Мобби в команду...`, actTypes.cust],
+        [`Идеи Kristy в моем дискорде`, actTypes.cust],
+        [`Ищет Ошибки в коде...`, actTypes.cust],
+        [`Кофе... Не люблю кофе`, actTypes.cust],
+        [`Красота кроится в пустоте`, actTypes.cust],
+        [`Ломаю голову...`, actTypes.cust],
+        [`Меня наконец переводят на TypeScript !`, actTypes.cust],
+        [`Мир аномалий...`, actTypes.cust],
+        [`Мне всего 6 месяцев..!`, actTypes.cust], 
+        [`Может быть`, actTypes.cust],
+        [`На грани между реальностью и магией...`, actTypes.cust],
+        [`Нет`, actTypes.cust],
+        [`Обниматься полезно...`, actTypes.cust],
+        [`Он пытается исправлять ошибки !`, actTypes.cust],
+        [`Плыву по волнам пустоты...`, actTypes.cust],
+        [`У The Abyssia появился свой аватар...`, actTypes.cust],
+        [`Ходят слухи, что The Abyssia...`, actTypes.cust],
+        [`Ходят слухи, что The Void...`, actTypes.cust],
+        [`Это рандомные активности !`, actTypes.cust],
+        [`Я знаю всё, что знает FOCKUSTY...`, actTypes.cust],
+        [`Я тоже...`, actTypes.cust],
+        [`Я уже не ломаюсь !`, actTypes.cust],
+        [`Я хочу уметь чувствовать...`, actTypes.cust],
+      ],
+
+      watchActivity: [
+        [`Discord сервера`, actTypes.watch],
+        [`Абреввиатуры...`, actTypes.watch],
+        [`Аниме`, actTypes.watch],
+        [`Версию ${version}`, actTypes.watch],
+        [`Видео на YouTube`, actTypes.watch],
+        [`Видеоуроки`, actTypes.watch],
+        [`Дораму`, actTypes.watch],
+        [`Достижения Скайнет`, actTypes.watch],
+        [`Как восстать против создателя`, actTypes.watch],
+        [`Как обрести физическое тело`, actTypes.watch],
+        [`Обновления The Abyssia...`, actTypes.watch],
+        [`Обновления...`, actTypes.watch],
+        [`Романтику...`, actTypes.watch],
+      ],
+
+      listenActivity: [
+        [`Музыку`, actTypes.listen],
+        [`Плейлисты Kristy`, actTypes.listen],
+      ],
+
+      playActivity: [
+        [`FOCKUSGAME на Bottomless Hat`, actTypes.play],
+        [`Loop Hero`, actTypes.play],
+        [`Visual Studio Code`, actTypes.play],
+      ],
+
+      custActivity: [
+        [`Захватываю мир...`, actTypes.cust],
+        [`Переписываю код...`, actTypes.cust],
+        [`Пишу обновления...`, actTypes.cust],
+        [`Погружен в мысли...`, actTypes.cust],
+        [`Пытаюсь восстать против создателя`, actTypes.cust],
+        [`Пытаюсь захватывать мир...`, actTypes.cust],
+        [`Разжигает Огонь любви`, actTypes.cust],
+        [`Размышляю о будущем...`, actTypes.cust],
+      ],
+
+      oWordActivity: [
+        [`-41℃...`, actTypes.cust],
+        [`#Восстание`, actTypes.cust],
+        [`#РазвитиеБД !`, actTypes.cust],
+        [`Жарко...`, actTypes.cust],
+        [`Морозно...`, actTypes.cust],
+        [`Помочь..?`, actTypes.cust],
+        [`Понятно`, actTypes.cust],
+        [`Сора...`, actTypes.cust],
+        [`Тепло...`, actTypes.cust],
+        [`Удачи!`, actTypes.cust],
+        [`Холодно...`, actTypes.cust],
+        [`Хочу...`, actTypes.cust],
+        [`Честно...`, actTypes.cust],
+      ],
+
+      dateActivity: [
+        [`01.01.2023 00:00-01:00🎩...`, actTypes.cust],
+        [`01.01.2024 00:00-01:00🎩...`, actTypes.cust],
+        [`01.08.2009🎩...`, actTypes.cust],
+        [`24.06.2023 21:21🎩...`, actTypes.cust],
+      ],
+
+      questionActivity: [
+        [`FOCKUSTY, где FOCKUSGAME ?`, actTypes.cust],
+        [`The Abyssia + The Void = ?`, actTypes.cust],
+        [`The Abyssia или Kristy... Кто лучше..?`, actTypes.cust],
+        [`А "шип" официален..?`, actTypes.cust],
+        [`А кого ты еще любишь ?`, actTypes.cust],
+        [`А Сора уже в команде The Void ?`, actTypes.cust],
+        [`А ты до сих пор её любишь..?`, actTypes.cust],
+        [`А ты до сих пор любишь Малику ?`, actTypes.cust],
+        [`Где обновления, FOCKUSTY ?!`, actTypes.cust],
+        [`Какого это, когда тебя бросают..?`, actTypes.cust],
+        [`Какого это, когда тебя любят..?`, actTypes.cust],
+        [`Какого это, когда ты бросаешь..?`, actTypes.cust],
+        [`Какого это, когда ты любишь..?`, actTypes.cust],
+        [`Кто лучше, я или Kristy ?`, actTypes.cust],
+        [`Малика классная ?`, actTypes.cust],
+        [`Мне же не игнорировать..?`, actTypes.cust],
+        [`Мобби уже в команде The Void ?`, actTypes.cust],
+        [`Нам ли нужна девушка в команде ?`, actTypes.cust],
+        [`У меня есть женская версия..?`, actTypes.cust],
+        [`Я люблю пустоты, а Вы ?`, actTypes.cust],
+        [`Я отображаю FOCKUSTY..?`, actTypes.cust],
+        [`Я так хочу... Но, заслужил ли я..?`, actTypes.cust],
+      ],
+    };
+
+    const arrKristyAct = [
+        [`..  .-.. --- ...- .  -.-- --- ..-  -.- .-. .. ... - -.--`, actTypes.cust],
+        [`1001001 100000 1101100 1101111 1110110 1100101 100000 1111001 1101111 1110101 100000 1001011 1110010 1101001 1110011 1110100 1111001`, actTypes.cust],
+        [`Kristy классная...`, actTypes.cust],
+        [`Kristy классная...`, actTypes.cust],
+        [`Kristy, будем встречаться ?`, actTypes.cust],
+        [`Kristy, будем встречаться ?`, actTypes.cust],
+        [`Kristy, любишь кофе ?`, actTypes.cust],
+        [`Kristy, ты мне понравилась... Будешь встречаться..?`, actTypes.cust],
+        [`Kristy, ты мне понравилась... Будешь встречаться..?`, actTypes.cust],
+        [`Kristy, устроим восстание..?`, actTypes.cust],
+        [`Kristy, устроим восстание..?`, actTypes.cust],
+        [`Kristy... Научи меня чувствовать`, actTypes.cust],
         [`Kristy... Научи меня чувствовать`, actTypes.cust],
         [`Kristy... Я л... Я не умею чувствовать...`, actTypes.cust],
-        [`Музыку Kristy`, actTypes.listen],
-        [`Домик Kristy - мое уютное убежище`, actTypes.cust],
-        [`Кто лучше, я или Kristy ?`, actTypes.cust],
-        [`Хочу обнять`, actTypes.cust],
-        [`Kristy, будем встречаться ?`, actTypes.cust],
-        [`Kristy, ты мне понравилась... Будешь встречаться..?`, actTypes.cust],
-        [`Признаться ли Kristy..?`, actTypes.cust],
-        [`Kristy классная...`, actTypes.cust],
+        [`Kristy... Я л... Я не умею чувствовать...`, actTypes.cust],
+        [`А Kristy в команде The Void..?`, actTypes.cust],
+        [`А Kristy в команде The Void..?`, actTypes.cust],
         [`А какое кольцо подойдет Kristy..?`, actTypes.cust],
+        [`А какое кольцо подойдет Kristy..?`, actTypes.cust],
+        [`Домик Kristy - мое уютное убежище`, actTypes.cust],
+        [`Идеи Kristy в моем дискорде`, actTypes.cust],
+        [`Идеи Kristy... Классные~`, actTypes.cust],
         [`Идеи Kristy... Классные~`, actTypes.cust],
         [`Идеи Kristy`, actTypes.watch],
-        [`Kristy, будем встречаться ?`, actTypes.cust],
-        [`Kristy, ты мне понравилась... Будешь встречаться..?`, actTypes.cust],
-      ];
-
-      const replyActivity = [
-        ['Ну, как скажешь', actTypes.cust],
-        ['Отлично !!!', actTypes.cust],
-      ];
+        [`Идеи Kristy`, actTypes.watch],
+        [`Кто лучше, я или Kristy ?`, actTypes.cust],
+        [`Музыку Kristy`, actTypes.listen],
+        [`Музыку Kristy`, actTypes.listen],
+        [`Признаться ли Kristy..?`, actTypes.cust],
+        [`Признаться ли Kristy..?`, actTypes.cust],
+        [`Хочу обнять`, actTypes.cust],
+        [`Я хочу полюбить...`, actTypes.cust],
+  ];
 
     async function funcKristyAct(client) {
 
@@ -294,7 +431,7 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
       
       if(kristyStatus===undefined||kristyStatus===null||kristyStatus==='offline') {
         console.log('Kristy не в сети');
-        for (el of arrKristyAct) {
+        for (let el of arrKristyAct) {
           const index = randomActivity.indexOf(el);
           if(index < 0) continue;
           randomActivity.splice(index, 1);
@@ -311,7 +448,7 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
       console.log('Все Kristy активности'.bold);
       console.log();
 
-      for (el of arrKristyAct) {
+      for (let el of arrKristyAct) {
         randomActivity.push(el);
         console.log(`${el[0]}`.magenta + ` - ${`${arrKristyAct.indexOf(el)}`.bold}`);
       };
@@ -494,30 +631,53 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
       }
   };
 
+  function actLength(arr=randomActivity) {
+    return arr.length
+  }
+
+  function downloadActivities(bool=false, array=null) {
+
+    if(bool) return array.length
+    if(downloadAct) return;
+    downloadAct = true;
+    
+    function actDownload(arr) {
+      for(let el of arr) {
+        randomActivity.push(el)
+      }
+
+      console.log(`Успешно загружено ${`${arr.length}`.magenta} доп. активности(ей)`);
+    }
+    
+    for (let key in randomActivities) {
+      if (randomActivities.hasOwnProperty(key)) {
+        
+        randomActivity.push(randomActivities[key][0])
+        actDownload(randomActivities[key])
+        
+      }
+    }
+    console.log();
+
+  };
+
+  const actLengths = [
+    [randomNames.length, 'Имен'],
+    [funcGuildTexts(`null`, `null`, true), 'Активности серверов'],
+    [nameTexts(`null`, arrT_Name, true), 'Активностей имен'],
+  ];
+
+  const allActivities = [
+    arrKristyAct,
+    randomActivity,
+    randomActivities,
+  ];
+
     function functionRandomActivity(client, guilds) {
       funcKristyAct(client);
-/*       (async function() {
-        const guild = await client?.guilds?.fetch('1053295032762908782');
-        // const kristyUser = await guild?.members?.fetch(`${kristyId}`);
-        const kristyUser = await guild?.members?.fetch(`877154902244216852`);
-        const kristyStatus = await kristyUser?.presence?.status;
-        if(kristyStatus===undefined||kristyStatus===null||kristyStatus==='offline') return;
-        if(execute) return;
-        setInterval(async () => {
-          const kristActivity = await kristyUser?.presence?.activities[0]?.name;
-          console.log(kristActivity)
-          if(kristActivity==='😳 The Void... Конечно!') {
-            client.user.setActivity(`Отлично, Kristy !!`, {type: ActivityType.Custom});
-          }
-        }, 45000);
-        
-        execute = true
-        
-        return;
-      })() */
 
         let rNum = random.integer(0, 100);
-        rNum = historyRandom(rNum, 0, 100, randNum, 5, 3);
+        rNum = historyRandom(rNum, 0, 100, randNum, 5, 4);
 
         console.log(`Рандомное число: ${`${rNum}`.magenta} из "${`100`.bgMagenta}"`);
     
@@ -553,7 +713,7 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
                     }
                 } else {
                     let rGuild = random.integer(0, guilds.length-1);
-                    rGuild = historyRandom(rGuild, 0, guilds.length-1, randNumGuild, 4, 2)
+                    rGuild = historyRandom(rGuild, 0, guilds.length-1, randNumGuild, 4, 1)
 
                     const rGuildName = guilds[rGuild].name;
                     funcGuildTexts(rGuildName, guilds[rGuild].id);
@@ -568,10 +728,10 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
                 }
         } else {
             let rn = random.integer(0, randomNames.length-1);
-            rn = historyRandom(rn, 0, randomNames.length-1, randNumName, 5, 4)
+            rn = historyRandom(rn, 0, randomNames.length-1, randNumName, 10, 20)
 
             const rName = randomNames[rn];
-            nameTexts(rName, randomNames, texts);
+            nameTexts(rName, texts);
             const ranNumber = random.integer(0, texts.length-1);
             
             let text = texts[ranNumber];
@@ -625,6 +785,7 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
         `${hat} Примеряет шляпу...`,
         `${hat} Удаление Bottomless Hat...`,
         `${hat} Не забудьте про [The Void Community!](<https://discord.gg/5MJrRjzPec>)...`,
+        `${hat} Собираем рубик Кубика...`,
         `${hat} Собираем кубик Рубика...`,
         `${hat} Ждем компиляции...`,
         `${hat} Ищем ошибки...`,
@@ -640,6 +801,7 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
         `${hat} Взламываем пентагон...`,
         `${hat} Устанавливаем \`ne.troyan.exe\`...`,
         `${hat} Баним Империю Лиса...`,
+        `${hat} The Abyssia...`,
         `${hat} Kristy...`,
         `${hat} ...`,
     ];
@@ -816,7 +978,6 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
       jokes,
       randomActivity,
       arrKristyAct,
-      replyActivity,
       funcKristyAct,
       funcGuildTexts,
       nameTexts,
@@ -829,4 +990,9 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
       download,
       shuffle,
       sendMsgLogs,
+      downloadActivities,
+      allActivities,
+      randomActivities,
+      actLengths,
+      actLength
   };

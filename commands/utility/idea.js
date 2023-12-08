@@ -22,13 +22,13 @@ module.exports = {
     })
         if(booleanVar===false) {
     const modal = new ModalBuilder()
-	.setCustomId(`ideaModal`)
-	.setTitle(`Ваша идея`);
+    .setCustomId(`ideaModal`)
+    .setTitle(`Ваша идея`);
 
     let ideaPH = `Добавить Валю в команду The Void Community`
     let ideaDetailPH = `Хочу, чтобы Валя был администратором на The Void Community!!!!`
 
-    randomNumber = random.integer(0, objectIdeas.length-1);
+    const randomNumber = random.integer(0, objectIdeas.length-1);
     ideaPH = objectIdeas[randomNumber].idea
     ideaDetailPH = objectIdeas[randomNumber].ideaDetail
 
