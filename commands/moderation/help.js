@@ -13,14 +13,18 @@ module.exports = {
 
 		const commands = [
 			`${hat} /8ball`,
+			`${hat} /joke`,
+			`${hat} /kristy (И подкоманды)`,
 			`${hat} /ping`,
 			`${hat} /random (И подкоманды)`,
-			`${hat} /voice (И подкоманды)`
-			`${hat} /ban`
+			`${hat} /sos`,
+			`${hat} /tag`,
+			`${hat} /voice (И подкоманды)`,
 			`${hat} /help`,
 			`${hat} /roles`,
 			`${hat} /say`,
 			`${hat} /test`,
+			`${hat} /idea`,
 			`${hat} /thevoid`,
 			`${hat} /server`,
 			`${hat} /user`,

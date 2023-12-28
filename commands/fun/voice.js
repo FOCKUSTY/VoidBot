@@ -1,11 +1,11 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { joinVoiceChannel, getVoiceConnection, AudioPlayerStatus, createAudioResource, createAudioPlayer, NoSubscriberBehavior } = require('@discordjs/voice');
-const { developEmbed } = require(`../../developing`);
+const { getDevelop, pseudoRandomNumber } = require(`../../developing`);
 const path = require('path');
 const fs = require('node:fs');
 const { Random } = require("random-js");
 const random = new Random();
-const { colors } = require(`colors`)
+const musicHistory = [];
 
 const player = createAudioPlayer({
     behaviors: {
@@ -33,25 +33,26 @@ module.exports = {
         .setNameLocalizations({ru:'отсоединиться',"en-US":'disconnect'})
         .setDescriptionLocalizations({ru:'Выйти из голосового канала',"en-US":'Exit voice channel'})),
     async execute(interaction) {
+        const developEmbed = getDevelop('developEmbed');
 
         const musics = []
 
-        const formatFiles = [".mpeg", ".mp3", ".mp4", ".opus"]
+        const formatFiles = [".mpeg", ".mp3", ".mp4", ".opus", '.weba']
         const musicsPath = path.join(__dirname, '../../../voidMusic/music');
         for (let i = 0; i < formatFiles.length; i++) {
             fs.readdirSync(musicsPath).filter(file => file.endsWith(formatFiles[i])).forEach(e => {
             musics.push(e);
         })}
 
-        const music = random.integer(0, musics.length-1);
-
+        // const music = random.integer(0, musics.length-1);
+        const music = pseudoRandomNumber(0, musics.length-1, 4, 1, musicHistory);
         const int = interaction;
-
         const user = int.user;
         const member = interaction.guild?.members.cache.get(user.id);
         const voice = member?.voice;
 
-        if(int.options.getSubcommand()  === `disconnect`) {
+        if(int.options.getSubcommand()  === `disconnect`)
+        {
             const connection = getVoiceConnection(voice.guild.id);
             if(connection===undefined) {
                 await int.reply({content: `Нет подключения к голосовому каналу`, ephemeral: true})
@@ -62,39 +63,38 @@ module.exports = {
             };
         }
 
-        else if(int.options.getSubcommand() === `play`) {
+        else if(int.options.getSubcommand() === `play`)
+        {
             const channel = interaction?.member.voice.channelId
             if (!channel) {
                 interaction.reply({content: 'Вы не находитесь в голосовом канале', ephemeral: true});
             } else {
             
+            console.log(`Сейчас играет: `+`${musics[music]}`.cyan+` (Индекс: `+`${music}`.red+`)`+`\n`)
 
-        console.log(`Сейчас играет: `+`${musics[music]}`.cyan+` (Индекс: `+`${music}`.red+`)`+`\n`)
+            const connection = joinVoiceChannel({
+                channelId: voice.channel.id,
+                guildId: voice.channel.guild.id,
+                adapterCreator: voice.channel.guild.voiceAdapterCreator,
+            });
 
-        const connection = joinVoiceChannel({
-            channelId: voice.channel.id,
-            guildId: voice.channel.guild.id,
-            adapterCreator: voice.channel.guild.voiceAdapterCreator,
-        });
+            player.play(createAudioResource(path.join(`${musicsPath}\\${musics[music]}`)));
+            // player.play(createAudioResource(path.join(`../../sounds/nea.mp3`)));
 
+            connection.subscribe(player);
 
-        player.play(createAudioResource(path.join(`${musicsPath}\\${musics[music]}`)));
-        // player.play(createAudioResource(path.join(`../../sounds/nea.mp3`)));
+            player.on('error', error => {
+                console.error('Error:', error.message, 'with track', error.resource.metadata.title);
+            });
 
-        connection.subscribe(player);
-
-        player.on('error', error => {
-            console.error('Error:', error.message, 'with track', error.resource.metadata.title);
-        });
-
-        player.on(AudioPlayerStatus.Idle, () => {
-            player.stop()
-            connection.disconnect();
-        });
-
-        await int.reply({
-            embeds: [developEmbed],
-            ephemeral: true
+            player.on(AudioPlayerStatus.Idle, () => {
+                player.stop()
+                connection.disconnect();
+            });
+            
+            await int.reply({
+                embeds: [developEmbed],
+                ephemeral: true
         });
         }}
     }

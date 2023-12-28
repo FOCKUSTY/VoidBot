@@ -1,28 +1,32 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionsBitField } = require('discord.js');
-const { color, authorName, iconURL } = require(`../../developing.json`)
+const {
+    SlashCommandBuilder,
+    EmbedBuilder,
+    PermissionFlagsBits,
+    PermissionsBitField,
+    TextInputBuilder, 
+    ActionRowBuilder, TextInputStyle,
+    addComponents, ModalBuilder
+} = require('discord.js');
+const { color, authorName, iconURL, } = require(`../../developing.json`);
+const { setChannel,setBool } = require('../../events/modals');
 
     module.exports = {
         cooldown: 5,
         data: new SlashCommandBuilder()
 		.setName('serversay')
 		.setDescription('Сообщение с помощью бота!')
-        .addStringOption(option =>
-            option
-                .setName(`channel`)
-                .setDescription(`Id канала на который вы хотите отправить сообщение`)
-                .setRequired(true))
-        .addStringOption(option =>
-            option
-                .setName('message')
-                .setDescription('Ваше сообщение !')
-                .setRequired(true)),
+        .addStringOption(o =>o.setName(`channel`).setDescription(`Id канала на который вы хотите отправить сообщение`).setRequired(true))
+        .addBooleanOption(o=>o.setName(`embed`).setDescription('Сообщение в виде embed? (Вложенный текст)').setRequired(true)),
         async execute(interaction) {
 
         const int = interaction;
         const client = int.client;
         const channelId = int.options.getString(`channel`);
-        const msg = int.options.getString(`message`);
+        const bool = int.options.getBoolean('embed');
         const channel = client?.channels.cache.get(channelId)
+    
+        setChannel(channel, int);
+        setBool(bool)
 
         if(!(channel.permissionsFor(interaction.client.user.id).has([PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel]))) {
             await int.reply({
@@ -33,28 +37,36 @@ const { color, authorName, iconURL } = require(`../../developing.json`)
         }
 
         if (int.user.id === `877154902244216852`) {
-        try {
+            const modal = new ModalBuilder().setCustomId(`sayModal`).setTitle(`Ваше сообщение !`);
 
-            channel.send(`${msg.replaceAll(`\\n`, `\n`)}`)
-
-            const embed = new EmbedBuilder()
-                .setColor(Number(color))
-                .setAuthor({name: `${authorName}`, iconURL: `${iconURL}`})
-                .setTitle(`Сообщение:`)
-                .setDescription(`${msg.replaceAll(`\\n`, `\n`)}`)
-                .setTimestamp()
-    
-            await interaction.reply({
-                content: `Сообщение было отправлено на ${channel}\nСервер: \`${channel?.guild}\`\nId: \`${channel?.guild?.id}\``,
-                embeds: [embed], ephemeral: true
-            })
-
-        } catch(err) {
-            await int.reply({
-                content: `Ошибка, возможные проблемы:\n\`${channel}\` не является каналом\nЯ не могу отправить туда сообщение\nОшибка:\`\`\`${err}\`\`\``,
-                ephemeral: true
-            })
-        }} else {
+            let ideaDetailPH = `Хочу, чтобы Валя был администратором на The Void Community!!!!`
+        
+            if(bool) {
+                const msg = new TextInputBuilder()
+                .setCustomId('message')
+                .setLabel("Ваше сообщение")
+                .setStyle(TextInputStyle.Paragraph)
+                .setRequired(true)
+                .setMaxLength(4000)
+                .setPlaceholder(`${ideaDetailPH}`)
+                
+                const row = new ActionRowBuilder().addComponents(msg);
+                modal.addComponents(row);
+                await int.showModal(modal)
+            } else {
+                const msg = new TextInputBuilder()
+                .setCustomId('message')
+                .setLabel("Ваше сообщение")
+                .setStyle(TextInputStyle.Paragraph)
+                .setRequired(true)
+                .setMaxLength(2000)
+                .setPlaceholder(`${ideaDetailPH}`)
+        
+                const row = new ActionRowBuilder().addComponents(msg);
+                modal.addComponents(row);
+                await int.showModal(modal)
+            }
+    } else {
             await int.reply({
                 content: `У Вас нет прав на использование этой команды`,
                 ephemeral: true

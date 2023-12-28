@@ -6,6 +6,8 @@ config.json
 start.bat.lnk
 sounds/
 music/
+names.json
+botReply.txt
 
 # Logs
 logs

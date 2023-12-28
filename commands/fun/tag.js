@@ -34,9 +34,6 @@ const { Tags } = require(`../../developing`);
             const tag = await Tags.findOne({ where: { name: tagName } });
         
             if (tag) {
-                // equivalent to: UPDATE tags SET usage_count = usage_count + 1 WHERE name = 'tagName';
-                tag.increment('usage_count');
-        
                 return interaction.reply({content: `${tag.get('description')}`, ephemeral: true});
             }
         

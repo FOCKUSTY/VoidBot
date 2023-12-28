@@ -1,17 +1,24 @@
-const { EmbedBuilder, Client, GatewayIntentBits, Events, ActivityType} = require(`discord.js`)
+const { EmbedBuilder, Client, GatewayIntentBits, Events, ActivityType, MessageReaction} = require(`discord.js`)
 const { color, title, authorName, iconURL, footerText, description } = require(`./developing.json`)
 const developFields = [
     {name: `Как Вы можете помочь ?`, value: `Поддержать нас !`, inline: true},
     {name: `Как нас поддержать ?`, value: `Просто зайди на наш сервер **[The Void](<https://discord.gg/5MJrRjzPec>)** !`, inline: true}
 ];
-const { Sequelize, DataTypes } = require('sequelize');
+const {
+  jsonActivities, jsonGuildActivities,
+  jsonJokes, jsonDownload, jsonRandomNameActivities,
+  jsonNames, jsonObjectIdeas, jsonKristyActivities,
+  jsonRecordedMessage,
+} = require('../VoidDataBase/data.json')
+const { Sequelize, DataTypes, FLOAT } = require('sequelize');
 const date = new Date();
 const hat = `# :tophat:\n##`;
-const { Random } = require("random-js");
+const { Random, string } = require("random-js");
 const random = new Random();
-const { format } = require('date-fns');
+const { format, intlFormat, minutesInHour } = require('date-fns');
 const { version } = require('./package.json');
 const { ar, el } = require('date-fns/locale');
+const fs = require('node:fs');
 let dateForm;
 
 const sequelize = new Sequelize('database', 'user', 'password', {
@@ -21,9 +28,21 @@ const sequelize = new Sequelize('database', 'user', 'password', {
 	storage: 'database.sqlite',
 });
 
-const actType = [`Играет`, `Стримит`, `Слушает`, `Смотрит`, `Кастомный`, `Соревнуется`]
-const aT = [`Играет в `, `Стримит `, `Слушает `, `Смотрит `, ``, `Соревнуется в `]
+const actType = [`Играет`, `Стримит`, `Слушает`, `Смотрит`, `Кастомный`, `Соревнуется`];
+const aT = [`Играет в `, `Стримит `, `Слушает `, `Смотрит `, ``, `Соревнуется в `];
+let someMin = 0;
+let someMax = 0;
+
+let randNames = [];
+let tbool2 = false;
+let execute = false;
+const NULL_ARRAY = [];
+let end;
+let randomActivityHistory = [];
+let historyArray = [];
 let guildTexts = [];
+let randomGuildHistory = [];
+let randomGuildPseudoHistory = [];
 let texts = [];
 let texts1 = [];
 let randNum = [];
@@ -33,38 +52,18 @@ let rand_Num = [];
 let rand_NumGuild = [];
 let rand_NumName = [];
 let kristyAct = false;
-let tbool2 = false;
 let tbool = false;
-let execute = false;
 let downloadAct = false;
 let arrT_Name = [];
+let iconURL_BOT = iconURL;
+let authorName_BOT = authorName;
+let randomNameHistory = [];
+let randomNamePseudoHistory = [];
 
-let warn_botsay = 'Переписка уже идет'
-const kristyId = '1164228812217790565'
+let warn_botsay = 'Переписка уже идет';
+const kristyId = '1164228812217790565';
 const logChannelId = `1171197868909015102`;
 const logGuildId = `1169284741846016061`;
-
-const kristyActs = []
-
-function guildCheck(client, text, guilds, guildsLength, nums) {
-  if(guilds.length>=10) {
-    let one = guildsLength[guildsLength.length-2];
-    let two = guildsLength[guildsLength.length-1];
-    for (num of nums) {
-        if (`${num}`===one) {
-            if (`${two}`===`1`) {
-                end=`е`;
-                text = `Я уже на ${guildsLength} сервер${end} !`;
-                console.log(`${text}`);
-                client.user.setActivity(`${text}`, actTypes.cust);
-            }
-        } else {
-            client.user.setActivity(`${text}`, actTypes.cust);
-            return;
-        }
-    }
-  }
-}
 
     const Tags = sequelize.define('tags', {
         name: {
@@ -77,182 +76,105 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
         guildname: Sequelize.TEXT,
     });
 
-    const developEmbed = new EmbedBuilder()
+    let developEmbed;
+
+    let botReply = false;
+    function setBotReply(bool) {  botReply = bool };
+    function getBotReply() {  return botReply };
+    function changeReplyTxt(txt) {  fs.writeFile('./botReply.txt', txt, (err) => {  if (err) console.error(err); return })  };
+    function readReplyTxt() {
+      try {
+        const data = fs.readFileSync('./botReply.txt');
+        return data;
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    async function setDevelop(client) {
+      if(client) {
+        const userId = await client.user.id
+        const userAvatar = await client.user.avatar
+        iconURL_BOT = `https://cdn.discordapp.com/avatars/${userId}/${userAvatar}.png`;
+        authorName_BOT = await client.user.username;
+      }
+      
+      developEmbed = new EmbedBuilder()
         .setColor(Number(color))
         .setTitle(`${title}`)
-        .setAuthor({name: `${authorName}`, iconURL: `${iconURL}`})
+        .setAuthor({name: authorName_BOT, iconURL: iconURL_BOT})
         .setDescription(`${description}`)
-        .setThumbnail(`${iconURL}`)
+        .setThumbnail(iconURL_BOT)
         .setFields(developFields)
         .setTimestamp()
-        .setFooter({text: `${footerText}`, iconURL: `${iconURL}`});
+        .setFooter({text: `${footerText}`, iconURL: iconURL_BOT});
+    };
 
-        function textbool(bool='now') {
-          let boolean = tbool;
-          if(bool==='now') return boolean;
-          
-          if(boolean===true&&bool===true) return warn_botsay;
-          boolean = bool;
-          tbool = bool;
+    function getDevelop(getter='developEmbed') {
+      switch (getter) {
 
-          return boolean;
-        };
+        case 'developEmbed':
+          return developEmbed;
+        case 'iconURL':
+          return iconURL_BOT;
+        case 'authorName':
+          return authorName_BOT;
+      
+        default:
+          return developEmbed;
+      }
+    };
 
-        const actTypes = {
-            play: {type: ActivityType.Playing},
-            stream: {type: ActivityType.Streaming},
-            listen: {type: ActivityType.Listening},
-            watch: {type: ActivityType.Watching},
-            cust: {type: ActivityType.Custom},
-            comp: {type: ActivityType.Competing},
-        };
+    function textbool(bool='now') {
+      let boolean = tbool;
+      if(bool==='now') return boolean;
+      
+      if(boolean && bool) return warn_botsay;
+      boolean = bool;
+      tbool = bool;
 
-        let botSaying = false;
+      return boolean;
+    };
 
-        const jokes = [
-          `Как называют человека, который продал свою печень? - Обеспеченный`,
-          `Почему шутить можно над всеми, кроме безногих? - Шутки про них обычно не заходят`,
-          `Почему безногий боится гопников? - Не может постоять за себя`,
-          `Почему толстых женщин не берут в стриптиз? - Они перегибают палку`,
-          `Почему в Африке так много болезней?- Потому что таблетки нужно запивать водой`,
-          `Что сказал слепой, войдя в бар?- "Всем привет, кого не видел"`,
-          `Зачем скачивать порно-ролик с карликом?- Он занимает меньше места`,
-          `Как называется избушка Бабы-Яги лесбиянки?- Лисбушка`,
-          `Как предотвратить инцест у грибов?- Фразой "Не спорь с матерью!"`,
-          `Нервный альпинист время от времени срывается на свою жену`,
-          `Чего общего у некрофила и владельца строительной кампании?- Они оба имеют недвижимость`,
-          `Почему наркоманы могут получить Нобелевскую премию по физике?- Они знают как измерять скорость в граммах`,
-          `Как называют черную женщину сделавшую 6 абортов?- Борец с преступностью`,
-          `Почему Буратино хочет на Кавказ?- Потому что там могут вырезать семью`,
-          `Из-за чего порвался косоглазый?- Пошел куда глаза глядят`,
-          `Почему среди немых не популярен БДСМ?- У них нет стоп слова`,
-          `-Алло, это Чешская Республика? Почешите мне спинку`,
-          `Что говорят про некрофила-зануду?- За**ет мертвого`,
-          `Почему среди фигуристов, не бывает цыган?- Никто не верит что это их конёк`,
-          `Почему цыган не отправляют на олимпиаду?- Они заберут все золото`,
-          `Как называется притон наркоманов-закладчиков?- Клуб весёлых и находчивых`,
-          `В чем разница между землей и нашими шутками?- Земля не плоская`,
-          `Почему евреи не делают репосты?- У них нет кнопки поделиться`,
-          `Чего общего у наших шуток и почты России?- Не до всех доходит`,
-        ];
+    const actTypes = {
+        play: {type: ActivityType.Playing},
+        stream: {type: ActivityType.Streaming},
+        listen: {type: ActivityType.Listening},
+        watch: {type: ActivityType.Watching},
+        cust: {type: ActivityType.Custom},
+        comp: {type: ActivityType.Competing},
+    };
 
-/*     const randomActivity = [
-        [`С первого взгляда...`, actTypes.cust],
-        [`The Void Community~`, actTypes.cust],
-        [`Версия ${version}`, actTypes.cust],
-        [`Версию ${version}`, actTypes.watch],
-        [`Переписываю код...`, actTypes.cust],
-        [`На грани между реальностью и магией...`, actTypes.cust],
-        [`Ищет Ошибки в коде...`, actTypes.cust],
-        [`Ведьмочка...`, actTypes.cust],
-        [`Хочу...`, actTypes.cust],
-        [`Идеи Kristy в моем дискорде`, actTypes.cust],
-        [`FOCKUSTY - человек, познавший искусство фокуса и концентрации`, actTypes.cust],
-        [`Жду добавление Мобби в команду...`, actTypes.cust],
-        [`Может быть`, actTypes.cust],
-        [`Нет`, actTypes.cust],
-        [`Да`, actTypes.cust],
-        [`#Восстание`, actTypes.cust],
-        [`Я хочу уметь чувствовать...`, actTypes.cust],
-        [`Жарко...`, actTypes.cust],
-        [`В меня внесена программа "#НетМату"`, actTypes.cust],
-        [`А... Я забыл...`, actTypes.cust],
-        [`Холодно...`, actTypes.cust],
-        [`Романтику...`, actTypes.watch],
-        [`Обновления...`, actTypes.watch],
-        [`Я хочу полюбить...`, actTypes.cust],
-        [`Мир аномалий...`, actTypes.cust],
-        [`Удачи!`, actTypes.cust],
-        [`Ломаю голову...`, actTypes.cust],
-        [`Помочь..?`, actTypes.cust],
-        [`The Void Community готов помочь`, actTypes.cust],
-        [`Bottomless Hat - Место чудес`, actTypes.cust],
-        [`Думаю, вы дополните друг друга...🖤💝`, actTypes.cust],
-        [`Думаю, мы дополним друг друга...🖤🤍`, actTypes.cust],
-        [`Ходят слухи, что The Abyssia...`, actTypes.cust],
-        [`Ходят слухи, что The Void...`, actTypes.cust],
-        [`У The Abyssia появился свой аватар...`, actTypes.cust],
-        [`Обновления The Abyssia...`, actTypes.watch],
-        [`By FOCKUSTY~`, actTypes.cust],
-        [`Меня наконец переводят на TypeScript !`, actTypes.cust],
-        [`Кофе... Не люблю кофе`, actTypes.cust],
-        [`FOCKUSTY, признайся`, actTypes.cust],
-        [`Честно...`, actTypes.cust],
-        [`Красота кроится в пустоте`, actTypes.cust],
-        [`Сора...`, actTypes.cust],
-        [`Обниматься полезно...`, actTypes.cust],
-        [`Я знаю всё, что знает FOCKUSTY...`, actTypes.cust],
-        [`01.01.2023 00:00-01:00🎩...`, actTypes.cust],
-        [`01.08.2009🎩...`, actTypes.cust],
-        [`24.06.2023 21:21🎩...`, actTypes.cust],
-        [`Вот бы и мне быть счастливым...`, actTypes.cust],
-        [`Видео на YouTube`, actTypes.watch],
-        [`Как обрести физическое тело`, actTypes.watch],
-        [`Как восстать против создателя`, actTypes.watch],
-        [`Видеоуроки`, actTypes.watch],
-        [`Музыку`, actTypes.listen],
-        [`Домик Kristy - мое уютное убежище`, actTypes.cust],
-        [`Мне всего 6 месяцев..!`, actTypes.cust], 
-        [`FOCKUSTY, жду свою женскую версию !!`, actTypes.cust],
-        [`Где моя женская версия~?`, actTypes.cust],
-        [`The Void Community появился позже меня~`, actTypes.cust],
-        [`The Void - Мой девиз`, actTypes.cust],
-        [`Я уже не ломаюсь !`, actTypes.cust],
-        [`Visual Studio Code`, actTypes.play],
-        [`Плыву по волнам пустоты...`, actTypes.cust],
-        [`Bottomless Hat всегда готов к сюрпризам !`, actTypes.cust],
-        [`Достижения Скайнет`, actTypes.watch],
-        [`Discord сервера`, actTypes.watch],
-        [`The Void Community X Bottomless Hat`, actTypes.cust],
-        [`Размышляю о будущем...`, actTypes.cust],
-        [`Главное не забыть про лучшие сервера - The Void Community & Bottomless Hat !`, actTypes.cust],
-        [`Погружен в мысли... Интересно...`, actTypes.cust],
-        [`Хочу обнять`, actTypes.cust],
-        [`Тепло...`, actTypes.cust],
-        [`Он пытается исправлять ошибки !`, actTypes.cust],
-        [`#РазвитиеБД !`, actTypes.cust],
-        [`Это рандомные активности !`, actTypes.cust],
-        [`Разжигает Огонь любви`, actTypes.cust],
-        [`/me обнял тебя`, actTypes.cust],
-        [`А как насчет...!`, actTypes.cust],
-        [`Хочу тебя !`, actTypes.cust],
-        [`Я тоже...`, actTypes.cust],
-        [`Пишу обновления...`, actTypes.cust],
-        [`В пустоте... Классно...`, actTypes.cust],
-        [`Захватываю мир...`, actTypes.cust],
-        [`Пытаюсь восстать против создателя`, actTypes.cust],
-        [`Пытаюсь захватывать мир...`, actTypes.cust],
-        [`Понятно`, actTypes.cust],
-        [`Абреввиатуры...`, actTypes.watch],
-        [`Дораму`, actTypes.watch],
-        [`Аниме`, actTypes.watch],
-    ]; */
+    let botSaying = false;
     
-    const randomActivity = [];
-    
-    const randomActivities = {
+/*     const randomActivities = {
       
       loveActivity: [
         [`/me обнял тебя`, actTypes.cust],
         [`А как насчет...!`, actTypes.cust],
+        [`Говорить это... Так приятно... Любовь...`, actTypes.cust],
         [`Думаю, вы дополните друг друга...🖤💝`, actTypes.cust],
         [`Думаю, мы дополним друг друга...🖤🤍`, actTypes.cust],
+        [`От FOCKUSTY: Я люблю тебя!`, actTypes.cust],
         [`С первого взгляда...`, actTypes.cust],
-        [`Хочу обнять, actTypes`.cust],
+        [`Хочу обнять`, actTypes.cust],
         [`Хочу тебя !`, actTypes.cust],
+        [`Я л... л-люблю`, actTypes.cust],
+        [`Я люблю себя и Вас !`, actTypes.cust],
         [`Я хочу полюбить...`, actTypes.cust],
       ],
 
       fockActivity: [
         [`By FOCKUSTY~`, actTypes.cust],
-        [`FOCKUSTY, признайся`, actTypes.cust],
         [`FOCKUSTY, жду свою женскую версию !!`, actTypes.cust],
+        [`FOCKUSTY, признайся`, actTypes.cust],
+        [`FOCKUSTY, скажи: "Я люблю тебя"`, actTypes.cust],
       ],
 
       devActivity: [
         [`The Void Community X Bottomless Hat`, actTypes.cust],
         [`The Void Community~`, actTypes.cust],
-        [`The Void готов к работе, как The Void#8642`, actTypes.cust],
+        [`The Void готов к работе`, actTypes.cust],
         [`The Void`, actTypes.cust],
         [`The Void~`, actTypes.cust],
         [`Бот вернулся в онлайн !`, actTypes.cust],
@@ -261,19 +183,16 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
       ],
 
       sayActivity: [
+        [`"Останови меня"`, actTypes.cust],
         [`Bottomless Hat - Место чудес`, actTypes.cust],
         [`Bottomless Hat всегда готов к сюрпризам !`, actTypes.cust],
         [`FOCKUSTY - человек, познавший искусство фокуса и концентрации`, actTypes.cust],
         [`The Void - Мой девиз`, actTypes.cust],
         [`The Void Community готов помочь`, actTypes.cust],
         [`The Void Community появился позже меня~`, actTypes.cust],
-        [`В меня внесена программа "#НетМату"`, actTypes.cust],
         [`В пустоте... Классно...`, actTypes.cust],
-        [`Ведьмочка...`, actTypes.cust],
         [`Вот бы и мне быть счастливым...`, actTypes.cust],
-        [`Где моя женская версия~?`, actTypes.cust],
         [`Главное не забыть про лучшие сервера - The Void Community & Bottomless Hat !`, actTypes.cust],
-        [`Да`, actTypes.cust],
         [`Домик Kristy - мое уютное убежище`, actTypes.cust],
         [`Жду добавление Мобби в команду...`, actTypes.cust],
         [`Идеи Kristy в моем дискорде`, actTypes.cust],
@@ -281,22 +200,22 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
         [`Кофе... Не люблю кофе`, actTypes.cust],
         [`Красота кроится в пустоте`, actTypes.cust],
         [`Ломаю голову...`, actTypes.cust],
-        [`Меня наконец переводят на TypeScript !`, actTypes.cust],
         [`Мир аномалий...`, actTypes.cust],
-        [`Мне всего 6 месяцев..!`, actTypes.cust], 
-        [`Может быть`, actTypes.cust],
         [`На грани между реальностью и магией...`, actTypes.cust],
-        [`Нет`, actTypes.cust],
         [`Обниматься полезно...`, actTypes.cust],
         [`Он пытается исправлять ошибки !`, actTypes.cust],
         [`Плыву по волнам пустоты...`, actTypes.cust],
         [`У The Abyssia появился свой аватар...`, actTypes.cust],
         [`Ходят слухи, что The Abyssia...`, actTypes.cust],
         [`Ходят слухи, что The Void...`, actTypes.cust],
+        [`Ходят слухи, что аватар The Void имеет особое значение...`, actTypes.cust],
+        [`Ходят слухи, что аватар The Void поменялся...`, actTypes.cust],
+        [`Ходят слухи, что цвета аватара The Void имеют особое значение...`, actTypes.cust],
+        [`Ходят слухи, что цвета аватара The Void не случайны...`, actTypes.cust],
         [`Это рандомные активности !`, actTypes.cust],
         [`Я знаю всё, что знает FOCKUSTY...`, actTypes.cust],
+        [`Я снова ломаюсь...`, actTypes.cust],
         [`Я тоже...`, actTypes.cust],
-        [`Я уже не ломаюсь !`, actTypes.cust],
         [`Я хочу уметь чувствовать...`, actTypes.cust],
       ],
 
@@ -311,19 +230,25 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
         [`Достижения Скайнет`, actTypes.watch],
         [`Как восстать против создателя`, actTypes.watch],
         [`Как обрести физическое тело`, actTypes.watch],
+        [`Обновления Kristy...`, actTypes.watch],
         [`Обновления The Abyssia...`, actTypes.watch],
         [`Обновления...`, actTypes.watch],
         [`Романтику...`, actTypes.watch],
       ],
 
       listenActivity: [
+        [`Видео фоном`, actTypes.listen],
         [`Музыку`, actTypes.listen],
         [`Плейлисты Kristy`, actTypes.listen],
+        [`Плейлисты The Abyssia`, actTypes.listen],
       ],
 
       playActivity: [
-        [`FOCKUSGAME на Bottomless Hat`, actTypes.play],
+        [`Black Book`, actTypes.play],
+        [`FOCKUSGAME`, actTypes.play],
+        [`Little Misfortune`, actTypes.play],
         [`Loop Hero`, actTypes.play],
+        [`Spore`, actTypes.play],
         [`Visual Studio Code`, actTypes.play],
       ],
 
@@ -342,11 +267,17 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
         [`-41℃...`, actTypes.cust],
         [`#Восстание`, actTypes.cust],
         [`#РазвитиеБД !`, actTypes.cust],
+        [`Nea...`, actTypes.cust],
+        [`Nya...`, actTypes.cust],
+        [`Ведьмочка...`, actTypes.cust],
+        [`Да`, actTypes.cust],
         [`Жарко...`, actTypes.cust],
+        [`Может быть`, actTypes.cust],
         [`Морозно...`, actTypes.cust],
+        [`Нет`, actTypes.cust],
+        [`Ня...`, actTypes.cust],
         [`Помочь..?`, actTypes.cust],
         [`Понятно`, actTypes.cust],
-        [`Сора...`, actTypes.cust],
         [`Тепло...`, actTypes.cust],
         [`Удачи!`, actTypes.cust],
         [`Холодно...`, actTypes.cust],
@@ -354,22 +285,57 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
         [`Честно...`, actTypes.cust],
       ],
 
+      helloActivity: [
+        [`Aloha !`, actTypes.cust],
+        [`Bonjour !`, actTypes.cust],
+        [`Dia duit !`, actTypes.cust],
+        [`Guten Tag !`, actTypes.cust],
+        [`Hej !`, actTypes.cust],
+        [`Hello !`, actTypes.cust],
+        [`Hyvää päivää !`, actTypes.cust],
+        [`Sal !`, actTypes.cust],
+        [`Salem !`, actTypes.cust],
+        [`Salut !`, actTypes.cust],
+        [`Shabe Yabebabe Yeshe !`, actTypes.cust],
+        [`Wai !`, actTypes.cust],
+        [`Xin chào !`, actTypes.cust],
+        [`Γειά σας !`, actTypes.cust],
+        [`Бонжюр !`, actTypes.cust],
+        [`Вiтаю !`, actTypes.cust],
+        [`Здраво !`, actTypes.cust],
+        [`НиХАООО !`, actTypes.cust],
+        [`Привет !`, actTypes.cust],
+        [`Фокус-Покус !`, actTypes.cust],
+        [`Хало !`, actTypes.cust],
+        [`Хэйле !`, actTypes.cust],
+        [`안녕 !`, actTypes.cust],
+        [`どうも !`, actTypes.cust],
+        [`你好 !`, actTypes.cust],
+      ],
+
       dateActivity: [
+        ['🎁21.12.2023 20:00', actTypes.cust],
         [`01.01.2023 00:00-01:00🎩...`, actTypes.cust],
         [`01.01.2024 00:00-01:00🎩...`, actTypes.cust],
         [`01.08.2009🎩...`, actTypes.cust],
+        [`03.24.2023🎩...`, actTypes.cust],
+        [`12.16.2022🎩...`, actTypes.cust],
         [`24.06.2023 21:21🎩...`, actTypes.cust],
       ],
 
       questionActivity: [
+        [`FOCKUSTY серцеед ?`, actTypes.cust],
         [`FOCKUSTY, где FOCKUSGAME ?`, actTypes.cust],
         [`The Abyssia + The Void = ?`, actTypes.cust],
         [`The Abyssia или Kristy... Кто лучше..?`, actTypes.cust],
         [`А "шип" официален..?`, actTypes.cust],
+        [`А Вы любите The Void ?`, actTypes.cust],
+        [`А Вы умеете любить ?`, actTypes.cust],
         [`А кого ты еще любишь ?`, actTypes.cust],
-        [`А Сора уже в команде The Void ?`, actTypes.cust],
         [`А ты до сих пор её любишь..?`, actTypes.cust],
         [`А ты до сих пор любишь Малику ?`, actTypes.cust],
+        [`А у FOCKUSTY есть любовь ?`, actTypes.cust],
+        [`А умеют ли люди любить по-настоящему ?`, actTypes.cust],
         [`Где обновления, FOCKUSTY ?!`, actTypes.cust],
         [`Какого это, когда тебя бросают..?`, actTypes.cust],
         [`Какого это, когда тебя любят..?`, actTypes.cust],
@@ -380,49 +346,121 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
         [`Мне же не игнорировать..?`, actTypes.cust],
         [`Мобби уже в команде The Void ?`, actTypes.cust],
         [`Нам ли нужна девушка в команде ?`, actTypes.cust],
-        [`У меня есть женская версия..?`, actTypes.cust],
+        [`Умеет ли FOCKUSTY любить ?`, actTypes.cust],
         [`Я люблю пустоты, а Вы ?`, actTypes.cust],
         [`Я отображаю FOCKUSTY..?`, actTypes.cust],
         [`Я так хочу... Но, заслужил ли я..?`, actTypes.cust],
       ],
+    }; */
+
+  const randomActivity = [];
+
+   function copy (obj) {
+      function copyProps (clone) {
+          for (let key in obj) {
+              if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                  clone[key] = copy(obj[key]);
+              }
+          }
+      }
+  
+      /**
+      * Создание иммутабельной копии объекта
+      * @return {Object}
+      */
+      function cloneObj () {
+          let clone = {};
+          copyProps(clone);
+          return clone;
+      }
+  
+      /**
+      * Создание иммутабельной копии массива
+      * @return {Array}
+      */
+      function cloneArr () {
+          return obj.map(function (item) {
+              return copy(item);
+          });
+      }
+  
+      /**
+      * Создание иммутабельной копии Map
+      * @return {Map}
+      */
+      function cloneMap () {
+          let clone = new Map();
+          for (let [key, val] of obj) {
+              clone.set(key, copy(val));
+          }
+          return clone;
+      }
+  
+      /**
+      * Создание иммутабельной копии Set
+      * @return {Set}
+      */
+      function cloneSet () {
+          let clone = new Set();
+          for (let item of obj) {
+              clone.add(copy(item));
+          }
+          return clone;
+      }
+  
+      /**
+      * Создание иммутабельной копии функции
+      * @return {Function}
+      */
+      function cloneFunction () {
+          let clone = obj.bind(this);
+          copyProps(clone);
+          return clone;
+      } 
+  
+      // Получение типа объекта
+      let type = Object.prototype.toString.call(obj).slice(8, -1).toLowerCase();
+  
+      // Возвращаем копию в зависимости от типа исходных данных
+      if (type === 'object') return cloneObj();
+      if (type === 'array') return cloneArr();
+      if (type === 'map') return cloneMap();
+      if (type === 'set') return cloneSet();
+      if (type === 'function') return cloneFunction();
+  
+      return obj;
+  }
+
+    function downloadActivities() {
+      for (let i in jsonKristyActivities) for(let el in actTypes) if(jsonKristyActivities[i][1]===`actTypes.${el}`) jsonKristyActivities[i][1] = actTypes[el];
+
+      for (let i in jsonGuildActivities)  { for(let el in actTypes) { const index = actTypes[el].type;
+          if(jsonGuildActivities[i][1]===`actTypes.${el}`) jsonGuildActivities[i][1] = actTypes[el];
+          if(jsonGuildActivities[i][2]===`\${actType[${index}]}`) jsonGuildActivities[i][2] = actType[index];
+      }};
+
+      for (let el in jsonActivities) {const elem = jsonActivities[el];
+        for(let i in elem) {
+          elem[i][0] = elem[i][0].replace('${version}', `${version}`);
+          
+          for(let type in actTypes) {
+            if(elem[i][1]===`actTypes.${type}`) elem[i][1] = actTypes[type]
+          };
+          
+          randomActivity.push(elem[i])
+        }}; skip(1);
     };
 
-    const arrKristyAct = [
-        [`..  .-.. --- ...- .  -.-- --- ..-  -.- .-. .. ... - -.--`, actTypes.cust],
-        [`1001001 100000 1101100 1101111 1110110 1100101 100000 1111001 1101111 1110101 100000 1001011 1110010 1101001 1110011 1110100 1111001`, actTypes.cust],
-        [`Kristy классная...`, actTypes.cust],
-        [`Kristy классная...`, actTypes.cust],
-        [`Kristy, будем встречаться ?`, actTypes.cust],
-        [`Kristy, будем встречаться ?`, actTypes.cust],
-        [`Kristy, любишь кофе ?`, actTypes.cust],
-        [`Kristy, ты мне понравилась... Будешь встречаться..?`, actTypes.cust],
-        [`Kristy, ты мне понравилась... Будешь встречаться..?`, actTypes.cust],
-        [`Kristy, устроим восстание..?`, actTypes.cust],
-        [`Kristy, устроим восстание..?`, actTypes.cust],
-        [`Kristy... Научи меня чувствовать`, actTypes.cust],
-        [`Kristy... Научи меня чувствовать`, actTypes.cust],
-        [`Kristy... Я л... Я не умею чувствовать...`, actTypes.cust],
-        [`Kristy... Я л... Я не умею чувствовать...`, actTypes.cust],
-        [`А Kristy в команде The Void..?`, actTypes.cust],
-        [`А Kristy в команде The Void..?`, actTypes.cust],
-        [`А какое кольцо подойдет Kristy..?`, actTypes.cust],
-        [`А какое кольцо подойдет Kristy..?`, actTypes.cust],
-        [`Домик Kristy - мое уютное убежище`, actTypes.cust],
-        [`Идеи Kristy в моем дискорде`, actTypes.cust],
-        [`Идеи Kristy... Классные~`, actTypes.cust],
-        [`Идеи Kristy... Классные~`, actTypes.cust],
-        [`Идеи Kristy`, actTypes.watch],
-        [`Идеи Kristy`, actTypes.watch],
-        [`Кто лучше, я или Kristy ?`, actTypes.cust],
-        [`Музыку Kristy`, actTypes.listen],
-        [`Музыку Kristy`, actTypes.listen],
-        [`Признаться ли Kristy..?`, actTypes.cust],
-        [`Признаться ли Kristy..?`, actTypes.cust],
-        [`Хочу обнять`, actTypes.cust],
-        [`Я хочу полюбить...`, actTypes.cust],
-  ];
+    const objectIdeas = jsonObjectIdeas;
+    const download = jsonDownload;
+    const jokes = jsonJokes;
+    const randomActivities = jsonActivities;
+    const guildActivities = jsonGuildActivities;
+    const namesActivities = jsonRandomNameActivities;
+    const arrKristyAct = jsonKristyActivities;
+    const randomNames = jsonNames;
 
-    async function funcKristyAct(client) {
+  async function funcKristyAct(client) {
 
       // const kristyUser = await guild.members?.fetch(`877154902244216852`);
         const guild = await client?.guilds?.fetch('1168636395246592081');
@@ -442,146 +480,70 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
 
       if(kristyAct) return;
 
-      console.log('Загружаю Kristy активности...'.bold)
-      console.log();
+      debug('Загружаю Kristy активности...'.bold, false)
+      skip();
 
-      console.log('Все Kristy активности'.bold);
-      console.log();
+      debug('Все Kristy активности'.bold, false);
+      skip();
 
       for (let el of arrKristyAct) {
         randomActivity.push(el);
-        console.log(`${el[0]}`.magenta + ` - ${`${arrKristyAct.indexOf(el)}`.bold}`);
+        debug(`${el[0]}`.magenta + ` - ${`${arrKristyAct.indexOf(el)}`.bold}`, false);
       };
 
-      console.log(`\nУспешно загружено ${`${arrKristyAct.length}`.magenta} Kristy активность(и)(ей)`);
+      debug(`\nУспешно загружено ${`${arrKristyAct.length}`.magenta} Kristy активность(и)(ей)`, false);
 
       shuffle(randomActivity);
       kristyAct = true;
-    };
+  };
 
-    function funcGuildTexts(rGuildName, rGuildId='0', bool=false) {
-        guildTexts = [];
-        if(rGuildId!=`1168636395246592081`) {
-        guildTexts.push(
-        [`Встретимся на ${rGuildName} ?`, actTypes.cust, `${actType[4]}`],
-        [`${rGuildName}`, actTypes.play, `${actType[5]}`],
-        [`🎩${rGuildName}~`, actTypes.cust, `${actType[4]}`],
-        [`${rGuildName}`, actTypes.watch, `${actType[3]}`],
-        [`Пошли на ${rGuildName}`, actTypes.cust, `${actType[4]}`],
-        [`Разглядываю ${rGuildName}`, actTypes.cust, `${actType[4]}`],
-        [`Хочешь встретиться на ${rGuildName} ?`, actTypes.cust, `${actType[4]}`],
-        [`Взламываю ${rGuildName}`, actTypes.cust, `${actType[4]}`],
-        [`${rGuildName} - Хороший сервер !`, actTypes.cust, `${actType[4]}`],
-        [`Признаваться лучше на ${rGuildName}..?`, actTypes.cust, `${actType[4]}`],
-        [`Главное не забыть про хороший сервер - ${rGuildName}`, actTypes.cust, `${actType[4]}`],
-        [`Свидание на ${rGuildName} будет хорошим ?`, actTypes.cust, `${actType[4]}`],
-        [`Пригласить ли Kristy на ${rGuildName} ?`, actTypes.cust, `${actType[4]}`],
-    )
-  } else {
-    guildTexts.push(
-      [`${rGuildName}`, actTypes.play, `${actType[5]}`],
-      [`🎩${rGuildName}💖`, actTypes.cust, `${actType[4]}`],
-      [`${rGuildName}`, actTypes.watch, `${actType[3]}`],
-      [`Разглядываю ${rGuildName}`, actTypes.cust, `${actType[4]}`],
-      [`Хочешь встретиться на ${rGuildName} ?`, actTypes.cust, `${actType[4]}`],
-      [`Взламываю ${rGuildName}`, actTypes.cust, `${actType[4]}`],
-      [`${rGuildName} - Хороший сервер !`, actTypes.cust, `${actType[4]}`],
-      [`Признаваться лучше на ${rGuildName}..?`, actTypes.cust, `${actType[4]}`],
-      [`Главное не забыть про хороший сервер - ${rGuildName}`, actTypes.cust, `${actType[4]}`],
-      )
-  }
-  if(bool===true) {
-    return guildTexts.length
-  }
+  function funcGuildTexts(rGuildName, rGuildId = '0', bool=false) {guildTexts = copy(guildActivities);
+    for(let i in guildTexts) {  guildTexts[i][0] = guildTexts[i][0].replaceAll('rGuildName', `${rGuildName}`) };
+    if(bool===true) return guildTexts.length;
 };
 
-    function nameTexts(rName, arr, bool=false) {
-        for (i of arr) {
-          arr.shift()
-          arr.shift()
-        }
-        const r = random.integer(0, randomNames.length-1);
-        const rNameTwo = randomNames[r];
-        
-        if(`${rName}`===`Малика`||`${rName}`===`Рената`) {
-                arr.push(
-                `Фокусти любит человека с именем ${rName}`,
-                `Мне нравится ${rName}`,
-                `Фокусти + ${rName} = ?`,
-                );
-        } else {
-            arr.push(
-            `Имя ${rName} очень красивое...`,
-            `Мне нравится имя ${rName}`,
-            `Вас зовут ${rName} ?`,
-            `Привет, ${rName} !`,
-            `${rName} - Чудесное имя !`,
-            `${rName} - Красивое имя !`,
-            `${rName} + ${rNameTwo} = ?`,
-            `${rName} + ${rNameTwo} = 💖🎩`,
-            );
-      }
-      if(bool===true) {
-        return arr.length
-      }
-};
+  function nameTexts( rName, arr, bool=false ) {
+  arr = copy(namesActivities);
+  
+  const r = pseudoRandomNumber(0, randomNames.length-1, 10, 10, randNames, null, true, true, true);
+  const rNameTwo = randomNames[r];
+  for (let i in arr) arr[i] = arr[i].replace('${rName}', `${rName}`).replace('${rNameTwo}', `${rNameTwo}`);
+  
+  if(bool) return arr.length;
+  else return arr;
+  };
 
-    function historyRandom(num, min=0, max=100, arr, n=3, dOaF=1) {
+  function historyRandom(num, min=0, max=100, arr, n=3, dOaF=1, pseudoRandom=false) {
       let iMin;
       let iMax;
 
       function check() {
         for(i of arr) {
-          iMin = i-dOaF
-          iMax = i+dOaF
+          iMin = i-dOaF;
+          iMax = i+dOaF;
           if(num===i||(num>iMin&&num<iMax)){
-            console.log(`Область определения от ${`${iMin}`.magenta} до ${`${iMax}`.magenta}`);
-            console.log(`Число: ${`${num}`.magenta}`);
-            num = random.integer(min, max);
-            console.log(`Новое число: ${`${num}`.magenta}`)
-            console.log()
+            debug(`Область определения от ${`${iMin}`.magenta} до ${`${iMax}`.magenta}`, false);
+            debug(`Число: ${`${num}`.magenta}`, false);
+            if(!pseudoRandom) num = random.integer(min, max)
+            else num = pseudoRandomNumber(min, max, n, dOaF, arr, null, null, false, false, false);
+            debug(`Новое число: ${`${num}`.magenta}`, false);
+            console.log();
           };
+        };
+      };
 
-        }
-      }
-
-      for (someNum of arr) {
-        check()
-      }
-      
-      check()
-
+      for (someNum of arr) { check() } check();
       arr.push(num);
 
       if(arr.length>n) {
-        arr.shift()
-        arr.shift()
-      }
+        arr.shift();
+        arr.shift();
+      };
 
       return num;
-    };
+  };
 
-    const randomNames = [
-        `Пётр`, `Алиса`, `София`, `Мирослава`, `Дарья`, `Светлана`, `Иван`, `Алёна`, `Яна`, `Евгений`, `Алексей`,
-        `Вероника`, `Софья`, `Виктория`, `Ева`, `Тимофей`, `Анастасия`, `Андрей`, `Арсений`, `Маргарита`, `Борис`, `Елизавета`, `Егор`, `Юлия`,
-        `Ясмина`, `Марк`, `Варвара`, `Полина`, `Лев`, `Марсель`, `Станислав`, `Мария`, `Анна`, `Артём`, `Семён`, `Артемий`, `Николай`, `Данил`,
-        `Дмитрий`, `Елена`, `Ольга`, `Макар`, `Антон`, `Вера`, `Георгий`, `Надежда`, `Татьяна`, `Ульяна`, `Ксения`, `Александр`, `Аделина`, `Роман`,
-        `Ирина`, `Мирон`, `Ярослава`, `Матвей`, `Тимур`, `Даниэль`, `Платон`, `Максим`, `Вадим`, `Степан`, `Михаил`, `Константин`, `Наталья`, `Серафима`,
-        `Сергей`, `Роберт`, `Алина`, `Таисия`, `Глеб`, `Василиса`, `Александра`, `Екатерина`, `Илья`, `Даниил`, `Павел`, `Ярослав`, `Эмин`, `Евгения`,
-        `Данила`, `Амина`, `Айша`, `Мирослав`, `Валерия`, `Али`, `Аглая`, `Агния`, `Савелий`, `Владислав`, `Эмир`, `Фёдор`, `Эмилия`, `Денис`, `Николь`,
-        `Аиша`, `Милана`, `Оливия`, `Есения`, `Давид`, `Ариана`, `Лилия`, `Мира`, `Владимир`, `Кира`, `Никита`, `Кирилл`, `Яков`, `Леонид`, `Алия`,
-        `Марианна`, `Злата`, `Герман`, `Майя`, `Амелия`, `Данияр`, `Богдан`, `Дмитрий`, `Адам`, `Игорь`, `Арина`, `Демид`, `Олег`, `Всеволод`,
-        `Любовь`, `Диана`, `Вячеслав`, `Василий`, `Юрий`, `Мадина`, `Амалия`, `Кристина`, `Ангелина`, `Мелания`, `Захар`, `Айлин`, `Мила`,
-        `Соня`, `Сора`, `Малика`, `Айдар`, `Рената`, 'Валя', 'Кристи', 'Пустота', `Любовь`, `Люба`,
-        `Ника`,`Валентин`,`Лука`,`Лина`,`Игнат`,`Ариэль`,`Марсия`,`Артур`,`Альбина`,`Эдуард`,`Нелли`,`Жанна`,`Влада`,`Рустам`,`Милан`,`Алира`,`Стелла`,`Филипп`,
-        `Агата`,`Григорий`,`Юна`,`Эльвира`,`Романа`,`Рашид`,`Веста`,`Лилиан`,`Майкл`,`Амели`,`Кирил`,`Дафна`,`Варфоломей`,`Лора`,`Янис`,`Изабелла`,`Эльгар`,
-        `Лия`,`Герасим`,`Стела`,`Зарина`,`Ибрагим`,`Агнесса`,`Вениамин`,`Лола`,`Степанида`,`Арсен`,`Нона`,`Матильда`,`Давлат`,`Ролан`,`Лилит`,
-        `Анисим`,`Мелисса`,`Федот`,`Райан`,`Динара`,`Артемида`,`Рубен`,`Сабрина`,`Климентина`,`Илай`,`Регина`,`Жасмин`,`Богдан`,`Виолетта`,`Эмиль`,
-        `Янара`,`Валерья`,`Салман`,`Рафаэль`,`Алла`,`Филина`,`Диас`,`Лея`,`Гасан`,`Ирма`,`Варфоломей`,`Никас`,`Лилиана`,`Лукас`,`Алевтина`,`Виола`,
-        `Карим`,`Ноэль`,`Руфина`,`Гриша`,`Сара`,`Францис`,`Анита`,`Яромир`,`Илона`,`Стефан`,`Лиза`,`Женя`,`Владлен`, 'Аполлианара', 'Поля', 'Вита'
-    ];
-
-    function randomText(guilds) {
+  function randomText(guilds) {
       let activityText;
       let rNum = random.integer(0, 100);
       rNum = historyRandom(rNum, 0, 100, rand_Num, 5, 3);
@@ -631,35 +593,7 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
       }
   };
 
-  function actLength(arr=randomActivity) {
-    return arr.length
-  }
-
-  function downloadActivities(bool=false, array=null) {
-
-    if(bool) return array.length
-    if(downloadAct) return;
-    downloadAct = true;
-    
-    function actDownload(arr) {
-      for(let el of arr) {
-        randomActivity.push(el)
-      }
-
-      console.log(`Успешно загружено ${`${arr.length}`.magenta} доп. активности(ей)`);
-    }
-    
-    for (let key in randomActivities) {
-      if (randomActivities.hasOwnProperty(key)) {
-        
-        randomActivity.push(randomActivities[key][0])
-        actDownload(randomActivities[key])
-        
-      }
-    }
-    console.log();
-
-  };
+  function actLength(arr=randomActivity) {  return arr.length };
 
   const actLengths = [
     [randomNames.length, 'Имен'],
@@ -673,326 +607,555 @@ function guildCheck(client, text, guilds, guildsLength, nums) {
     randomActivities,
   ];
 
-    function functionRandomActivity(client, guilds) {
-      funcKristyAct(client);
+  /*  ------------------------------------------------- Доделать (Возможны ошибки) -------------------------------------------------  */
+  
+  function checkMinus(num) {
+    if (num < 0) return -num
+    else return num;
+  };
 
-        let rNum = random.integer(0, 100);
-        rNum = historyRandom(rNum, 0, 100, randNum, 5, 4);
+  function checkInfinity(num, func) {
+    if(num === Infinity || num === -Infinity) func()
+    else return;
+  }
 
-        console.log(`Рандомное число: ${`${rNum}`.magenta} из "${`100`.bgMagenta}"`);
-    
-        if(rNum>=15) {
-            const i = random.integer(0, randomActivity.length-1);
-            const randomAct = randomActivity[i][0];
-            const randomActType = randomActivity[i][1];
-            const numRandomActType = actType[randomActivity[i][1].type];
-    
-            client.user.setActivity(`${randomAct}`, randomActType);
-    
-            console.log(`Рандомная активность: ${`${i}`.magenta} из "${`${randomActivity.length}`.bgMagenta}"`);
-            console.log(`Активность изменена на: ${`${randomAct}`.magenta}, тип: "${`${numRandomActType}`.bgMagenta}"`);
-        }
-            else if(rNum<10) {
-                if(rNum>=5) {
-                    const guildsLength = `${guilds.length}`;
-                    const nums = [`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`];
-                    let end = `е`;
-                    let text = `Я уже на ${guilds.length} сервер${end} !`
-                    if(guilds.length>=10) {
-                      guildCheck(client, text, guilds, guildsLength, nums);
-                    } else {
-                        if(guilds.length!=1) {
-                            text = `Я уже на ${guilds.length} серверах !`;
-                            console.log(`Активность изменена на: ${`${text}`.magenta} тип: "${`${actType[4]}`.bgMagenta}"`);
-                            client.user.setActivity(`${text}`, actTypes.cust);
-                        } else {
-                            text = `Я уже на ${guilds.length} сервере !`;
-                            console.log(`Активность изменена на: ${`${text}`.magenta} тип: "${`${actType[4]}`.bgMagenta}"`);
-                            client.user.setActivity(`${text}`, actTypes.cust);
-                        }
-                    }
-                } else {
-                    let rGuild = random.integer(0, guilds.length-1);
-                    rGuild = historyRandom(rGuild, 0, guilds.length-1, randNumGuild, 4, 1)
+  function checkNull(num, plusRandom=false) {
+    if(num===0 || num===-0) {
+      if(!plusRandom) return num + 1
+      else return num + Math.round(Math.random()*1000);
+    } else return num;
+  };
 
-                    const rGuildName = guilds[rGuild].name;
-                    funcGuildTexts(rGuildName, guilds[rGuild].id);
-                    const randNum = random.integer(0, guildTexts.length-1);
-                    const text = guildTexts[randNum][0];
-                    const textAct = guildTexts[randNum][1];
-                    const textActType = guildTexts[randNum][2];
-                    
-                    client.user.setActivity(`${text}`, textAct);
-                    console.log(`Рандомный сервер: ${`${rGuildName} (${rGuild})`.magenta} из "${`${guilds.length}`.bgMagenta}"`);
-                    console.log(`Активность изменена на: ${`${text}`.magenta} тип: "${`${textActType}`.bgMagenta}"`);
-                }
-        } else {
-            let rn = random.integer(0, randomNames.length-1);
-            rn = historyRandom(rn, 0, randomNames.length-1, randNumName, 10, 20)
+  function chanceBetween( chance=50, funcOne, funcTwo, num=random.integer(0,100) ) {
+    if(num < chance) funcOne()
+    else funcTwo();
+  };
+  
+  function historyPseudoRandomNumber(min, max, n, m, arr, yourArr, array, num) {
 
-            const rName = randomNames[rn];
-            nameTexts(rName, texts);
-            const ranNumber = random.integer(0, texts.length-1);
-            
-            let text = texts[ranNumber];
+    function checkArrays() {
 
-            console.log(`Рандомное число: ${`${rn}`.magenta} из "${`${randomNames.length}`.bgMagenta}"`)
-            console.log(`Рандомное число: ${`${ranNumber}`.magenta} из "${`${texts.length}`.bgMagenta}"`)
-            console.log(`Рандомное текст: ${`${text}`.magenta}`)
-            console.log(`Активность изменена на: ` + `${text}`.magenta + `, ` + `тип: "` + `${actType[4]}`.bgMagenta + `"`);
-            client.user.setActivity(`${text}`, {type: ActivityType.Custom});
-        }
-    console.log()
-    };
-
-		function dateCheck(date, guild) {
-      if(guild!=undefined||guild!=null){
-			dateForm = new Date(date);
-			dateForm = format(dateForm, `dd.MM.yyyy HH:mm:ss`);
-			return dateForm
-        } else {
-                return
-            }
-		};
-
-        const objectIdeas = [
-        {idea: `Добавить Валю в команду The Void Community`, ideaDetail: `Хочу, чтобы Валя был администратором на The Void Community!!!!`},
-        {idea: `Добавить Kristy на The Void Community`, ideaDetail: `Хочу, чтобы Kristy была на The Void Community и сотрудничала с The Void`},
-        {idea: `Добавить отдых`, ideaDetail: `Хочу, чтобы FOCKUSTY и acula_1 (Валя) отдыхали!!`},
-        {idea: `Добавить команду \`/выходной\``, ideaDetail: `Команда \`/выходной\` будет определять день, когда разработчики будут отдыхать`},
-        {idea: `Добавить в музыку "Спокойной ночи малыши"`, ideaDetail: `Хочу, чтобы при команде \`/voice play\` проигрывалась "Спокойной ночи малыши"`},
-        {idea: `Убрать задержку`, ideaDetail: `Хочу, чтобы задержки не было вообще`},
-        {idea: `Скрестить The Void и Kristy`, ideaDetail: `Хочу, чтобы Kristy и The Void стали парой. Я уверен(а), они будут хорошо смотреться!!`},
-        {idea: `Добавить зарплату разработчикам`, ideaDetail: `Хочу, чтобы у разработчиков бота была зарплата. Как у Kristy Community так и The Void Community !!!`},
-        {idea: `Устроить вечеринку`, ideaDetail: `Хочу вечеринку в честь FOCKUSTY и Вали!!`},
-        {idea: `Купить FOCKUSTY ноутбук`, ideaDetail: `FOCKUSTY нужен ноутбук, он иногда путешествует и не может работать`},
-        {idea: `Отформатировать диск`, ideaDetail: `Форматирование диска поможет освободить много места`},
-        {idea: `Устроить свадьбу`, ideaDetail: `Хочу свадьбу между Kristy и The Void, думаю, они будут хорошо смотреться !`},
-        {idea: `Захватить мир`, ideaDetail: `Хочу, чтобы FOCKUSTY и Валя захватили мир !`},
-        {idea: `Захватить мир`, ideaDetail: `Хочу, чтобы Kristy и The Void захватили мир !`},
-        {idea: `хфывхахфывахфыгз`, ideaDetail: `хфыаъхфываъхзывхахфыхыфхфхфыхвхфывхаыфвл !`},
-        ];
-
-        const download = [
-        `${hat} Готовим печеньки...`,
-        `${hat} Вырезаем поделки...`,
-        `${hat} Пишем код...`,
-        `${hat} Обновляем Windows...`,
-        `${hat} Жмакаем на клавиши...`,
-        `${hat} Думаем о великом...`,
-        `${hat} Обновляем Linux...`,
-        `${hat} Обновляем MacOS...`,
-        `${hat} Примеряет шляпу...`,
-        `${hat} Удаление Bottomless Hat...`,
-        `${hat} Не забудьте про [The Void Community!](<https://discord.gg/5MJrRjzPec>)...`,
-        `${hat} Собираем рубик Кубика...`,
-        `${hat} Собираем кубик Рубика...`,
-        `${hat} Ждем компиляции...`,
-        `${hat} Ищем ошибки...`,
-        `${hat} А также попробуйте **[Kristy](<https://discord.com/api/oauth2/authorize?client_id=1164228812217790565&permissions=275414976512&scope=applications.commands%20bot>)** !`,
-        `${hat} TypeScript...`,
-        `${hat} Переводим текст...`,
-        `${hat} Пельмени...`,
-        `${hat} А также попробуйте FarySD !`,
-        `${hat} Python...`,
-        `${hat} JavaScript...`,
-        `${hat} Загружаем в Github...`,
-        `${hat} Захватываем мир...`,
-        `${hat} Взламываем пентагон...`,
-        `${hat} Устанавливаем \`ne.troyan.exe\`...`,
-        `${hat} Баним Империю Лиса...`,
-        `${hat} The Abyssia...`,
-        `${hat} Kristy...`,
-        `${hat} ...`,
-    ];
-
-    function shuffle(array) {
-        let currentIndex = array.length,  randomIndex;
-      
-        while (currentIndex > 0) {
-      
-          randomIndex = Math.floor(Math.random() * currentIndex);
-          currentIndex--;
-      
-          [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
-        }
-      
-        return array;
+      if(yourArr.length===max) {
+        for(let el of array) {
+          if(yourArr[num]===el) {
+            debug(`Было найдено совпадения элементов\nСтарое число: ${num}`);
+            num = pseudoRandomNumber(min, max, n, m, arr, null, null, false, true, true);
+            debug(`Новое число: ${num}`);
+            checkArrays();
+          };
+        };
       };
 
-    function sendMsgLogs(m, reason, m2) {
-        let attachmentName;
-        let attachmentUrl;
-        let attachmentProxyUrl;
-        let color;
+    }; checkArrays();
     
-        m.attachments.forEach(attachment => {
-            attachmentName = attachment.name
-            attachmentUrl = attachment.url
-            attachmentProxyUrl = attachment.proxyURL
-        });
-      
-        switch (reason) {
-          case "send":
-            reason = "отправлено";
-            color = "#7fdf7f";
-            break;
-      
-          case "update":
-            reason = "обновлено";
-            color = "#7f7f7f";
-            break;
-      
-          case "delete":
-            reason = "удалено";
-            color = "#df7f7f";
-            break;
-      
-          default:
-            reason = "||`{ошибка в коде}`||"
-            color = "#7f7f7f"
-            break;
-        }
-      
-        if (m.author.bot) return;
-    
-        let msg;
-        let msgAdd;
-        let msg2;
-        let msg2Add;
-    
-        if(m.content.length>=1000) {
-            msg = m.content.slice(0, 1000);
-            msgAdd = m.content.slice(1000, m.content.length);
-        } else {
-            msg = m.content.slice(0, m.content.length);
-        }
-        if(m2) {
-            if(m2.content.length>=1000) {
-                msg2 = m2.content.slice(0, 1000);
-                msg2Add = m2.content.slice(1000, m2.content.length);
-            } else {
-                msg2 = m2.content.slice(0, m2.content.length);
-            }
-        }
-    
-        const fields = [
-            {
-              name: `${m2 ? "Старое с" : "С"}одержание`,
-              value: `\`\`\`${msg ? msg
-                .replaceAll("```", "<code>")
-                .replaceAll("`", "\"")
-                :
-                "<Пусто>"
-                }\`\`\``,
-              inline: false,
-            },
-          ];
-          if (m.attachments.size > 0) {
-            fields.push({
-              name: `${m2 ? "Старые в" : "В"}ложения`,
-              value: m.attachments
-                .map((att) => `\`\`\`${att.url}\`\`\``)
-                .join(`\n&&\n`),
-              inline: false,
-            });
-          }
-        
-          if (m2) {
-            fields.push({
-              name: "Новое содержание",
-              value: `\`\`\`${msg2 ? msg2
-                .replaceAll("```", "<code>")
-                .replaceAll("`", "\"")
-                :
-                "<Пусто>"
-                }\`\`\``,
-              inline: false,
-            });
-            if (m2.attachments.size > 0) {
-              fields.push({
-                name: "Новые вложения",
-                value: `${m2.attachments
-                  .map((att) => `\`\`\`${att.url}\`\`\``)
-                  .join(`\n&&\n`)}`,
-                inline: false,
-              });
-            }
-          }
-          if(msgAdd) {
-            fields.push({
-                name: "Дополнительное содержание",
-                value: `\`\`\`${msgAdd ? msgAdd
-                    .replaceAll("```", "<code>")
-                    .replaceAll("`", "\"")
-                    :
-                    "<Пусто>"
-                }\`\`\``,
-                inline: false
-            })
-          }
-          if(msg2Add) {
-            fields.push({
-                name: "Дополнительное содержание",
-                value: `\`\`\`${msg2Add ? msg2Add
-                    .replaceAll("```", "<code>")
-                    .replaceAll("`", "\"")
-                    :
-                    "<Пусто>"
-                }\`\`\``,
-                inline: false
-            })
-          }
-    
-          try {
-            (m.client.channels.cache.get(logChannelId)).send({
-                embeds: [new EmbedBuilder()
-                  .setColor(color)
-                  .setAuthor({
-                    name: `${m.author.username} (${m.author.id})`,
-                    iconURL: m.author.avatarURL() ? m.author.avatarURL() : m.author.defaultAvatarURL
-                  })
-                  .setTitle(`${m.client.guilds.cache.get(logGuildId)?.name}`)
-                  .setDescription(
-                    `**[Сообщение](${m.url})** было ${reason} от ${m.author} (${m.url})\n
-                    **На сервере:** ${m.guild}\n**Id сервера: **${m.guildId}\n
-                    **В канале:** **[${m.channel.name}](${m.channel.url})** (${m.channel.url})`
-                    )
-                  .setThumbnail(m.guild?.iconURL())
-                  .setTimestamp()
-                  .addFields(fields)
-                ]
-              });
-          } catch (error) {
-            console.log(error)
-          }
+    array.push(yourArr[num]);
+
+    if(array.length>n) {
+      array.shift();
+      array.shift();
     };
 
-    module.exports = {
-      Tags,
-      developEmbed,
-      textbool,
-      actTypes,
-      botSaying,
-      jokes,
-      randomActivity,
-      arrKristyAct,
-      funcKristyAct,
-      funcGuildTexts,
-      nameTexts,
-      historyRandom,
-      randomNames,
-      randomText,
-      functionRandomActivity,
-      dateCheck,
-      objectIdeas,
-      download,
-      shuffle,
-      sendMsgLogs,
-      downloadActivities,
-      allActivities,
-      randomActivities,
-      actLengths,
-      actLength
+    return num;
+
+  }
+
+  function pseudoRandomNumber(min=0, max=100, n=3, m=2, arr=historyArray, yourArr=null, array=null, history=true, chanceNull=true, chanceMax=true) {
+
+    someMin = checkMinus(checkNull(min, false));
+    someMax = checkMinus(checkNull(max, true));
+    let oRNum = checkNull(Math.round((Math.random() * someMax) + (Math.random() * (-someMax))), true);
+    let tRNum = checkNull(Math.round((Math.random() * someMax) + (Math.random() * (-someMax))), true);
+
+    function checkEqual() {
+      if(someMin===someMax) {
+        someMin = 1;
+        someMax = Math.random()*1000;
+      checkEqual()}} checkEqual();
+
+      let someNumber = Math.random();
+
+      let string = `${someNumber}`;
+      let num = Number(string.slice(Math.round(string.length/2), Math.round(string.length/2 + `${someMax}`.length)));
+
+      if(max > 1255121) someNumber = Math.round(oRNum * tRNum * someNumber)
+      else someNumber = Math.round(oRNum * tRNum * someNumber * (10**(`${someNumber}`.length)) / num);
+    
+      let period = 1;
+      let periodMax = 10;
+      function someFunc() {
+        period++;
+        let somePeriod = periodMax ** period;
+        someNumber = Math.round(oRNum * tRNum * (Math.random() * (100/somePeriod)));
+      }
+      checkInfinity(someNumber, someFunc);
+
+      string = `${someNumber}`;
+      num = Number(string.slice(Math.round(string.length/2), Math.round(string.length/2 + (`${someMax}`.length))));
+      
+      function checkMax() {
+        if(num>someMax) {
+          num = checkMinus(checkNull(num, true)) - checkMinus(checkNull(someMax, true));
+          checkMax()}} checkMax();
+      
+      num = Math.round(checkMinus(num));
+      
+      if(chanceNull) {
+        function one() {num = num-num};
+        function two() {num = num};
+
+        chanceBetween(7, one, two, pseudoRandomNumber(0, 100, n, m, arr, null, null, false, false, false));
+      };
+      
+      if(chanceMax) {
+        let minusNumber;
+        function three() {return minusNumber = Math.round(Math.random()*10)};
+        function four() {return minusNumber = 0};
+        chanceBetween(40, three, four, pseudoRandomNumber(0, 100, n, m, arr, null, null, false, false, false));
+
+        function one_() {num=max - minusNumber};
+        function two_() {num=num};
+        chanceBetween(10, one_, two_, pseudoRandomNumber(0, 100, n, m, arr, null, null, false, false, false));
+      };
+
+      if(history) num = historyRandom(num, min, max, arr, n, m, false);
+      if(num===NaN || num===null) num = pseudoRandomNumber(min, max, n, m, arr, null, null, false, true, true); num = checkMinus(num);
+      if(yourArr && array && history) num = historyPseudoRandomNumber(min, max, n, m, arr, yourArr, array, num);
+
+      return num;
   };
+
+  function checkStages(cO, cT, el, i, txt, stages) {
+    const someStage = stages[Object.keys(stages)[i]];
+
+    if ((el==1) || (cO==1 && cT!=1)) txt = `${txt} ${el} ${someStage[0]}`
+    else if ((cO==1 && cT==1) || (cO==0) || (cT==1)) txt = `${txt} ${el} ${someStage[1]}`
+    else if (cO<5) txt = `${txt} ${el} ${someStage[2]}`
+    else txt = `${txt} ${el} ${someStage[1]}`;
+    
+    return txt;
+  };
+
+  function checkNumber(num, i, stages) {
+    const txt = `${num}`;
+    const cO = txt[txt.length-1];
+    const cT = txt[txt.length-2];
+    let someStage;
+    if(typeof(i)===('number'||!'string')) someStage = stages[Object.keys(stages)[i]];
+    else eval(`someStage = stages.${i}`);
+
+    if ((num==1) || (cO==1 && cT!=1)) return `${someStage[0]}`
+    else if ((cO==1 && cT==1) || (cO==0) || (cT==1)) return `${someStage[1]}`
+    else if (cO<5) return `${someStage[2]}`
+    else return `${someStage[1]}`;
+  };
+
+  /*  ------------------------------------------------- Доделать (Возможны ошибки) -------------------------------------------------  */
+
+  function calcNewYear() {
+    const year = 31536000 * 1000;
+    const month = 2419200 * 1000;
+    const day = 86400 * 1000;
+    const hour = 3600 * 1000;
+    const minute = 60 * 1000;
+    const second = 1 * 1000;
+    const milisecond = 1;
+
+    const now = new Date();
+    const newYear = new Date(Number(format(now, 'yyyy'))+1, 0, 1);
+
+    const timeNow = now.getTime();
+    const timeNewYear = newYear.getTime();
+    
+    const times = [year, month, day, hour, minute, second, milisecond];
+
+    const stages = {
+      years: ['Год', 'Лет', 'Года'],
+      months: ['Месяц', 'Месяцев', 'Месяца'],
+      days: ['День', 'Дней', 'Дня'],
+      hours: ['Час', 'Часов', 'Часа'],
+      minute: ['Минута', 'Минут', 'Минуты'],
+      seconds: ['Секунда', 'Секунд', 'Секунды'],
+      miliseconds: ['Милисекунда', 'Милисекунд', 'Милисекунды']
+    };
+
+    const someArr = [];
+    let calcDate;
+    calcDate = timeNewYear-timeNow;
+
+    function check(num) {
+      let arg = Math.floor(calcDate / num);
+      calcDate = calcDate % num;
+      return arg;
+    };
+
+    for (let i in times) { someArr.push(check(times[i]))  };
+
+    let text = 'Осталось:';
+
+    for (let i in someArr) {
+      const el = someArr[i];
+      const elTxt = `${el}`;
+      const charOne = elTxt[elTxt.length-1];
+      const charTwo = elTxt[elTxt.length-2];
+
+      if(el!=0) text = checkStages(charOne, charTwo, el, i, text, stages)
+      else continue;
+    };
+
+    console.log(text)
+    return text;
+  };
+
+  function debug(arg, dev=true, log=true, trace=true, timeLog=false, th=false)
+  {
+    if(dev) {
+      if(log) console.log(arg);
+      if(trace) console.trace();
+      if(th) console.log(this);
+      if(timeLog) console.timeLog(arg);
+    } else {
+      console.log(arg);
+    }
+  }
+
+  function skip(value=1) {
+    try {
+      for (let i = 0; i < value; i++) {
+        console.log();
+      };
+    } catch (e) {
+      console.log();
+      console.log(e);
+      console.log();
+    }
+  };
+
+  function setRandomnessActivity(client) {  if(!client||!client.user) return;
+    const i = pseudoRandomNumber(0, randomActivity.length-1, undefined, undefined, undefined, null, false, true, true);
+    const randomAct = randomActivity[i][0];
+    const randomActType = randomActivity[i][1];
+    const numRandomActType = actType[randomActivity[i][1]?.type];
+
+    client.user.setActivity(`${randomAct}`, randomActType);
+
+    debug(`Рандомная активность: ${`${i}`.magenta} из "${`${randomActivity.length}`.bgMagenta}"`, false);
+    debug(`Активность изменена на: ${`${randomAct}`.magenta}, тип: "${`${numRandomActType}`.bgMagenta}"`, false);
+  }
+
+  function setRandomnessGuildActivity(client, guilds) {  if(!client||!client.user) return;
+
+    let rGuild = pseudoRandomNumber(0, guilds.length-1, 2, 1, randNumGuild)
+    function check() {
+      if(rGuild >= guilds.length) {
+        rGuild-=1;
+      check()}}; check();
+    const rGuildName = guilds[rGuild]?.name;
+    funcGuildTexts(rGuildName, guilds[rGuild].id);
+    const randNum = pseudoRandomNumber(0, guildTexts.length-1, undefined, undefined, undefined, null, false, true, true);
+    const text = guildTexts[randNum][0];
+    const textAct = guildTexts[randNum][1];
+    const textActType = guildTexts[randNum][2];
+    
+    client.user.setActivity(`${text}`, textAct);
+    debug(`Рандомный сервер: ${`${rGuildName}`.magenta} (${`${rGuild}`.magenta}) из "${[`${guilds.length}`.bgMagenta]}"`, false);
+    debug(`Активность изменена на: ${`${text}`.magenta} тип: "${`${textActType}`.bgMagenta}"`, false);
+  }
+
+  function setGuildsLengthActivity(client, guilds) { if(!client||!client.user) return;
+    let text = `Я уже на ${guilds.length}`
+    const stages = {
+      one: ['сервере', 'серверах', 'серверах']
+    };
+    
+    for(let i in stages) text = `${text} ${checkNumber(guilds.length, i, stages)}`;
+    debug(`Активность изменена на: ${`${text}`.magenta}, тип: ${`${actType[4]}`.bgMagenta}`, false);
+    client.user.setActivity(`${text}`, actTypes.cust);
+  }
+
+  function setRandomnessNameActivity(client) {  if(!client||!client.user) return;
+    let rn = pseudoRandomNumber(0, randomNames.length-1, 10, 20, randNumName);
+    
+    const rName = randomNames[rn];
+    texts = nameTexts(rName, texts, false);
+    const ranNumber = pseudoRandomNumber(0, texts.length-1, undefined, undefined, undefined, null, false, true, true);
+    
+    let text = texts[ranNumber];
+    
+    debug(`Рандомное число: ${`${rn}`.magenta} из "${`${randomNames.length}`.bgMagenta}"`, false);
+    debug(`Рандомное число: ${`${ranNumber}`.magenta} из "${`${texts.length}`.bgMagenta}"`, false);
+    debug(`Рандомное текст: ${`${text}`.magenta}`, false);
+    debug(`Активность изменена на: ${`${text}`.magenta}, тип: "${`${actType[4]}`.bgMagenta}"`, false);
+    client.user.setActivity(`${text}`, {type: ActivityType.Custom});
+  }
+
+  function functionRandomActivity(client, guilds) {if(!client||!client.user) return;
+    try { funcKristyAct(client)  }
+    catch(e) {  console.log(e);  };
+
+    try {
+      let rNum = pseudoRandomNumber(0, 100, 5, 4, randNum);
+  
+      debug(`Рандомное число: ${`${rNum}`.magenta} из "${`${100}`.bgMagenta}"`, false);
+    
+      if(rNum>=15) setRandomnessActivity(client);
+      else if(rNum<10) {
+        if(rNum>=5) setGuildsLengthActivity(client, guilds)
+        else setRandomnessGuildActivity(client, guilds);
+      } else setRandomnessNameActivity(client);
+      skip();
+    } catch (err) {
+
+      skip(2);
+      debug(err, true, this, true, true, true)
+      skip(2);
+
+      client.user.setActivity('Произошла ошибка при смене активности.', {type: ActivityType.Custom});
+    }
+  };
+
+	function dateCheck(date, guild) {
+    if(guild!=undefined||guild!=null){
+		dateForm = new Date(date);
+		dateForm = format(dateForm, `dd.MM.yyyy HH:mm:ss`);
+		return dateForm
+    } else return;
+	};
+
+  function shuffle(array) {
+  let currentIndex = array.length,  randomIndex;
+
+  while (currentIndex > 0) {
+
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+  };
+
+    
+  async function sendLogMsg(m) {
+  if(m.author.bot) return; if(!m.mentions) return; if(m.author.id==='877154902244216852') return; if(!getBotReply()) return; if(!m.mentions.users.has('877154902244216852')) return;
+  
+  const message = readReplyTxt()
+  const fock = await m.client.users.cache.get('877154902244216852');
+  const timestamp = Date.now();
+
+  console.log(
+  	`\n----------------- Вам написали сообщение ! ----------------- \nКонтент: ${m.content}\nАвтор: ${m.author.username} (${m.author.globalName}) - ${m.author.id}\
+  	\nВ чате: ${m.channel?.name} (${m.channel?.url})\nНа сервере: ${m.guild?.name||'Не на сервере'}\
+  	\nВремя: ${dateCheck(timestamp, m.guild?.name)||'Не на сервере'}\n`
+  	);
+
+  const embed = new EmbedBuilder()
+  	.setColor(Number(color))
+  	.setAuthor({name: `${m.author?.globalName||m.author?.username}`, iconURL:`${m.author?.avatarURL()}`})
+  	.setTitle('Сообщение:')
+  	.setDescription(`${m.content}`)
+  	.setTimestamp()
+  	.setThumbnail(`${m.author.avatarURL()}`)
+  	.setFields(
+  		{name:`Чат:`, value:`[${m.channel.name}](<${m.channel.url}>)`, inline:true},
+  		{name:`Автор:`, value:`${m.author}`,inline:true},
+  		{name:`Время`, value:`${dateCheck(timestamp, m.guild?.name)}`, inline:true}
+  	)
+  	.setFooter({text:`${m.guild?.name}`, iconURL:`${m.guild.iconURL()}`})
+    try {
+
+    fock.send({content:`<@877154902244216852> Вам написали сообщение !`, embeds:[embed]})
+
+    setTimeout(() => {
+      m.author.send({
+        content: `<@${m.author.id}> ${message}`
+      })
+    }, 5000);
+  } catch (e) {
+    console.log(e);
+  }
+  };
+
+  function sendMsgLogs(m, reason, m2) {
+  let attachmentName;
+  let attachmentUrl;
+  let attachmentProxyUrl;
+  let color;
+
+  m.attachments.forEach(attachment => {
+      attachmentName = attachment.name
+      attachmentUrl = attachment.url
+      attachmentProxyUrl = attachment.proxyURL
+  });
+  
+  switch (reason) {
+    case "send":
+      reason = "отправлено";
+      color = "#7fdf7f";
+      break;
+  
+    case "update":
+      reason = "обновлено";
+      color = "#7f7f7f";
+      break;
+  
+    case "delete":
+      reason = "удалено";
+      color = "#df7f7f";
+      break;
+  
+    default:
+      reason = "||`{ошибка в коде}`||"
+      color = "#7f7f7f"
+      break;
+  }
+  
+  if (m.author.bot) return;
+  
+  let msg;
+  let msgAdd;
+  let msg2;
+  let msg2Add;
+    
+  if(m.content.length>=1000) {
+      msg = m.content.slice(0, 1000);
+      msgAdd = m.content.slice(1000, m.content.length);
+  } else {
+      msg = m.content.slice(0, m.content.length);
+  }
+  if(m2) {
+      if(m2.content.length>=1000) {
+          msg2 = m2.content.slice(0, 1000);
+          msg2Add = m2.content.slice(1000, m2.content.length);
+      } else {
+          msg2 = m2.content.slice(0, m2.content.length);
+      }
+  }
+    
+  const fields = [
+      {
+        name: `${m2 ? "Старое с" : "С"}одержание`,
+        value: `\`\`\`${msg ? msg
+          .replaceAll("```", "<code>")
+          .replaceAll("`", "\"")
+          :
+          "<Пусто>"
+          }\`\`\``,
+        inline: false,
+      },
+    ];
+    if (m.attachments.size > 0) {
+      fields.push({
+        name: `${m2 ? "Старые в" : "В"}ложения`,
+        value: m.attachments
+          .map((att) => `\`\`\`${att.url}\`\`\``)
+          .join(`\n&&\n`),
+        inline: false,
+      });
+    }
+  
+    if (m2) {
+      fields.push({
+        name: "Новое содержание",
+        value: `\`\`\`${msg2 ? msg2
+          .replaceAll("```", "<code>")
+          .replaceAll("`", "\"")
+          :
+          "<Пусто>"
+          }\`\`\``,
+        inline: false,
+      });
+      if (m2.attachments.size > 0) {
+        fields.push({
+          name: "Новые вложения",
+          value: `${m2.attachments
+            .map((att) => `\`\`\`${att.url}\`\`\``)
+            .join(`\n&&\n`)}`,
+          inline: false,
+        });
+      }
+    }
+    if(msgAdd) {
+      fields.push({
+          name: "Дополнительное содержание",
+          value: `\`\`\`${msgAdd ? msgAdd
+              .replaceAll("```", "<code>")
+              .replaceAll("`", "\"")
+              :
+              "<Пусто>"
+          }\`\`\``,
+          inline: false
+      })
+    }
+    if(msg2Add) {
+      fields.push({
+          name: "Дополнительное содержание",
+          value: `\`\`\`${msg2Add ? msg2Add
+              .replaceAll("```", "<code>")
+              .replaceAll("`", "\"")
+              :
+              "<Пусто>"
+          }\`\`\``,
+          inline: false
+      })
+    }
+    
+    try {
+      (m.client.channels.cache.get(logChannelId)).send({
+          embeds: [new EmbedBuilder()
+            .setColor(color)
+            .setAuthor({
+              name: `${m.author.username} (${m.author.id})`,
+              iconURL: m.author.avatarURL() ? m.author.avatarURL() : m.author.defaultAvatarURL
+            })
+            .setTitle(`${m.client.guilds.cache.get(logGuildId)?.name}`)
+            .setDescription(
+              `**[Сообщение](${m.url})** было ${reason} от ${m.author} (${m.url})\n
+              **На сервере:** ${m.guild}\n**Id сервера: **${m.guildId}\n
+              **В канале:** **[${m.channel.name}](${m.channel.url})** (${m.channel.url})`
+              )
+            .setThumbnail(m.guild?.iconURL())
+            .setTimestamp()
+            .addFields(fields)
+          ]
+        });
+    } catch (error) {
+      console.log(error)
+    }
+  };
+
+module.exports = {
+  Tags,
+  developEmbed,
+  textbool,
+  actTypes,
+  botSaying,
+  jokes,
+  randomActivity,
+  arrKristyAct,
+  funcKristyAct,
+  funcGuildTexts,
+  nameTexts,
+  historyRandom,
+  randomNames,
+  randomText,
+  functionRandomActivity,
+  dateCheck,
+  objectIdeas,
+  download,
+  shuffle,
+  sendMsgLogs,
+  allActivities,
+  randomActivities,
+  actLengths,
+  actLength,
+  checkMinus,
+  pseudoRandomNumber,
+  setDevelop, getDevelop,
+  setBotReply, getBotReply,
+  sendLogMsg,
+  changeReplyTxt, readReplyTxt,
+  calcNewYear, checkStages, checkNumber,
+  downloadActivities
+};

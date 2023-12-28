@@ -8,10 +8,9 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
         .setNameLocalizations({ru:'тест',"en-US":'test'})
         .setDescriptionLocalizations({ru:'Тестовая команда',"en-US":'Test command'}),
         async execute(interaction) {
-
         
         // interaction.member.send({content: `Test message?`})
-        
+
         await interaction.reply({
 		content: `Test message?`,
 		ephemeral: true});

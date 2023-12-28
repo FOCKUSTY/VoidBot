@@ -35,8 +35,7 @@ module.exports = {
         });
 
         const con = getVoiceConnection(vs.guild.id);
-        if(con===undefined) {
-        } else {
+        if(con===undefined) {} else {
             player.on(AudioPlayerStatus.Idle, () => {
               if (vs.member.id===TheVoid) return;
               player.stop()

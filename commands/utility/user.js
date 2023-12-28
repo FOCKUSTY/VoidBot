@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, time } = require('discord.js');
-const { iconURL } = require(`../../developing.json`)
+const { getDevelop } = require('../../developing');
 
 module.exports = {
 	cooldown: 5,
@@ -21,6 +21,7 @@ module.exports = {
 		.setNameLocalizations({ru:'участник',"en-US":'member'})
 		.setDescriptionLocalizations({ru:'Участник на сервере',"en-US":'Member on guild'})),
 	async execute(interaction) {
+		const iconURL = getDevelop('iconURL');
 		const int = interaction
 		if(int.guild!=null && int.guild!=undefined) {
 			let userO = int.user
