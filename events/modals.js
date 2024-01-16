@@ -10,11 +10,18 @@ let channel,
     bool,
     versionUpdate;
 
-async function setChannel(option, interaction) {
+async function setChannel(option, interaction)
+{
 	channel = await interaction.client.channels.fetch(option?.id);
 };
-function setBool(option) { bool = option };
-function setVersionUpdate(version) {
+
+function setBool(option)
+{
+    bool = option
+};
+
+function setVersionUpdate(version) 
+{
     versionUpdate = `\n# Версия: ${version}`
 };
 
@@ -126,10 +133,13 @@ async function modalSubmit(int) {
 
     /*  ----------------------------------------------------- updateModal -----------------------------------------------------  */
 
-		} else if(int.customId==='updateModal') {
+		}
+        else if(int.customId==='updateModal')
+        {
 		const msg = `${int.fields.getTextInputValue('message')} ${versionUpdate}`;
 
-        if(bool) {
+        if(bool)
+        {
             const embed = new EmbedBuilder()
             .setColor(0x161618)
             .setAuthor({name: `${int?.user?.globalName||int?.user?.username}`, iconURL: `${int.user.avatarURL()}` })
@@ -138,7 +148,9 @@ async function modalSubmit(int) {
             .setTimestamp()
 
             channel.send({embeds:[embed]})
-        } else {
+        }
+        else
+        {
             channel.send(`${msg.replaceAll(`\\n`, `\n`)}`)
         }
         

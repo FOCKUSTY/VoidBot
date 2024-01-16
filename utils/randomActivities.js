@@ -39,6 +39,7 @@ let
   kristyAct = false,
   randomActivityHistory = [],
   randNum = [],
+  randNumName = [],
   randNumGuild = [],
   guildTexts = [];
 

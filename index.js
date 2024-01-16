@@ -86,12 +86,13 @@ for (const file of eventFiles) {
 	}
 }
 
+client.on(Events.InteractionCreate, async int => modalSubmit(int) );
+
 /* client.on(Events.MessageCreate, (m) => sendMsgLogs(m, "send"));
 client.on(Events.MessageUpdate, (m, nm) => sendMsgLogs(m, "update", nm));
 client.on(Events.MessageDelete, (m) => sendMsgLogs(m, "delete"));
 client.on(Events.MessageCreate, async (m) => sendLogMsg(m))
 
-client.on(Events.InteractionCreate, async int => modalSubmit(int) );
  */
 /* let bool = false;
 let bool_com = false;
