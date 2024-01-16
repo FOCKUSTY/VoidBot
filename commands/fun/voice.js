@@ -1,17 +1,29 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { joinVoiceChannel, getVoiceConnection, AudioPlayerStatus, createAudioResource, createAudioPlayer, NoSubscriberBehavior } = require('@discordjs/voice');
-const { getDevelop, pseudoRandomNumber } = require(`../../developing`);
-const path = require('path');
-const fs = require('node:fs');
-const { Random } = require("random-js");
-const random = new Random();
-const musicHistory = [];
+const
+    { SlashCommandBuilder } = require('discord.js'),
+    {
+        joinVoiceChannel,
+        getVoiceConnection,
+        AudioPlayerStatus,
+        createAudioResource,
+        createAudioPlayer,
+        NoSubscriberBehavior
+    } = require('@discordjs/voice'),
+    
+    { pseudoRandomNumber } = require('../../utils/pseudoRandom'),
+    { getDevelop } = require('../../utils/develop'),
+    { setGMPlaying } = require('../../utils/music'),
 
-const player = createAudioPlayer({
-    behaviors: {
-      noSubscriber: NoSubscriberBehavior.Pause,
-    },
-});
+    path = require('path'),
+    fs = require('node:fs'),
+
+    musicHistory = [],
+
+    player = createAudioPlayer({
+        behaviors:
+        {
+            noSubscriber: NoSubscriberBehavior.Pause,
+        },
+    });
 
 module.exports = {
     cooldown: 5,
@@ -20,82 +32,101 @@ module.exports = {
 	.setDescription('Присоединиться в голосовой канал !')
     .setNameLocalizations({ru:'голосовой',"en-US":'voice'})
     .setDescriptionLocalizations({ru:'Присоединиться в голосовой канал',"en-US":'Join voice channel'})
-    .addSubcommand(subcommand =>
-        subcommand
-        .setName(`play`)
-        .setDescription(`Проиграть музыку`)
-        .setNameLocalizations({ru:'возпроизвести',"en-US":'play'})
-        .setDescriptionLocalizations({ru:'Проиграть музыку',"en-US":'Play music'}))
-    .addSubcommand(subcommand =>
-        subcommand
-        .setName(`disconnect`)
-        .setDescription(`Выйти из голосового канала`)
-        .setNameLocalizations({ru:'отсоединиться',"en-US":'disconnect'})
-        .setDescriptionLocalizations({ru:'Выйти из голосового канала',"en-US":'Exit voice channel'})),
+    .addSubcommand(s =>s.setName(`play`).setDescription(`Проиграть музыку`)
+        .setNameLocalizations({ru:'возпроизвести',"en-US":'play'}).setDescriptionLocalizations({ru:'Проиграть музыку',"en-US":'Play music'})
+        
+        // .addStringOption(o=>o.setName('link').setDescription('Ссылка на музыку')
+        //     .setNameLocalizations({ru:'ссылка',"en-US":'link'}).setDescriptionLocalizations({ru:'Ссылка на музыку',"en-US":'Link to music'}))
+
+        .addBooleanOption(o=>o.setName('repeat').setDescription('Повторять ?')
+            .setNameLocalizations({ru:'повторение',"en-US":'repeat'}).setDescriptionLocalizations({ru:'Повторять ?',"en-US":"Repeat ?"}))
+        
+        .addIntegerOption(o=>o.setName('count-repeat').setDescription('Количество повторений')
+            .setNameLocalizations({ru:'кол-во-повторений'}).setDescriptionLocalizations({ru:'Количество повторений',"en-US":'Repeat count'})))
+    .addSubcommand(s =>s.setName(`disconnect`).setDescription(`Выйти из голосового канала`)
+        .setNameLocalizations({ru:'отсоединиться',"en-US":'disconnect'}).setDescriptionLocalizations({ru:'Выйти из голосового канала',"en-US":'Exit voice channel'})),
     async execute(interaction) {
-        const developEmbed = getDevelop('developEmbed');
 
-        const musics = []
+        const
+            formatFiles = [".mpeg", ".mp3", ".mp4", ".opus", '.weba', '.m4a'],
+            musicsPath = path.join(__dirname, '../../../voidMusic/music'),
+            developEmbed = getDevelop('developEmbed'),
+            musics = [],
+            
+            int = interaction,
+            user = int.user,
+            member = interaction.guild?.members.cache.get(user.id),
+            voice = member?.voice;
 
-        const formatFiles = [".mpeg", ".mp3", ".mp4", ".opus", '.weba']
-        const musicsPath = path.join(__dirname, '../../../voidMusic/music');
-        for (let i = 0; i < formatFiles.length; i++) {
-            fs.readdirSync(musicsPath).filter(file => file.endsWith(formatFiles[i])).forEach(e => {
-            musics.push(e);
-        })}
-
-        // const music = random.integer(0, musics.length-1);
-        const music = pseudoRandomNumber(0, musics.length-1, 4, 1, musicHistory);
-        const int = interaction;
-        const user = int.user;
-        const member = interaction.guild?.members.cache.get(user.id);
-        const voice = member?.voice;
-
+        function check()
+        {
+            musics.length = 0;
+            for (let i = 0; i < formatFiles.length; i++)
+            {
+                fs.readdirSync(musicsPath).filter(file => file.endsWith(formatFiles[i])).forEach(e => {
+                musics.push(e);
+            })};
+        };
+        
         if(int.options.getSubcommand()  === `disconnect`)
         {
             const connection = getVoiceConnection(voice.guild.id);
-            if(connection===undefined) {
-                await int.reply({content: `Нет подключения к голосовому каналу`, ephemeral: true})
-            } else {
+            if(connection===undefined) await int.reply({content: `Нет подключения к голосовому каналу`, ephemeral: true})
+            else
+            {
                 player.on(AudioPlayerStatus.Idle, () => {player.stop()});
                 connection.disconnect();
-                await int.reply({content: `Успешно отключено от голосового канала`, ephemeral: true});
+                await int.reply({ content: `Успешно отключено от голосового канала`, ephemeral: true });
             };
         }
 
         else if(int.options.getSubcommand() === `play`)
         {
-            const channel = interaction?.member.voice.channelId
-            if (!channel) {
-                interaction.reply({content: 'Вы не находитесь в голосовом канале', ephemeral: true});
-            } else {
-            
-            console.log(`Сейчас играет: `+`${musics[music]}`.cyan+` (Индекс: `+`${music}`.red+`)`+`\n`)
+            const repeat = int.options.getBoolean('repeat');
+            const repeatCount = int.options.getInteger('count-repeat');
+            const channel = interaction?.member.voice.channelId;
+            // const link = int.options.getString('link');
 
-            const connection = joinVoiceChannel({
-                channelId: voice.channel.id,
-                guildId: voice.channel.guild.id,
-                adapterCreator: voice.channel.guild.voiceAdapterCreator,
-            });
+            if (!channel) interaction.reply({ content: 'Вы не находитесь в голосовом канале', ephemeral: true });
+            else {
 
-            player.play(createAudioResource(path.join(`${musicsPath}\\${musics[music]}`)));
-            // player.play(createAudioResource(path.join(`../../sounds/nea.mp3`)));
+                const connection = joinVoiceChannel({
+                    channelId: voice.channel.id,
+                    guildId: voice.channel.guild.id,
+                    adapterCreator: voice.channel.guild.voiceAdapterCreator,
+                });
+                let count = 0;
+                
+                    const play = () => {
 
-            connection.subscribe(player);
+                        if(count===0 || !(count%5)) check();
+                        
+                        setGMPlaying(`${int.guild.name}`, true);
+                        count+=1;
 
-            player.on('error', error => {
-                console.error('Error:', error.message, 'with track', error.resource.metadata.title);
-            });
-
-            player.on(AudioPlayerStatus.Idle, () => {
-                player.stop()
-                connection.disconnect();
-            });
-            
-            await int.reply({
-                embeds: [developEmbed],
-                ephemeral: true
-        });
+                        const music = pseudoRandomNumber(0, musics.length-1, 4, 3, musicHistory, null, null, true, true, true);
+                        console.log(`Сейчас играет: `+`${musics[music]}`.cyan+` (Индекс: `+`${music} из ${musics.length}`.red+`)\nНа сервере ${int.guild.name}\n`);
+                        player.play(createAudioResource(path.join(`${musicsPath}\\${musics[music]}`)));
+                        // player.play(createAudioResource(path.join(`../../../VoidMusic/sounds/nea.mp3`)));
+        
+                        connection.subscribe(player);
+    
+                    };
+    
+                    player.on('error', error => { console.error('Error:', error.message, 'with track', error.resource.metadata.title) });
+    
+                    player.on(AudioPlayerStatus.Idle, () => {
+                        player.stop();
+                        if(repeat && repeatCount>count) play()
+                        else 
+                        {
+                            connection.disconnect();
+                            setGMPlaying(`${int.guild.name}`, false);
+                        }
+                    });
+    
+                    play();
+                    await int.reply({ embeds: [developEmbed],ephemeral: true });
         }}
     }
 };

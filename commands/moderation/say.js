@@ -1,13 +1,18 @@
-const {
-    SlashCommandBuilder, PermissionFlagsBits,
-    ChannelType, PermissionsBitField,
-    EmbedBuilder, TextInputStyle,
-    TextInputBuilder, ActionRowBuilder, ModalBuilder
-} = require('discord.js');
-const { setChannel, setBool } = require('../../events/modals')
-const { color, authorName, iconURL } = require(`../../developing.json`)
+const
+    {
+        SlashCommandBuilder,
+        PermissionFlagsBits,
+        ChannelType,
+        TextInputStyle,
+        TextInputBuilder,
+        ActionRowBuilder,
+        ModalBuilder
+    } = require('discord.js'),
 
-module.exports = {
+    { setChannel, setBool } = require('../../events/modals')
+
+module.exports =
+{
     cooldown: 5,
     data: new SlashCommandBuilder()
     .setName('say')
@@ -28,14 +33,15 @@ module.exports = {
         .setName(`embed`).setDescription('Сообщение в виде embed? (Вложенный текст)').setRequired(true)
         .setNameLocalizations({ru:'вложение',"en-US":'embed'})
         .setDescriptionLocalizations({ru:'embed сообщение? (Вложенный текст)',"en-US":'embed message?'})),
-    async execute(interaction) {
+    async execute(interaction)
+    {
 
         const int = interaction;
         const channel = int.options.getChannel('channel')
         const bool = int.options.getBoolean('embed');
     
         setChannel(channel, int);
-        setBool(bool)
+        setBool(bool);
 
     const modal = new ModalBuilder().setCustomId(`sayModal`).setTitle(`Ваше сообщение !`);
 

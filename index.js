@@ -3,17 +3,25 @@ const { Client, Collection, GatewayIntentBits, Events, InteractionType, EmbedBui
 } = require('discord.js');
 const { modalSubmit } = require('./events/modals')
 const { token } = require('./config.json');
-const { color } = require('./developing.json')
-const { Tags, sendMsgLogs, randomText, textbool, getBotReply, dateCheck, sendLogMsg } = require(`./developing`)
-const { jsonRecordedMessage } = require('../../VoidDataBase/data.json')
+const { color, bold } = require('colors')
+/* const {
+	Tags,
+	sendMsgLogs,
+	randomText,
+	textbool,
+	getBotReply,
+	dateCheck, checkDate,
+	sendLogMsg
+} = require(`./developing`) */
 const { Random } = require('random-js')
 const fs = require('node:fs');
 const path = require('node:path');
 const r = new Random();
 const actH = [];
-const actType = [`Играет в `, `Стримит `, `Слушает `, `Смотрит `, ``, `Соревнуется в `]
+/* const actType = [`Играет в `, `Стримит `, `Слушает `, `Смотрит `, ``, `Соревнуется в `]
 const guilds = [];
-const history = [];
+const history = []; */
+let using = 0;
 
 const client = new Client({
 	intents: [
@@ -30,6 +38,7 @@ client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
+console.log(`Мои команды:`.bold)
 for (const folder of commandFolders) {
 	const commandsPath = path.join(foldersPath, folder);
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
@@ -37,7 +46,27 @@ for (const folder of commandFolders) {
 		const filePath = path.join(commandsPath, file);
 		const command = require(filePath);
 		if ('data' in command && 'execute' in command) {
+			const options = command.data.options;
+			const name = command.data.name;
+			let subcommands = [];
+			let spaces = '';
+			let text = `Команда ${`${command.data.name}`.magenta}`;
+			if(options.length!=0)
+			{
+				text = `Команда ${`${command.data.name}`.cyan}`
+				for(let i=0; i<12 - name.length-1; i++) spaces += ' ';
+				subcommands.push(`${spaces} Опции:`);
+				for(let key in command.data.options)
+				{
+					using+=1
+					subcommands.push(`${`${options[key].name}`.cyan}`);
+					if(using <= options.length-1) subcommands.push("|");
+				}; using = 0;
+			};
+			
 			client.commands.set(command.data.name, command);
+			subcommands.unshift(text);
+			if(subcommands.length!=0) console.log(`${subcommands.join(' ')}`);
 		} else {
 			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
 		}
@@ -57,27 +86,22 @@ for (const file of eventFiles) {
 	}
 }
 
-client.on(Events.MessageCreate, (m) => sendMsgLogs(m, "send"));
+/* client.on(Events.MessageCreate, (m) => sendMsgLogs(m, "send"));
 client.on(Events.MessageUpdate, (m, nm) => sendMsgLogs(m, "update", nm));
 client.on(Events.MessageDelete, (m) => sendMsgLogs(m, "delete"));
 client.on(Events.MessageCreate, async (m) => sendLogMsg(m))
 
 client.on(Events.InteractionCreate, async int => modalSubmit(int) );
-
-let bool = false;
+ */
+/* let bool = false;
 let bool_com = false;
-let count = 0;
+let count = 0; */
 
-async function chatting(m, text) {
+/* async function chatting(m, text) {
 	setTimeout(async () => {
-		await m.client.channels.cache.get(m.channel.id).send({
-			content: `${text}`,
-			reply: {
-				messageReference: m
-			}
-		});
+		await m.reply(`${text}`);
 		count = 0;
-		bool_com = textbool(false)
+		bool_com = textbool(false);
 	}, 2000);
 };
 
@@ -110,6 +134,6 @@ client.on(Events.MessageCreate, async (m) => {
 
 		chatting(m, text);
 	}
-)
+) */
 
 client.login(token)

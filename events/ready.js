@@ -1,67 +1,61 @@
-const { Events, ActivityType, ActivityFlags, ActivityPlatform, GatewayActivityButton } = require('discord.js');
-const { Color, color, bold } = require(`colors`);
-const {
-	randomActivity, functionRandomActivity,
-	actLengths, actLength, downloadActivities,
-	pseudoRandomNumber, setDevelop, Tags, download, getDevelop, calcNewYear
-} = require(`../developing`);
-const guilds = [];
-/* const history = [];
-const historyMany = []; */
+const
+	{ Events, ActivityType } = require('discord.js'),
+	{ Color, color, bold } = require(`colors`),
+	{ functionRandomActivity } = require('../utils/randomActivities'),
+	{ getActivities, downloadActivities } = require('../utils/updateActivities'),
+	{ setGMPlaying } = require('../utils/music'),
+	{ setDevelopClient, setDevelop } = require('../utils/develop'),
+	{ Tags } = require('../utils/tags'),
+	
+	guilds = [];
 
-let actDownload = 0;
-
-module.exports = {
+module.exports =
+{
 	name: Events.ClientReady,
 	once: true,
-	async execute(client) {
+	async execute(client)
+	{
 
 		Tags.sync();
-		setDevelop(client)
+		setDevelop(client);
+
 		client.user.setPresence({activities: [{ name: 'The Void' }], status: 'idle'}); 
 		client.user.setActivity('The Void Community~', {type: ActivityType.Playing});
-		client.guilds.cache.forEach(guild => {
-			guilds.push(guild)
-		});
-		let BottomlessHatGuild = await client.guilds.cache.get('1053295032762908782');
-		BottomlessHatGuild.setName(`Bottomless Hat - ${calcNewYear()} !`)
+		
+		client.guilds.cache.forEach(guild => {	guilds.push(guild)	});
+		
+		setGMPlaying(client);
+		setDevelopClient(client);
+		
+		try
+		{			
+			setTimeout(() =>
+			{
+				downloadActivities();
 
-/* 		for(let i = 0; i < 300; i++) {
-			console.log(`${i} - 0`, pseudoRandomNumber(0, 100, 3, 2, history));
-			console.log();
-			console.log(`${i} - 1`, pseudoRandomNumber(5123, 62632, 10, 10, historyMany));
-		} */
+				const randomActivity = getActivities('randomActivity')
 
+				console.log(`Рандомные активности:`.bold + `\n`);
+				for ( let el of randomActivity )
+				{
+					console.log(`${el[0]}`.magenta + ` - ${`${randomActivity.indexOf(el)}`.bold}`);
+				};
 
-		setTimeout(() => { downloadActivities();
-			console.log(`Рандомные активности:`.bold + `\n`);
-			for (e of randomActivity) {
-				console.log(`${e[0]}`.magenta + ` - ${`${randomActivity.indexOf(e)}`.bold}`);
-			};
-			console.log()
-
-			console.log(`Всего ${`${actLength()}`.magenta} Активность(и)(ей)`);
-			actDownload+=actLength();
-			for(el of actLengths) {
-				console.log(`Всего ${`${el[0]}`.magenta} ${el[1]}`);
-				actDownload += Number(el[0]);
-			};
-
-			console.log(`Всего загружено: ${`${actDownload}`.magenta} разных(ые) активности(ей)`);
-			console.log();
-	
-			console.log(`Готово!`.bold +` `+`The Void`.bgCyan.black+` готов к работе, как `+`${client.user.tag}`.red.bold+`\n`);
-	
-			functionRandomActivity(client, guilds);
-
-			setInterval(async () => {
-				BottomlessHatGuild.setName(`Bottomless Hat - ${calcNewYear()} !`)
-			}, 148000);
-
-			setInterval(() => {
+				console.log();
+		
+				console.log(`Готово!`.bold +` `+`The Void`.bgCyan.black+` готов к работе, как `+`${client.user.tag}`.red.bold+`\n`);
+		
 				functionRandomActivity(client, guilds);
-			}, 60000);
-		}, 5000);
+				
+				setInterval(() => {
+					functionRandomActivity(client, guilds);
+				}, 75000);
+			}, 5000);
+		}
+		catch (er)
+		{
+			console.log(er)
+		}
 
 	},
 };

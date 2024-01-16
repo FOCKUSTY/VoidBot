@@ -1,5 +1,5 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const clientGuilds = [];
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js'),
+     clientGuilds = [];
 
     module.exports = {
         cooldown: 5,

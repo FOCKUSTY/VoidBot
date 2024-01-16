@@ -1,32 +1,34 @@
-const {
-    SlashCommandBuilder,
-    EmbedBuilder,
-    PermissionFlagsBits,
-    PermissionsBitField,
-    TextInputBuilder, 
-    ActionRowBuilder, TextInputStyle,
-    addComponents, ModalBuilder
-} = require('discord.js');
-const { color, authorName, iconURL, } = require(`../../developing.json`);
-const { setChannel,setBool } = require('../../events/modals');
+const
+    {
+        SlashCommandBuilder,
+        PermissionsBitField,
+        TextInputBuilder, 
+        ActionRowBuilder,
+        TextInputStyle,
+        ModalBuilder
+    } = require('discord.js'),
 
-    module.exports = {
-        cooldown: 5,
-        data: new SlashCommandBuilder()
-		.setName('serversay')
-		.setDescription('Сообщение с помощью бота!')
-        .addStringOption(o =>o.setName(`channel`).setDescription(`Id канала на который вы хотите отправить сообщение`).setRequired(true))
-        .addBooleanOption(o=>o.setName(`embed`).setDescription('Сообщение в виде embed? (Вложенный текст)').setRequired(true)),
-        async execute(interaction) {
+    { setChannel,setBool } = require('../../events/modals');
+
+module.exports =
+{
+    cooldown: 5,
+    data: new SlashCommandBuilder()
+	.setName('serversay')
+	.setDescription('Сообщение с помощью бота!')
+    .addStringOption(o =>o.setName(`channel`).setDescription(`Id канала на который вы хотите отправить сообщение`).setRequired(true))
+    .addBooleanOption(o=>o.setName(`embed`).setDescription('Сообщение в виде embed? (Вложенный текст)').setRequired(true)),
+    async execute(interaction)
+    {
 
         const int = interaction;
         const client = int.client;
         const channelId = int.options.getString(`channel`);
         const bool = int.options.getBoolean('embed');
-        const channel = client?.channels.cache.get(channelId)
+        const channel = client?.channels.cache.get(channelId);
     
         setChannel(channel, int);
-        setBool(bool)
+        setBool(bool);
 
         if(!(channel.permissionsFor(interaction.client.user.id).has([PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel]))) {
             await int.reply({

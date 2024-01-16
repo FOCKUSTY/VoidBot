@@ -1,13 +1,15 @@
 const { SlashCommandBuilder, EmbedBuilder, time } = require('discord.js');
-let verLevel = [
+let verLevel =
+[
 	`Нет`,
 	`Маленький`,
 	`Средний`,
 	`Высокий`,
 	`Серьезный`,
-]
+];
 
-module.exports = {
+module.exports =
+{
 	cooldown: 5,
 	data: new SlashCommandBuilder()
 		.setName('server')

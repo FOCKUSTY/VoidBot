@@ -1,26 +1,30 @@
 const { SlashCommandBuilder } = require('discord.js');
 
-    module.exports = {
-        cooldown: 5,
-        data: new SlashCommandBuilder()
-		.setName('kill')
-		.setDescription('Убить бота !')
-        .setDescriptionLocalizations({ru:'убить','en-US':'kill'})
-        .setDescriptionLocalizations({ru:'Убить бота !',"en-US":'Kill the bot !'}),
-        async execute(interaction) {
-            const client = interaction.client;
+module.exports =
+{
+    cooldown: 5,
+    data: new SlashCommandBuilder()
+	.setName('sleep')
+	.setDescription('Отправить бота баиньки !')
+    .setDescriptionLocalizations({ru:'спать','en-US':'sleep'})
+    .setDescriptionLocalizations({ru:'Отправить бота баиньки !',"en-US":'Send the bot to sleep !'}),
+    async execute(interaction)
+    {
+        const client = interaction.client;
             
-        if(interaction.user.id === `877154902244216852`) {
+        if(interaction.user.id === `877154902244216852`)
+        {
             await interaction.reply({
             content: `Бот завершил работу!`,
             ephemeral: true
         })
 
-        console.log(`Бот сбит...`)
+        console.log(`Бот ложится спать...`)
             await client.destroy();
-            setTimeout(() => {
-                process.exit();}, 1000)
-        } else {
+            setTimeout(() => { process.exit() }, 1000)
+        }
+        else
+        {
             console.log(`Error: Недостаточно прав`)
             await interaction.reply({
                 content: `У Вас недостаточно прав`,
