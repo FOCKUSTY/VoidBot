@@ -1,7 +1,4 @@
-const
-{
-    format
-} = require('date-fns');
+const { format } = require('date-fns');
 
 let dateForm;
 

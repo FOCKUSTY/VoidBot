@@ -5,12 +5,12 @@ const debug = ( arr = [], dev = devDebug, isLog = false, isTrace = false, _this_
 {
   let arg = arr[0]
   
-  if(!Array.isArray(arr)) arg = arr
-  else {
+  if(!Array.isArray(arr) && ( arr[1] || devDebug ) ) arg = arr
+  else
+  {
     
     console.error(arg);
     console.trace(arg);
-    console.log(arr[2]);
     return;
 
   };

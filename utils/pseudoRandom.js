@@ -65,47 +65,46 @@ const historyPseudoRandomNumber = (min, max, n, m, arr, yourArr, array, num) =>
   return num;
 };
 
-const historyRandom = (num, min=0, max=100, arr, n=3, dOaF=1, pseudoRandom=false) =>
+const historyRandom = (num, min=0, max=100, array, n=3, dOaF=1, pseudoRandom=false) =>
 {
-    let
-      iMin,
-      iMax;
-  
-    function check()
+  let
+    iMin,
+    iMax;
+
+  function check()
+  {
+    for(let i of array)
     {
-      for(let i of arr)
+      iMin = i-dOaF;
+      iMax = i+dOaF;
+      if( num===i || ( num > iMin && num < iMax ) )
       {
-        iMin = i-dOaF;
-        iMax = i+dOaF;
-        if( num===i || ( num > iMin && num < iMax ) )
-        {
-          debug(`Область определения от ${ `${ iMin }`.magenta } до ${ `${ iMax }`.magenta }`);
-          debug(`Число: ${ `${ num }`.magenta }`);
-          
-          if( !pseudoRandom ) num = random.integer(min, max)
-          else num = pseudoRandomNumber(min, max, n, dOaF, arr, null, null, false, false, false);
-          
-          debug(`Новое число: ${ `${ num } `.magenta }`);
-          console.log();
-        };
+        debug(`Область определения от ${ `${ iMin }`.magenta } до ${ `${ iMax }`.magenta }`);
+        debug(`Число: ${ `${ num }`.magenta }`);
+        
+        if( !pseudoRandom ) num = random.integer(min, max)
+        else num = pseudoRandomNumber(min, max, n, dOaF, array, null, null, false, false, false);
+        
+        debug(`Новое число: ${ `${ num } `.magenta }`);
+        console.log();
       };
     };
-  
-    for (let {} of arr) check();
-    check();
+  };
 
-    arr.push( num );
-  
-    if(arr.length > n)
-    {
-      arr.shift();
-      arr.shift();
-    };
-  
-    return num;
+  for (let {} of array) check();
+  check();
+  array.push( num );
+
+  if(array.length > n)
+  {
+    array.shift();
+    array.shift();
+  };
+
+  return num;
 };
 
-function pseudoRandomNumber(min=0, max=100, n=3, m=2, arr=historyArray, yourArr=null, array=null, history=true, chanceNull=true, chanceMax=true)
+/* function pseudoRandomNumber(min=0, max=100, n=3, m=2, arr=historyArray, yourArr=null, array=null, history=true, chanceNull=true, chanceMax=true)
 {
 
     someMin = checkMinus( checkNull( min, false )  );
@@ -147,12 +146,13 @@ function pseudoRandomNumber(min=0, max=100, n=3, m=2, arr=historyArray, yourArr=
     
     function checkMax()
     {
-        if(num > someMax)
-        {
-            num = checkMinus( checkNull( num, true ) ) - checkMinus( checkNull ( someMax, true ) );
-            checkMax();
-        }
-    }
+      if(num > someMax)
+      {
+        num = checkMinus( checkNull( num, true ) ) - checkMinus( checkNull ( someMax, true ) );
+        checkMax();
+      }
+    };
+    
     checkMax();
     
     num = Math.round( checkMinus(num) );
@@ -195,11 +195,72 @@ function pseudoRandomNumber(min=0, max=100, n=3, m=2, arr=historyArray, yourArr=
     };
 
     if(history) num = historyRandom(num, min, max, arr, n, m, false);
-    if(num === (NaN || null)) num = pseudoRandomNumber(min, max, n, m, arr, null, null, false, true, true); num = checkMinus(num);
     if( yourArr && array && history ) num = historyPseudoRandomNumber(min, max, n, m, arr, yourArr, array, num);
+    
+    if(num === NaN || num === null || num === undefined)
+    {
+      num = pseudoRandomNumber(min, max, n, m, arr, null, null, false, true, true);
+      num = checkMinus(num);
+    };
 
     return num;
-};
+}; */
+
+function pseudoRandomNumber(min=0, max=100, n=3, m=2, historyArr=historyArray, yourArr, array, history=true, chanceNull=true, chanceMax=true)
+{
+  let
+    someMin,
+    someMax;
+  
+  if(min === max)
+  {
+    if(max===0) max +=100;
+    
+    min = 0;
+  };
+
+  const random = Math.round(Math.random()*1000);
+
+  if(min===0) someMin = min + 1;
+  else someMin = min;
+  someMax = max * random;
+
+  const
+    randomNumber = ( someMin * someMax + ((someMax - someMin) * someMax) + random**2 ) + (random * random * (someMax ** 2)),
+    text = `${randomNumber}`,
+    maxLength = `${max}`.length,
+    minLength = `${min}`.length;
+
+  let number = Number( text.slice( Math.round(text.length/2), Math.round(text.length/2+maxLength) ) );
+
+  function checkMax()
+  {
+    if(number > max)
+    {
+      console.log(number)
+      number = checkMinus( checkNull( number, true ) ) - checkMinus( checkNull ( max, true ) );
+      checkMax();
+    }
+  };
+
+  checkMax();
+
+  if(chanceNull)
+  {
+    chanceBetween(5, function(){ number = 0 }, function(){ number = number }, pseudoRandomNumber( 0, 100, n, m, array, null, null, false, false, false ) );
+  };
+
+  if(chanceMax)
+  {
+    chanceBetween(5, function(){ number = max }, function(){ number = number }, pseudoRandomNumber( 0, 100, n, m, array, null, null, false, false, false ) );
+  };
+  
+  if(history) number = historyRandom(number, min, max, historyArr, n, m, false);
+  if( yourArr && array && history ) number = historyPseudoRandomNumber(min, max, n, m, historyArr, yourArr, array, number);
+
+  return number
+
+}
 
 module.exports =
 {

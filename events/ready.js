@@ -19,8 +19,8 @@ module.exports =
 		Tags.sync();
 		setDevelop(client);
 
-		client.user.setPresence({activities: [{ name: 'The Void' }], status: 'idle'}); 
-		client.user.setActivity('The Void Community~', {type: ActivityType.Playing});
+		client.user.setPresence({ activities: [ { name: 'The Void' } ], status: 'idle' });
+		client.user.setActivity('The Void Community~', { type: ActivityType.Playing });
 		
 		client.guilds.cache.forEach(guild => {	guilds.push(guild)	});
 		

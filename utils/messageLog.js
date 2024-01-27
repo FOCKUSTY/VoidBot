@@ -1,26 +1,16 @@
 const
-{
-    EmbedBuilder
-} = require('discord.js');
+    { EmbedBuilder } = require('discord.js'),
+    { skip, debug } = require('./developConsole'),
 
-const
-{
-    skip,
-    debug
-} = require('./developConsole');
-
-
-
-const logChannelId = `1171197868909015102`;
-const logGuildId = `1169284741846016061`;
-
-
+    logChannelId = `1171197868909015102`,
+    logGuildId = `1169284741846016061`;
 
 const sendMessageLog = ( m, reason, m2 ) =>
 {
     if (m.author.bot) return;
 
-    let attachmentName,
+    let
+        attachmentName,
         attachmentUrl,
         attachmentProxyUrl,
         color;

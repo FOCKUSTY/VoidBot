@@ -12,7 +12,7 @@ const
         async execute(interaction)
         {
         
-        updateActivities();
+        updateActivities(interaction.client);
         
         await interaction.reply( { content: `Активности были успешно обновлены !`, ephemeral: true } );
 

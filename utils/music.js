@@ -1,21 +1,35 @@
-let globalMusicPlaying = new Map(),
-    music;
+let
+  globalMusicPlaying = new Map(),
+  localMusic;
 
-const setGMPlaying = async (arg, bool=false) =>
+const setGMPlaying = async (arg, boolean=false) =>
 {
-  if(globalMusicPlaying.size===0 && arg.guilds.cache) await arg.guilds.cache.forEach(guild => { globalMusicPlaying.set(guild, bool)})
-  else globalMusicPlaying.set(arg, bool);
+  if(globalMusicPlaying.size===0 && arg.guilds.cache) await arg.guilds.cache.forEach(guild =>
+    {
+      globalMusicPlaying.set(guild, boolean);
+    })
+  else globalMusicPlaying.set(arg, boolean);
 };
 
-const getGMPlaying = (guildName) => { return globalMusicPlaying.get(guildName) };
+const getGMPlaying = (guildName) =>
+{
+  return globalMusicPlaying.get(guildName)
+};
 
-const setMusic = (_music) => { music = _music };
+const setMusic = (music) =>
+{
+  localMusic = music
+};
 
-const getMusic = () => { return music };
+const getMusic = () =>
+{
+  return localMusic
+};
 
-module.exports = {
-    setGMPlaying,
-    getGMPlaying,
-    setMusic,
-    getMusic
+module.exports =
+{
+  setGMPlaying,
+  getGMPlaying,
+  setMusic,
+  getMusic
 };

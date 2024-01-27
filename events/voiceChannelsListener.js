@@ -13,7 +13,10 @@ const
   { getGMPlaying } = require('../utils/music'),
   path = require('path'),
   TheVoid = `1122199797449904179`,
-  Kristy = `1164228812217790565`;
+  Kristy = `1164228812217790565`,
+  TheAbissia = '1165358319419002890';
+
+
 let booleanVar = false;
 let user;
 
@@ -24,6 +27,7 @@ module.exports =
   {
     
     if(getGMPlaying(`${vs.guild.name}`)) return;
+    if (vs?.member?.id===TheAbissia) return;
     if (vs.member.id===Kristy) return;
     booleanVar = false;
     if (vs.member.id===TheVoid) return;

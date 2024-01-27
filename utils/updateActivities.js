@@ -1,6 +1,7 @@
 const
     fs = require('node:fs'),
     { ActivityType } = require('discord.js'),
+    { color } = require('colors'),
 
     {
         jsonActivities,
@@ -14,7 +15,9 @@ const
     } = require('../../VoidDataBase/data.json'),
     
     { version } = require('../package.json'),
-    { skip } = require('./developConsole');
+    { debug, skip } = require('./developConsole'),
+    { shuffle } = require('./shuffle'),
+    { oneTimeFunction, OnTime} = require('./OnTimeFunction');
 
 
 
@@ -33,9 +36,14 @@ let arrKristyAct = jsonKristyActivities,
 
 
 
+let kristyAct = new OnTime(false, 'kristyAct');
+
+
+
+
+
 const THEVOIDSARRAY =
     [
-    
         [   'The Void',     'THEVOIDSBOT_NREVERSE'      ],
         [   'The Abyssia',  'THEVOIDSBOT_REVERSE'       ],
         [   'Kristy',       'THEVOIDSBOT_LOVE'          ],
@@ -47,6 +55,7 @@ const THEVOIDSARRAY =
     
     ],
 
+    kristyId       = '1164228812217790565',
     randomActivity = [],
 
     dataVars =
@@ -188,14 +197,57 @@ const readActivityDB = () =>
     };
   };
 };
-  
-const updateActivities = () =>
+
+const funcKristyAct = async (client) =>
 {
+  const guild = await client?.guilds?.fetch('1168636395246592081');
+  const kristyUser = await guild?.members?.fetch(`${kristyId}`);
+  const kristyStatus = kristyUser?.presence?.status;
+  
+  if(kristyStatus === undefined || kristyStatus === null || kristyStatus === 'offline')
+  {
+    console.log('Kristy не в сети');
+    for (let el of arrKristyAct)
+    {
+      const index = randomActivity.indexOf(el);
+      if(index < 0) continue;
+      randomActivity.splice(index, 1);
+    };
+    kristyAct.oneTimeFunction(false, true);
+    return;
+  };
+
+  if(kristyAct.oneTimeFunction(false, false, true)) return;
+
+  debug('Загружаю Kristy активности...'.bold)
+  skip();
+
+  debug('Все Kristy активности'.bold);
+  skip();
+
+  for (let el of arrKristyAct)
+  {
+    randomActivity.push(el);
+    debug(`${el[0]}`.magenta + ` - ${`${arrKristyAct.indexOf(el)}`.bold}`);
+  };
+
+  debug(`\nУспешно загружено ${`${arrKristyAct.length}`.magenta} Kristy активность(и)(ей)`);
+
+  shuffle(randomActivity);
+  kristyAct.oneTimeFunction(true);
+};
+
+const updateActivities = (client) =>
+{
+
+  let length = randomActivity.length
 
   clearActivity();
   readActivityDB();
   downloadActivities();
+  if(!!client && oneTimeFunction('kristyAct', false, false, true)) for (let el of arrKristyAct) randomActivity.push(el);
   debug('Были перезагружены активности');
+  debug('Общая длина составляет: ' + `${randomActivity.length}`.magenta + '\nБыла: "' + `${length}`.bgMagenta + '"')
 
 };
 
@@ -236,6 +288,7 @@ module.exports =
 {
     downloadActivities,
     updateActivities,
+    funcKristyAct,
     getActivities,
     dataVars,
 };
