@@ -2,13 +2,26 @@ const { REST, Routes } = require('discord.js');
 const { clientId, token } = require('./config.json');
 const fs = require('node:fs');
 const path = require('node:path');
-const { colors } = require(`colors`)
+const { colors } = require(`colors`);
+const { deployCommands, updateCommands } = require('./utils/deployCommands')
 
-const commands = [];
-const foldersPath = path.join(__dirname, 'commands');
-const commandFolders = fs.readdirSync(foldersPath);
+const guildCommands = [];
+const guildFoldersPath = path.join(__dirname, 'guildCommands');
+const guildCommandFolders = fs.readdirSync(guildFoldersPath);
 
-for (const folder of commandFolders) {
+const globalCommands = [];
+const globalFoldersPath = path.join(__dirname, 'commands');
+const globalCommandFolders = fs.readdirSync(globalFoldersPath);
+
+deployCommands(guildCommandFolders, guildCommands, guildFoldersPath);
+deployCommands(globalCommandFolders, globalCommands, globalFoldersPath);
+
+const rest = new REST().setToken(token);
+
+updateCommands(rest, guildCommands, clientId, 'guild');
+updateCommands(rest, globalCommands, clientId, 'global');
+
+/* for (const folder of commandFolders) {
 	const commandsPath = path.join(foldersPath, folder);
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 	for (const file of commandFiles) {
@@ -21,11 +34,9 @@ for (const folder of commandFolders) {
 			console.log(`[WARNING] The command at `+`${filePath}`.bold+` is missing a required "data" or "execute" property.`);
 		}
 	}
-};
+}; */
 
-const rest = new REST().setToken(token);
-
-(async () => {
+/* (async () => {
 	try {
 		console.log(`Начало обновления `+`${commands.length} (/)`.cyan+` команд(ы)`);
 
@@ -38,4 +49,4 @@ const rest = new REST().setToken(token);
 		console.error(error);
 		return;
 	}
-})();
+})(); */

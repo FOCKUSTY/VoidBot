@@ -20,7 +20,7 @@ const checkInfinity = (num, func) =>
 
 const checkNull = (num, plusRandom=false) =>
 {
-  if(num === (0 || -0))
+  if(num === 0)
   {
     if(!plusRandom) return num + 1
     else return num + Math.round(Math.random()*1000);
@@ -237,8 +237,8 @@ function pseudoRandomNumber(min=0, max=100, n=3, m=2, historyArr=historyArray, y
   {
     if(number > max)
     {
-      console.log(number)
-      number = checkMinus( checkNull( number, true ) ) - checkMinus( checkNull ( max, true ) );
+      number = checkMinus( checkNull( number ) ) - checkMinus( checkNull ( max ) );
+      if(number===0) return;
       checkMax();
     }
   };

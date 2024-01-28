@@ -44,6 +44,8 @@ let
   guildTexts    = [];
   texts         = [];
 
+const usernames = new OnTime(false, 'usernames');
+
 const setRandomnessActivity = (client) => 
 {
     try
@@ -166,8 +168,8 @@ const functionRandomActivity = async (client, guilds) =>
     */
     if(!client||!client.user) return;
 
-    if(!oneTimeFunction('usernames', true, false, true)) setUsernames(client);
-    oneTimeFunction('usernames', true);
+    if(!usernames.boolean) setUsernames(client);
+    usernames.oneTimeFunction(true);
     
     funcKristyAct(client);
     
@@ -180,7 +182,7 @@ const functionRandomActivity = async (client, guilds) =>
     {
       if(rNum>=90)
       {
-        const userInformation = getRandomUserInformation('userIdGuildIdUsernameGuildName')
+        const userInformation = getRandomUserInformation('userId-GuildId-Username-GuildName')
         const guild = await client.guilds.fetch(`${userInformation[1]}`);
         const user = await guild.members.fetch(`${userInformation[0]}`);
         

@@ -11,21 +11,22 @@ const setUsernames = async(client, guildIds=[]) =>
 {
     if(guildIds.length===0) for(let guild of await client.guilds.cache) guildIds.push(guild[0]); 
 
-    for (let guildId of guildIds)
+    guildCicle: for (let guildId of guildIds)
     {
         const guild   = await client.guilds.fetch(`${guildId}`);
         const members = await guild.members.cache;
 
-        let user;
+        let guildUser;
 
-        for(let member of members)
+        userCicle: for(let member of members)
         {
-            user = member[1].user;
+            guildUser = await guild.members.fetch(`${member[1].user.id}`);
             
-            if(user.bot) continue;
+            if(guildUser?.user?.bot) continue userCicle;
+            if(!guildUser?.presence?.status) continue userCicle;
 
-            if(user.globalName) userInformations.set(`${user.id}`, [`${user.globalName}`, [`${guild.id}`, `${guild.name}`]]);
-            else userInformations.set(`${user.id}`, [`${user.username}`, [`${guild.id}`, `${guild.name}`]]);
+            if(guildUser.user.globalName) userInformations.set(`${guildUser.user.id}`, [`${guildUser.user.globalName}`, [`${guild.id}`, `${guild.name}`]]);
+            else userInformations.set(`${guildUser.user.id}`, [`${guildUser.user.username}`, [`${guild.id}`, `${guild.name}`]]);
         };
     };
     for(let i of userInformations) userInformationsCache.push(i) 
@@ -37,7 +38,7 @@ const getUsernames = (isCache=false) =>
     else if(!isCache) return [...userInformations];
 };
 
-const getRandomUserInformation = (info='name') =>
+const getRandomUserInformation = (info='username') =>
 {
     const randomNumber = pseudoRandomNumber(0, userInformations.size-1, 2, 3, userInformationsHistoryArray, undefined, undefined, true, true, true);
     const key = Array.from(userInformations.keys())[randomNumber];
@@ -47,10 +48,10 @@ const getRandomUserInformation = (info='name') =>
     switch (info)
     {
         
-        case 'name':
+        case 'username':
             return userInformations.get(key)[0];
         
-        case 'id':
+        case 'userid':
             return key
         
         case 'guildid':
@@ -59,13 +60,13 @@ const getRandomUserInformation = (info='name') =>
         case 'guildname':
             return userInformations.get(key)[1][1];
         
-        case 'useridguildid':
+        case 'userid-guildid':
             return [key, userInformations.get(key)[1][0]];
         
-        case 'useridguildidusername':
+        case 'userid-guildid-username':
             return [key, userInformations.get(key)[1][0], userInformations.get(key)[0]];
         
-        case 'useridguildidusernameguildname':
+        case 'userid-guildid-username-guildname':
             return [key, userInformations.get(key)[1][0], userInformations.get(key)[0], userInformations.get(key)[1][1]];
     
         default:

@@ -122,6 +122,7 @@ module.exports =
             setName(int);
 
             if(isRepeat && repeatCount!=1) for (let i = 0; i<repeatCount; i++) queue.push(pseudoRandomNumber(0, musics.length-1, 8, 1, musicHistory, null, null, true, true, true))
+            else queue.push(pseudoRandomNumber(0, musics.length-1, 8, 1, musicHistory, null, null, true, true, true));
 
             if (!channel) return await interaction.reply( { content: 'Вы не находитесь в голосовом канале', ephemeral: true } );
 
