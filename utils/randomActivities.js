@@ -44,9 +44,7 @@ let
   guildTexts    = [];
   texts         = [];
 
-const usernames = new OnTime(false, 'usernames');
-
-const setRandomnessActivity = (client) => 
+const setRandomnessActivity = (client, textActivity=false, log=true) => 
 {
     try
     {
@@ -56,10 +54,12 @@ const setRandomnessActivity = (client) =>
       const randomActType = randomActivity[i][1];
       const numRandomActType = actType[randomActivity[i][1]?.type];
 
+      if(textActivity) return randomAct
+
       client.user.setActivity(`${randomAct}`, randomActType);
 
-      debug(`Рандомная активность: ${`${i}`.magenta} из "${`${randomActivity.length}`.bgMagenta}"`);
-      debug(`Активность изменена на: ${`${randomAct}`.magenta}, тип: "${`${numRandomActType}`.bgMagenta}"`);
+      if(log) debug(`Рандомная активность: ${`${i}`.magenta} из "${`${randomActivity.length}`.bgMagenta}"`);
+      if(log) debug(`Активность изменена на: ${`${randomAct}`.magenta}, тип: "${`${numRandomActType}`.bgMagenta}"`);
     }
     catch (err)
     {
@@ -67,7 +67,7 @@ const setRandomnessActivity = (client) =>
     }
 };
 
-const setRandomnessGuildActivity = (client, guilds) =>
+const setRandomnessGuildActivity = (client, guilds, textActivity=false, log=true) =>
 {
   try
   {
@@ -83,10 +83,13 @@ const setRandomnessGuildActivity = (client, guilds) =>
     const text = guildTexts[randNum][0];
     const textAct = guildTexts[randNum][1];
     const textActType = guildTexts[randNum][2];
+
+    if(textActivity) return text;
+
     client.user.setActivity(`${text}`, textAct);
     
-    debug(`Рандомный сервер: ${`${rGuildName}`.magenta} (${`${rGuild}`.magenta}) из "${[`${guilds.length}`.bgMagenta]}"`);
-    debug(`Активность изменена на: ${`${text}`.magenta} тип: "${`${textActType}`.bgMagenta}"`);
+    if(log) debug(`Рандомный сервер: ${`${rGuildName}`.magenta} (${`${rGuild}`.magenta}) из "${[`${guilds.length}`.bgMagenta]}"`);
+    if(log) debug(`Активность изменена на: ${`${text}`.magenta} тип: "${`${textActType}`.bgMagenta}"`);
   }
   catch (err)
   {
@@ -94,7 +97,7 @@ const setRandomnessGuildActivity = (client, guilds) =>
   };
 }
 
-const setGuildsLengthActivity = (client, guilds) =>
+const setGuildsLengthActivity = (client, guilds, textActivity=false, log=true) =>
 {
   try
   {
@@ -107,7 +110,10 @@ const setGuildsLengthActivity = (client, guilds) =>
     };
     
     text = `${text} ${ checkNumber(guilds.length, stages) }`;
-    debug(`Активность изменена на: ${`${text}`.magenta}, тип: ${`${actType[4]}`.bgMagenta}`);
+    
+    if(textActivity) return text;
+
+    if(log) debug(`Активность изменена на: ${`${text}`.magenta}, тип: ${`${actType[4]}`.bgMagenta}`);
     client.user.setActivity(`${text}`, actTypes.cust);
   }
   catch (err)
@@ -116,7 +122,7 @@ const setGuildsLengthActivity = (client, guilds) =>
   }
 }
 
-const setRandomnessNameActivity = (client) =>
+const setRandomnessNameActivity = (client, textActivity=false, log=true) =>
 {
   try
   {
@@ -129,10 +135,16 @@ const setRandomnessNameActivity = (client) =>
     
     let text = texts[randomTextNumber];
     
-    debug(`Рандомное число: ${`${randomNumberName}`.magenta} из "${`${randomNames.length}`.bgMagenta}"`);
-    debug(`Рандомное число: ${`${randomTextNumber}`.magenta} из "${`${texts.length}`.bgMagenta}"`);
-    debug(`Рандомное текст: ${`${text}`.magenta}`);
-    debug(`Активность изменена на: ${`${text}`.magenta}, тип: "${`${actType[4]}`.bgMagenta}"`);
+    if(textActivity) return text;
+
+    if(log)
+    {
+      debug(`Рандомное число: ${`${randomNumberName}`.magenta} из "${`${randomNames.length}`.bgMagenta}"`);
+      debug(`Рандомное число: ${`${randomTextNumber}`.magenta} из "${`${texts.length}`.bgMagenta}"`);
+      debug(`Рандомное текст: ${`${text}`.magenta}`);
+      debug(`Активность изменена на: ${`${text}`.magenta}, тип: "${`${actType[4]}`.bgMagenta}"`);
+    };
+
     client.user.setActivity(`${text}`, { type: ActivityType.Custom });
   }
   catch (err)
@@ -141,67 +153,87 @@ const setRandomnessNameActivity = (client) =>
   };
 };
 
-const functionRandomActivity = async (client, guilds) =>
+const functionRandomActivity = async (client, guilds, textActivity=false, log=true) =>
 {
   try
   {
-
-    /* 
-      const fock = new User('877154902244216852', 'fockusty', 'FOCKUSTY', '868794603409637376');
-      fock.setUser(client);
-      const log = fock.getUser();
-      // await console.log(log); // Promise { <pending> }
-      // await log.then( async (value) => await console.log(value)); // undefined
-      // log.then(()=>{ console.log('ok!')}).catch(()=>{console.log('bad')}) // ok!
-      // setTimeout(() => { console.log(log) }, (50000)); // Promise { <undefined> }
-      // console.log(log); // Promise { <pending> }
-      // log.then(function(user) { console.log(user) }) // undefined
-      // log.then((res, rej) => console.log(res, rej)); // undefined
-      // log.finally(onFinally => console.log(onFinally)); // undefined
-      // Promise.resolve(log).then((res, rej) => console.log(res, rej)); // undefined
-    */
-
-    /*
-      setUser(client, '1053295032762908782', '877154902244216852', 'fockusty');
-      const users = getUsers();
-      console.log(users); // Promise { <pending> }
-    */
     if(!client||!client.user) return;
-
-    if(!usernames.boolean) setUsernames(client);
-    usernames.oneTimeFunction(true);
     
-    funcKristyAct(client);
+    funcKristyAct(client, log);
     
     let rNum = pseudoRandomNumber(0, 100, 5, 4, randNum);
     shuffle(randomActivity);
     
-    debug(`Рандомное число: ${`${rNum}`.magenta} из "${`${100}`.bgMagenta}"`);
+    if(log) debug(`Рандомное число: ${`${rNum}`.magenta} из "${`${100}`.bgMagenta}"`);
     
     if (rNum>=15)
     {
       if(rNum>=90)
       {
-        const userInformation = getRandomUserInformation('userId-GuildId-Username-GuildName')
-        const guild = await client.guilds.fetch(`${userInformation[1]}`);
-        const user = await guild.members.fetch(`${userInformation[0]}`);
-        
-        console.log(`Название гильдии: ${userInformation[3]}`);
-        console.log(`Имя пользователя: ${userInformation[2]}`);
-
-        client.user.setPresence({ activities: user?.presence?.activities || setRandomnessActivity(client) });
-        console.log(`Рандомная активность: ${user?.presence?.activities||'Активности нет'}`);
+        let count = 0;
+        const setActivity = async () =>
+        {
+          const userInformation = await getRandomUserInformation('userId-guildId-username-guildName')
+          const guild = await client.guilds.fetch(`${userInformation[1]}`);
+          const user = await guild.members.fetch(`${userInformation[0]}`);
+          const activities = user?.presence?.activities
+          
+          count+=1;
+          if(count<20) if(!activities[0]?.name || activities[0]?.name==='Custom Status') return setActivity();
+          
+          if(log)
+          {
+            debug(`Название гильдии: ${userInformation[3]}`);
+            debug(`Имя пользователя: ${userInformation[2]}`);
+            skip();
+          };
+  
+          if(activities[0]?.name)
+          {
+            if(textActivity) return await activities[0]?.name;
+            client.user.setActivity(`${activities[0]?.name}`);
+            
+            if(log)
+            {
+              debug(`Рандомная активность: ${activities[0]?.name}`);
+              skip();
+            }
+          }
+          else
+          {
+            if(textActivity) return await setRandomnessActivity(client, log);
+            setRandomnessActivity(client, log);
+          }
+          count = 0;
+        };
+        setActivity();
       }
 
-      else setRandomnessActivity(client);
+      else
+      {
+        if(textActivity) return await setRandomnessActivity(client, textActivity, log);
+        setRandomnessActivity(client, textActivity, log);
+      }
     }
     else if (rNum<10)
     {
-      if(rNum>=5) setGuildsLengthActivity(client, guilds)
-      else setRandomnessGuildActivity(client, guilds);
+      if(rNum>=5)
+      {
+        if(textActivity) return await setGuildsLengthActivity(client, guilds, textActivity, log);
+        setGuildsLengthActivity(client, guilds, textActivity, log);
+      }
+      else
+      {
+        if(textActivity) return await setRandomnessGuildActivity(client, guilds, textActivity, log);
+        setRandomnessGuildActivity(client, guilds, textActivity, log);
+      }
     }
-    else setRandomnessNameActivity(client);
-    skip();
+    else
+    {
+      if(textActivity) return await setRandomnessNameActivity(client, textActivity, log);
+      setRandomnessNameActivity(client, textActivity, log);
+    }
+    if(log) skip();
   }
   catch (err)
   {

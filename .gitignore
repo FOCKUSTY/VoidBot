@@ -8,6 +8,7 @@ sounds/
 music/
 names.json
 botReply.txt
+database.sqlite
 
 # Logs
 logs

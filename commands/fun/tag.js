@@ -1,6 +1,7 @@
 const
     { SlashCommandBuilder, EmbedBuilder } = require('discord.js'),
-    { Tags } = require(`../../utils/tags`);
+    { getUserTagOutDB } = require(`../../utils/dataBase`),
+    { getDevelop } = require('../../utils/develop');
 
 module.exports =
 {
@@ -29,34 +30,55 @@ module.exports =
 
         const
             int = interaction,
-            subcommand = interaction.options.getSubcommand();
+            subcommand = interaction.options.getSubcommand(),
+            iconURL = getDevelop('iconURL'),
+            authorName = getDevelop('authorname');
 
         if(subcommand===`ideaname`)
         {
-            const
-                tagName = interaction.options.getString('name'),
-                tag = await Tags.findOne({ where: { name: tagName } });
-    
-            if (tag) return interaction.reply({content: `${tag.get('description')}`, ephemeral: true});
+            const tagName = interaction.options.getString('name');
+            
+            getUserTagOutDB('findOne', tagName)
+                .then(function(tag)
+                {
+                    const embed = new EmbedBuilder()
+                        .setColor(0x161618)
+                        .setAuthor({name: `${authorName}`, iconURL: `${iconURL}`})
+                        .setTitle(`${tag.get('name')}`)
+                        .setThumbnail(`${iconURL}`)
+                        .setDescription(`${tag.get('description')}`)
+                        .setTimestamp()
+                        .setFooter({text: `${int.guild?.name||`Не на сервере`}`, iconURL: `${iconURL}`});
 
-            return interaction.reply({content: `Не удалось найти тег: ${tagName}`, ephemeral: true});
-
+                    if (tag) return interaction.reply({embeds: [embed], ephemeral: true});
+                    else return interaction.reply({content: `Не удалось найти тег: ${tagName}`, ephemeral: true});
+                })
+                .catch(function(err)
+                {
+                    console.log(err);
+                    return interaction.reply({content: `Не удалось найти тег: ${tagName}`, ephemeral: true});
+                });
         }
         else if(subcommand===`ideas`)
         {
-            const
-                tagList = await Tags.findAll({ attributes: ['name'] }),
-                tagString = tagList.map(t => t.name).join('\n') || 'Нет тегов';
+            getUserTagOutDB('findAll')
+                .then(function(tagnames)
+                {
+                    const embed = new EmbedBuilder()
+                        .setColor(0x161618)
+                        .setAuthor({name: int?.guild.name||int.user.username, iconURL: `${int?.guild.iconURL()||int?.user.iconURL()}` })
+                        .setTitle(`Все идеи`)
+                        .setDescription(`${tagnames}`)
+                        .setTimestamp()
+                        .setFooter({text: `${int?.guild.name||int.user.username}`, iconURL: `${int?.guild.iconURL()||int?.user.iconURL()}`});
+                
+                    return interaction.reply({embeds: [embed], ephemeral: true})
+                })
+                .catch(function(err)
+                {
+                    console.log(err);
+                });
 
-            const embed = new EmbedBuilder()
-            .setColor(0x161618)
-			.setAuthor({name: int?.guild.name||int.user.username, iconURL: `${int?.guild.iconURL()||int?.user.iconURL()}` })
-			.setTitle(`Все идеи`)
-			.setDescription(`${tagString}`)
-			.setTimestamp()
-			.setFooter({text: `${int?.guild.name||int.user.username}`, iconURL: `${int?.guild.iconURL()||int?.user.iconURL()}` });
-
-            return interaction.reply({embeds: [embed], ephemeral: true})
         };
 	},
 };

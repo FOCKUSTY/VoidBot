@@ -198,7 +198,7 @@ const readActivityDB = () =>
   };
 };
 
-const funcKristyAct = async (client) =>
+const funcKristyAct = async (client, log=true) =>
 {
   const guild = await client?.guilds?.fetch('1168636395246592081');
   const kristyUser = await guild?.members?.fetch(`${kristyId}`);
@@ -206,7 +206,7 @@ const funcKristyAct = async (client) =>
   
   if(kristyStatus === undefined || kristyStatus === null || kristyStatus === 'offline')
   {
-    console.log('Kristy не в сети');
+    if(log) console.log('Kristy не в сети');
     for (let el of arrKristyAct)
     {
       const index = randomActivity.indexOf(el);
@@ -219,19 +219,22 @@ const funcKristyAct = async (client) =>
 
   if(kristyAct.oneTimeFunction(false, false, true)) return;
 
-  debug('Загружаю Kristy активности...'.bold)
-  skip();
-
-  debug('Все Kristy активности'.bold);
-  skip();
+  if(log)
+  {
+      debug('Загружаю Kristy активности...'.bold)
+      skip();
+    
+      debug('Все Kristy активности'.bold);
+      skip();
+  }
 
   for (let el of arrKristyAct)
   {
     randomActivity.push(el);
-    debug(`${el[0]}`.magenta + ` - ${`${arrKristyAct.indexOf(el)}`.bold}`);
+    if(log) debug(`${el[0]}`.magenta + ` - ${`${arrKristyAct.indexOf(el)}`.bold}`);
   };
 
-  debug(`\nУспешно загружено ${`${arrKristyAct.length}`.magenta} Kristy активность(и)(ей)`);
+  if(log) debug(`\nУспешно загружено ${`${arrKristyAct.length}`.magenta} Kristy активность(и)(ей)`);
 
   shuffle(randomActivity);
   kristyAct.oneTimeFunction(true);

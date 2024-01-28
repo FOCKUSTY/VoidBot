@@ -4,9 +4,11 @@ const { Client, Collection, GatewayIntentBits, Events, InteractionType, EmbedBui
 const { modalSubmit } = require('./events/modals');
 const { skip } = require('./utils/developConsole')
 const { token } = require('./config.json');
-const { color, bold } = require('colors')
-const { indexDeployCommands } = require('./utils/deployCommands')
-const { Random } = require('random-js')
+const { color, bold } = require('colors');
+const { sendMessageLog } = require('./utils/messageLog');
+const { msgPing } = require('./utils/msgPing');
+const { indexDeployCommands } = require('./utils/deployCommands');
+const { Random } = require('random-js');
 const fs = require('node:fs');
 const path = require('node:path');
 const r = new Random();
@@ -55,12 +57,12 @@ for (const file of eventFiles)
 
 client.on(Events.InteractionCreate, async interaction => modalSubmit(interaction) );
 
-/* client.on(Events.MessageCreate, (m) => sendMsgLogs(m, "send"));
-client.on(Events.MessageUpdate, (m, nm) => sendMsgLogs(m, "update", nm));
-client.on(Events.MessageDelete, (m) => sendMsgLogs(m, "delete"));
-client.on(Events.MessageCreate, async (m) => sendLogMsg(m))
+client.on(Events.MessageCreate, (m) => sendMessageLog(m, "send"));
+client.on(Events.MessageUpdate, (m, nm) => sendMessageLog(m, "update", nm));
+client.on(Events.MessageDelete, (m) => sendMessageLog(m, "delete"));
+client.on(Events.MessageCreate, async (m) => msgPing(m))
 
- */
+
 /* let bool = false;
 let bool_com = false;
 let count = 0; */

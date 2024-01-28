@@ -7,6 +7,18 @@ const
     userInformationsCache = [],
     userInformationsHistoryArray = [];
 
+let
+    totalUsers = 0,
+    totalGuilds = 0;
+
+const getAmount = (value='totalusers') =>
+{
+    value = value.toLocaleLowerCase()
+    if(value==='totalusers') return totalUsers;
+    else if(value==='totalguilds') return totalGuilds;
+    else return totalGuilds;
+};
+
 const setUsernames = async(client, guildIds=[]) =>
 {
     if(guildIds.length===0) for(let guild of await client.guilds.cache) guildIds.push(guild[0]); 
@@ -15,7 +27,8 @@ const setUsernames = async(client, guildIds=[]) =>
     {
         const guild   = await client.guilds.fetch(`${guildId}`);
         const members = await guild.members.cache;
-
+        
+        totalGuilds+=1;
         let guildUser;
 
         userCicle: for(let member of members)
@@ -23,6 +36,7 @@ const setUsernames = async(client, guildIds=[]) =>
             guildUser = await guild.members.fetch(`${member[1].user.id}`);
             
             if(guildUser?.user?.bot) continue userCicle;
+            totalUsers+=1;
             if(!guildUser?.presence?.status) continue userCicle;
 
             if(guildUser.user.globalName) userInformations.set(`${guildUser.user.id}`, [`${guildUser.user.globalName}`, [`${guild.id}`, `${guild.name}`]]);
@@ -147,5 +161,6 @@ module.exports =
     getUsers,
     setUsernames,
     getUsernames,
-    getRandomUserInformation
+    getRandomUserInformation,
+    getAmount
 }

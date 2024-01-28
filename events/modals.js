@@ -4,7 +4,7 @@ const
         EmbedBuilder,
         PermissionsBitField
     } = require('discord.js'),
-    { Tags } = require('../utils/tags')
+    { addUserTagToDB } = require('../utils/dataBase')
 
 let channel,
     bool,
@@ -38,6 +38,8 @@ async function modalSubmit(int) {
 	if(int.type === InteractionType.ModalSubmit) {
 
         /*  ------------------------------------------------- ideaModal -------------------------------------------------  */
+        /*  ------------------------------------------------- ideaModal -------------------------------------------------  */
+        /*  ------------------------------------------------- ideaModal -------------------------------------------------  */
 
 		if(int.customId==='ideaModal')
         {
@@ -65,27 +67,13 @@ async function modalSubmit(int) {
                 });
             });
 		
-				int.reply({content: `Ваша идея была доставлена!`, embeds: [embed], ephemeral: true});
-	
-				console.log(`Идея была доставлена\nИдея: ${ideaTitle}\nОписание: ${ideaDetails}\nНаписал: ${user} (${int.user.id})\nС сервера: ${int.guild?.name||`Не на сервере`} (${int.guild?.id||``})\n`);
-				
-                try {
-                    
-                    const tag = await Tags.create({
-                        name: ideaTitle,
-                        username: int.user.username,
-                        globalname: int.user.globalName,
-                        description: ideaDetails,
-                        guildname: int?.guild?.name||`Не на сервере`
-                    });
-                    
-                    console.log(`Тег идеи успешно добавлен\nНазвание: ${tag.name}\nОписание: ${tag.description}\nОтправил: ${tag.username}\nС сервера: ${tag.guildname}`)
-                } catch (error) {
-                    console.log(`Ошибка с добавление тега\n${error}`)
-                }
+			int.reply({content: `Ваша идея была доставлена!`, embeds: [embed], ephemeral: true});
+					
+            addUserTagToDB(ideaTitle, user, ideaDetails, guild);
 		
-        
-            } else if(int.customId==='sayModal') {
+        }
+        else if(int.customId==='sayModal')
+        {
 			
 			if(!(channel?.permissionsFor(interaction.client.user.id).has([PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel]))) {
             await int.reply({
@@ -97,7 +85,8 @@ async function modalSubmit(int) {
 
 		const msg = int.fields.getTextInputValue('message');
 
-        if(bool) {
+        if(bool)
+        {
             const embed = new EmbedBuilder()
             .setColor(0x161618)
             .setAuthor({name: `${int?.user?.globalName||int?.user?.username}`, iconURL: `${int.user.avatarURL()}` })
@@ -106,7 +95,9 @@ async function modalSubmit(int) {
             .setTimestamp()
 
             channel.send({embeds:[embed]})
-        } else {
+        }
+        else
+        {
             channel.send(`${msg.replaceAll(`\\n`, `\n`)}`)
         }
         
@@ -131,6 +122,8 @@ async function modalSubmit(int) {
         ephemeral: true});
     }
 
+    /*  ----------------------------------------------------- updateModal -----------------------------------------------------  */
+    /*  ----------------------------------------------------- updateModal -----------------------------------------------------  */
     /*  ----------------------------------------------------- updateModal -----------------------------------------------------  */
 
 		}
