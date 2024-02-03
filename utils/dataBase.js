@@ -21,7 +21,7 @@ const Tags = sequelize.define('tags',
     guildname: Sequelize.TEXT,
 });
 
-const addUserTagToDB = async (title, user, detail, guild) =>
+const addUserTagToDB = async (title, user, detail, guild, log=true) =>
 {
     try
     {
@@ -34,18 +34,18 @@ const addUserTagToDB = async (title, user, detail, guild) =>
             guildname: guild?.name||`Не на сервере`
         });
     
-        console.log(
-        `Тег идеи успешно добавлен\
-        Название: ${tag.name}\
-        Описание: ${tag.description}\
-        Отправил: ${tag.username}\
+        if(log) console.log(
+        `Тег идеи успешно добавлен\n
+        Название: ${tag.name}\n
+        Описание: ${tag.description}\n
+        Отправил: ${tag.username}\n
         С сервера: ${tag.guildname}`
         )
     }
     catch (err)
     {
-        console.log('Ошибка с добавлением тега');
-        console.log(err);
+        if(log) console.log('Ошибка с добавлением тега');
+        if(log) console.log(err);
     }
 };
 

@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const { getCommands } = require('../../utils/deployCommands')
 
 module.exports =
 {
@@ -11,27 +12,7 @@ module.exports =
 	async execute(interaction)
 	{
 
-		const hat = `:tophat:`
-
-		const commands = [
-			`${hat} /8ball`,
-			`${hat} /joke`,
-			`${hat} /kristy (И подкоманды)`,
-			`${hat} /ping`,
-			`${hat} /random (И подкоманды)`,
-			`${hat} /sos`,
-			`${hat} /tag`,
-			`${hat} /voice (И подкоманды)`,
-			`${hat} /help`,
-			`${hat} /roles`,
-			`${hat} /say`,
-			`${hat} /test`,
-			`${hat} /idea`,
-			`${hat} /thevoid`,
-			`${hat} /server`,
-			`${hat} /user`,
-			`${hat} /version`
-		];
+		const commands = getCommands();
 		
 		await interaction.reply({
 			content: `${commands.join(`\n`)}`,

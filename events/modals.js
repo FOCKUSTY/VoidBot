@@ -6,7 +6,8 @@ const
     } = require('discord.js'),
     { addUserTagToDB } = require('../utils/dataBase')
 
-let channel,
+let
+    channel,
     bool,
     versionUpdate;
 
@@ -69,7 +70,7 @@ async function modalSubmit(int) {
 		
 			int.reply({content: `Ваша идея была доставлена!`, embeds: [embed], ephemeral: true});
 					
-            addUserTagToDB(ideaTitle, user, ideaDetails, guild);
+            addUserTagToDB(ideaTitle, int.user, ideaDetails, int.guild);
 		
         }
         else if(int.customId==='sayModal')

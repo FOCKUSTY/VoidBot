@@ -2,8 +2,7 @@ const
     { EmbedBuilder } = require('discord.js'),
     { skip, debug } = require('./developConsole'),
 
-    logChannelId = `1171197868909015102`,
-    logGuildId = `1169284741846016061`;
+    { logChannelId, logGuildId } = require('../config.json')
 
 const sendMessageLog = ( m, reason, m2 ) =>
 {

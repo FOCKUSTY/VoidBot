@@ -2,7 +2,15 @@ const { REST, Routes } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
 const { color } = require('colors')
-const { guildId } = require('../config.json')
+const { guildId } = require('../config.json');
+const { hat } = require('../../VoidDataBase/data.json')
+
+const commands = [];
+
+const getCommands = () =>
+{
+    return commands;
+}
 
 let using = 0;
 
@@ -36,7 +44,9 @@ const indexDeployCommands = (commandFolders, foldersPath, client) =>
                     };
                     using = 0;
                 };
-                
+
+                commands.push(`${hat} ${command.data.name}`);
+
                 client.commands.set(command.data.name, command);
                 subcommands.unshift(text);
                 if(subcommands.length!=0) console.log(`${subcommands.join(' ')}`);
@@ -113,5 +123,6 @@ module.exports =
 {
     indexDeployCommands,
     deployCommands,
-    updateCommands
+    updateCommands,
+    getCommands
 }

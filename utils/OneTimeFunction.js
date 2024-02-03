@@ -16,7 +16,7 @@ const oneTimeFunction = (name, boolean=true, isUpdate=false, isGet=false, activi
   }
 };
 
-class OnTime
+class OneTime
 {
   constructor(_boolean_, _name_)
   {
@@ -51,5 +51,5 @@ class OnTime
 module.exports =
 {
   oneTimeFunction,
-  OnTime
+  OneTime
 };

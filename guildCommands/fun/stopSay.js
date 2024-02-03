@@ -1,7 +1,7 @@
 const
     { SlashCommandBuilder, EmbedBuilder } = require('discord.js'),
-    { developCommand } = require('../../utils/developCommand');
-
+    { developCommand } = require('../../utils/developCommand'),
+    { getBooleanChatting, setBooleanChatting } = require('../../utils/chatting');
 
 module.exports =
 {
@@ -14,30 +14,26 @@ module.exports =
     async execute(interaction)
     {
         
-        return developCommand(interaction);
+        // return developCommand(interaction);
 
         if(interaction.user.id != ('877154902244216852'||'827928352131252245')) return await interaction.reply({content:'У Вас нет прав', ephemeral: true})
 
-        const stop = textbool();
+        const booleanChatting = getBooleanChatting();
 
-        if((stop?.toLocaleLowerCase||stop)===('переписка уже идет'||'Переписка уже идет')) {  
-            
-            textbool(false);         
+        if(booleanChatting)
+        {
+            setBooleanChatting(false);
+
             await interaction.reply({
                 content: `Заканчиваю общение...`,
-                ephemeral: true});
-        } else if(stop===false) {
-
+                ephemeral: true
+            });
+        }
+        else
+        {
             await interaction.reply({
             content: `Общение и так закончено`,
             ephemeral: true});
-        } else {
-            textbool(false);
-
-            await interaction.reply({
-            content: `Заканчиваю общение...`,
-            ephemeral: true});
-        }
-
+        };
 	},
 };

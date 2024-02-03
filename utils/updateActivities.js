@@ -12,31 +12,37 @@ const
         jsonNames,
         jsonObjectIdeas,
         jsonKristyActivities,
+        jsonBotVersion
     } = require('../../VoidDataBase/data.json'),
     
     { version } = require('../package.json'),
     { debug, skip } = require('./developConsole'),
     { shuffle } = require('./shuffle'),
-    { oneTimeFunction, OnTime} = require('./OnTimeFunction');
+    { oneTimeFunction, OneTime} = require('./OneTimeFunction'),
+
+    {
+        kristyGuildId,
+        kristyId,
+    } = require('../config.json');
 
 
 
-
-
-let arrKristyAct = jsonKristyActivities,
+let
+    arrKristyAct = jsonKristyActivities,
     download = jsonDownload,
     guildActivities = jsonGuildActivities,
     jokes = jsonJokes,
     namesActivities = jsonRandomNameActivities,
     objectIdeas = jsonObjectIdeas,
     randomActivities = jsonActivities,
-    randomNames = jsonNames;
+    randomNames = jsonNames,
+    botVersion = jsonBotVersion;
 
 
 
 
 
-let kristyAct = new OnTime(false, 'kristyAct');
+let kristyAct = new OneTime(false, 'kristyAct');
 
 
 
@@ -44,18 +50,17 @@ let kristyAct = new OnTime(false, 'kristyAct');
 
 const THEVOIDSARRAY =
     [
-        [   'The Void',     'THEVOIDSBOT_NREVERSE'      ],
-        [   'The Abyssia',  'THEVOIDSBOT_REVERSE'       ],
-        [   'Kristy',       'THEVOIDSBOT_LOVE'          ],
-        [   'The Void',     'THEVOIDSBOT_REVERSE_LOVE'  ],
-        [   'Kristy',       'THEVOID_LOVE'              ],
-        [   'Меня',         'THEVOID'                   ],
-        [   '',             'typend_A'                  ],
-        [   'ым',           'typend_B'                  ],
-    
+        [   'девушка',      'THEVOIDSBOT_REVERSE_GENDER'  ],
+        [   'The Void',     'THEVOIDSBOT_NREVERSE'        ],
+        [   'The Abyssia',  'THEVOIDSBOT_REVERSE'         ],
+        [   'Kristy',       'THEVOIDSBOT_LOVE'            ],
+        [   'The Void',     'THEVOIDSBOT_REVERSE_LOVE'    ],
+        [   'Kristy',       'THEVOID_LOVE'                ],
+        [   'Меня',         'THEVOID'                     ],
+        [   '',             'typend_A'                    ],
+        [   'ым',           'typend_B'                    ],
     ],
 
-    kristyId       = '1164228812217790565',
     randomActivity = [],
 
     dataVars =
@@ -68,6 +73,7 @@ const THEVOIDSARRAY =
         [   'objectIdeas',          'jsonObjectIdeas'           ],
         [   'namesActivities',      'jsonRandomNameActivities'  ],
         [   'randomNames',          'jsonNames'                 ],
+        [   'botVersion',           'jsonBotVersion'            ],
     ],
 
     dataFiles =
@@ -80,6 +86,7 @@ const THEVOIDSARRAY =
         objectIdeas,
         randomActivities,
         randomNames,
+        botVersion
     ],
 
     jsonFiles =
@@ -92,6 +99,7 @@ const THEVOIDSARRAY =
         jsonObjectIdeas,
         jsonActivities,
         jsonNames,
+        jsonBotVersion
     ],
 
     actTypes =
@@ -200,7 +208,7 @@ const readActivityDB = () =>
 
 const funcKristyAct = async (client, log=true) =>
 {
-  const guild = await client?.guilds?.fetch('1168636395246592081');
+  const guild = await client?.guilds?.fetch(`${kristyGuildId}`);
   const kristyUser = await guild?.members?.fetch(`${kristyId}`);
   const kristyStatus = kristyUser?.presence?.status;
   
@@ -243,14 +251,16 @@ const funcKristyAct = async (client, log=true) =>
 const updateActivities = (client) =>
 {
 
-  let length = randomActivity.length
+  let length = randomActivity.length;
 
   clearActivity();
   readActivityDB();
   downloadActivities();
   if(!!client && oneTimeFunction('kristyAct', false, false, true)) for (let el of arrKristyAct) randomActivity.push(el);
   debug('Были перезагружены активности');
-  debug('Общая длина составляет: ' + `${randomActivity.length}`.magenta + '\nБыла: "' + `${length}`.bgMagenta + '"')
+  debug('Общая длина составляет: ' + `${randomActivity.length}`.magenta + '\nБыла: "' + `${length}`.bgMagenta + '"');
+  
+  shuffle(randomActivity);
 
 };
 
@@ -281,6 +291,9 @@ const getActivities = (variable=randomActivity) =>
 
         case 'randomNames':
             return randomNames;
+
+        case 'version':
+            return version;
         
         case 'randomActivity':
             return randomActivity

@@ -27,7 +27,7 @@ module.exports =
             .setNameLocalizations({ru:'канал',"en-US":'channel'})
             .setDescriptionLocalizations({ru:'Канал на который вы хотите отправить сообщение',"en-US":'The channel you want to send a message to'})
             .setRequired(true)
-            .addChannelTypes(ChannelType.GuildText))
+            .addChannelTypes(ChannelType.GuildText, ChannelType.GuildVoice, ChannelType.GuildForum, ChannelType.PrivateThread, ChannelType.PublicThread))
     .addBooleanOption(option =>
         option
         .setName(`embed`).setDescription('Сообщение в виде embed? (Вложенный текст)').setRequired(true)

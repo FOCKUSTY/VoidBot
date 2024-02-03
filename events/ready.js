@@ -10,6 +10,7 @@ const
 	{ checkNumber } = require('../utils/stages'),
 	{ skip } = require('../utils/developConsole'),
 	{ changeComma } = require('../utils/changeComma'),
+	{ readAllMessageFromIdeaChannel } = require('../utils/ideaMethods'),
 	
 	guilds = [];
 
@@ -25,12 +26,13 @@ module.exports =
 		setGMPlaying(client);
 		setDevelopClient(client);
 		setUsernames(client);
+		readAllMessageFromIdeaChannel(client);
 
 		client.user.setPresence({ activities: [ { name: 'The Void' } ], status: 'idle' });
 		client.user.setActivity('The Void Community~', { type: ActivityType.Playing });
 		
 		client.guilds.cache.forEach(guild => {	guilds.push(guild)	});
-		
+
 		try
 		{			
 			setTimeout(() =>
@@ -47,28 +49,36 @@ module.exports =
 
 				const dumplingCount = getAmount('totalUsers');
 				const serversCount = getAmount('totalGuilds');
+				const botsCount = getAmount('totalBots');
+
 				const dumplingCountNumeral = checkNumber(dumplingCount, {dumpling: ['пельмень', 'пельменя', 'пельменей']});
-				const serversCountNumeral = checkNumber(serversCount, {server: ['сервер', 'сервера', 'серверов']});
+				const serversCountNumeral = checkNumber(serversCount, {servers: ['сервер', 'сервера', 'серверов']});
+				const botsCountNumeral = checkNumber(botsCount, {spareParts: ['запчасть', 'запчасти', 'запчастей']});
+
 				const dumplingsCountFromEachServer = Math.round(dumplingCount/serversCount*10)/10;
+				const botsCountNumberalFromEachServer = Math.round(botsCount/serversCount*10)/10;
+
 				const dumplingsCountFromEachServerNumeral = checkNumber(dumplingsCountFromEachServer, {dumpling: ['пельмень', 'пельменя', 'пельменей']})
+				const botsCountNumberalFromEachServerNumeral = checkNumber(botsCountNumberalFromEachServer, {spareParts: ['запчасть', 'запчасти', 'запчастей']})
 
 				skip();
 				
 				console.log(`Всего собрано ${dumplingCount} ${dumplingCountNumeral} с ${serversCount} ${serversCountNumeral}`);
-				console.log(`В среднем с каждого сервера ${changeComma(dumplingsCountFromEachServer)} ${dumplingsCountFromEachServerNumeral}`);
+				console.log(`Также собрано ${botsCount} ${botsCountNumeral} с ${serversCount} ${serversCountNumeral}`)
+				console.log(`В среднем с каждого сервера ${changeComma(dumplingsCountFromEachServer)} ${dumplingsCountFromEachServerNumeral}, а также ${changeComma(botsCountNumberalFromEachServer)} ${botsCountNumberalFromEachServerNumeral}`);
 				
 				skip();
 
 				console.log(`Готово!`.bold +` `+`The Void`.bgCyan.black+` готов к работе, как `+`${client.user.tag}`.red.bold+`\n`);
 
 				setInterval(() => {
-					functionRandomActivity(client, guilds);
+					functionRandomActivity(client, guilds, false, true);
 				}, 75000);
 			}, 5000);
 		}
-		catch (er)
+		catch (err)
 		{
-			console.log(er)
+			console.log(err)
 		}
 
 	},

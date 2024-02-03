@@ -9,12 +9,14 @@ const
 
 let
     totalUsers = 0,
+    totalBots = 0,
     totalGuilds = 0;
 
 const getAmount = (value='totalusers') =>
 {
     value = value.toLocaleLowerCase()
     if(value==='totalusers') return totalUsers;
+    else if(value==='totalbots') return totalBots;
     else if(value==='totalguilds') return totalGuilds;
     else return totalGuilds;
 };
@@ -35,7 +37,11 @@ const setUsernames = async(client, guildIds=[]) =>
         {
             guildUser = await guild.members.fetch(`${member[1].user.id}`);
             
-            if(guildUser?.user?.bot) continue userCicle;
+            if(guildUser?.user?.bot)
+            {
+                totalBots+=1;
+                continue userCicle;
+            }
             totalUsers+=1;
             if(!guildUser?.presence?.status) continue userCicle;
 
@@ -58,34 +64,44 @@ const getRandomUserInformation = (info='username') =>
     const key = Array.from(userInformations.keys())[randomNumber];
     
     info = info.toLocaleLowerCase();
-
-    switch (info)
-    {
-        
-        case 'username':
-            return userInformations.get(key)[0];
-        
-        case 'userid':
-            return key
-        
-        case 'guildid':
-            return userInformations.get(key)[1][0];
-        
-        case 'guildname':
-            return userInformations.get(key)[1][1];
-        
-        case 'userid-guildid':
-            return [key, userInformations.get(key)[1][0]];
-        
-        case 'userid-guildid-username':
-            return [key, userInformations.get(key)[1][0], userInformations.get(key)[0]];
-        
-        case 'userid-guildid-username-guildname':
-            return [key, userInformations.get(key)[1][0], userInformations.get(key)[0], userInformations.get(key)[1][1]];
     
-        default:
-            return userInformations.get(key)[0];;
-    };
+    try
+    {
+        switch (info)
+        {
+            
+            case 'username':
+                return userInformations.get(key)[0];
+            
+            case 'userid':
+                return key
+            
+            case 'guildid':
+                return userInformations.get(key)[1][0];
+            
+            case 'guildname':
+                return userInformations.get(key)[1][1];
+            
+            case 'userid-guildid':
+                return [key, userInformations.get(key)[1][0]];
+            
+            case 'userid-guildid-username':
+                return [key, userInformations.get(key)[1][0], userInformations.get(key)[0]];
+            
+            case 'userid-guildid-username-guildname':
+                return [key, userInformations.get(key)[1][0], userInformations.get(key)[0], userInformations.get(key)[1][1]];
+        
+            default:
+                return userInformations.get(key)[0];;
+        };
+        
+    }
+    catch (err)
+    {
+        console.log(err)
+        console.log(userInformations)
+        console.log(key)   
+    }
 };
 
 const setUser = async(client, guildId, userId, userName=undefined) =>

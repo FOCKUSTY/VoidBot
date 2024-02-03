@@ -14,7 +14,7 @@ const checkMinus = (num) =>
 
 const checkInfinity = (num, func) =>
 {
-  if(num === (Infinity || -Infinity)) func()
+  if(num === Infinity || num === -Infinity) func()
   else return;
 }
 
@@ -103,108 +103,6 @@ const historyRandom = (num, min=0, max=100, array, n=3, dOaF=1, pseudoRandom=fal
 
   return num;
 };
-
-/* function pseudoRandomNumber(min=0, max=100, n=3, m=2, arr=historyArray, yourArr=null, array=null, history=true, chanceNull=true, chanceMax=true)
-{
-
-    someMin = checkMinus( checkNull( min, false )  );
-    someMax = checkMinus( checkNull( max, true  )   );
-    let oRNum = checkNull( Math.round( ( Math.random() * someMax ) + ( Math.random() * ( -someMax ) ) ), true ),
-        tRNum = checkNull( Math.round( ( Math.random() * someMax ) + ( Math.random() * ( -someMax ) ) ), true );
-
-    function checkEqual()
-    {
-        if(someMin === someMax)
-        {
-            someMin = 1;
-            someMax = Math.random()*1000;
-            checkEqual();
-        };
-    };
-    checkEqual();
-
-    let someNumber = Math.random(),
-        string = `${someNumber}`,
-        num = Number( string.slice( Math.round( string.length/2 ), Math.round( string.length/2 + `${ someMax }`.length ) ) );
-
-    if(max > 1255121) someNumber = Math.round(oRNum * tRNum * someNumber)
-    else someNumber = Math.round(oRNum * tRNum * someNumber * (10**(`${someNumber}`.length)) / num);
-  
-    let period = 1,
-        periodMax = 10;
-    
-    function someFunc()
-    {
-      period++;
-      let somePeriod = periodMax ** period;
-      someNumber = Math.round( oRNum * tRNum * ( Math.random() * ( 100/somePeriod ) ) );
-    };
-    checkInfinity( someNumber, someFunc );
-
-    string = `${someNumber}`;
-    num = Number( string.slice( Math.round( string.length/2 ), Math.round( string.length/2 + ( `${ someMax }`.length ) ) ) );
-    
-    function checkMax()
-    {
-      if(num > someMax)
-      {
-        num = checkMinus( checkNull( num, true ) ) - checkMinus( checkNull ( someMax, true ) );
-        checkMax();
-      }
-    };
-    
-    checkMax();
-    
-    num = Math.round( checkMinus(num) );
-    
-    if(chanceNull)
-    {
-        function one() 
-        {
-          num = num-num
-        };
-
-        function two() 
-        {
-            num = num
-        };
-
-        chanceBetween( 5, one, two, pseudoRandomNumber( 0, 100, n, m, arr, null, null, false, false, false ) );
-    };
-    
-    if( chanceMax )
-    {
-        let minusNumber;
-        function three() {
-            return minusNumber = Math.round( Math.random() * 10 );
-        };
-        function four() {
-            return minusNumber = 0;
-        };
-        chanceBetween( 15, three, four, pseudoRandomNumber( 0, 100, n, m, arr, null, null, false, false, false ) );
-
-        function one_()
-        {
-            num=max - minusNumber;
-        };
-        function two_()
-        {
-            num=num;
-        };
-        chanceBetween( 5, one_, two_, pseudoRandomNumber( 0, 100, n, m, arr, null, null, false, false, false ) );
-    };
-
-    if(history) num = historyRandom(num, min, max, arr, n, m, false);
-    if( yourArr && array && history ) num = historyPseudoRandomNumber(min, max, n, m, arr, yourArr, array, num);
-    
-    if(num === NaN || num === null || num === undefined)
-    {
-      num = pseudoRandomNumber(min, max, n, m, arr, null, null, false, true, true);
-      num = checkMinus(num);
-    };
-
-    return num;
-}; */
 
 function pseudoRandomNumber(min=0, max=100, n=3, m=2, historyArr=historyArray, yourArr, array, history=true, chanceNull=true, chanceMax=true)
 {

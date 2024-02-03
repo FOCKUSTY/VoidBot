@@ -8,7 +8,7 @@ const
     } = require('discord.js'),
 
     { Random } = require("random-js"),
-    { bannedUsers } = require(`../../bannedUser`),
+    { bannedUsers } = require(`../../../VoidDataBase/users/bannedUsers.json`),
     { getActivities } = require('../../utils/updateActivities'),
     random = new Random();
     

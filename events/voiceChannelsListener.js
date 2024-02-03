@@ -9,7 +9,7 @@ const
   } = require("@discordjs/voice"),
 
   { Events } = require("discord.js"),
-  { featureUsers } = require(`../whiteList`),
+  { featureUsers } = require(`../../VoidDataBase/users/featureUsers.json`),
   { getGMPlaying } = require('../utils/music'),
   path = require('path'),
   TheVoid = `1122199797449904179`,

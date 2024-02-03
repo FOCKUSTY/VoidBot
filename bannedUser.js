@@ -1,4 +1,5 @@
-const bannedUsers = [
+const bannedUsers =
+[
     {id: `701839124952383528`},
 ];
 

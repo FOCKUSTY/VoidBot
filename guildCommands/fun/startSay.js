@@ -1,6 +1,7 @@
 const
     { SlashCommandBuilder, EmbedBuilder } = require('discord.js'),
-    { developCommand } = require('../../utils/developCommand');
+    { developCommand } = require('../../utils/developCommand'),
+    { getBooleanChatting, setBooleanChatting } = require('../../utils/chatting');
 
 module.exports =
 {
@@ -19,25 +20,36 @@ module.exports =
     async execute(interaction)
     {
         
-        return developCommand(interaction);
+        // return developCommand(interaction);
 
         const msg = interaction.options.getString('message')||'Да начнем же общение';
 
-        const start = textbool(true)
+        const start = getBooleanChatting();
 
-        if(!(start==='Переписка уже идет'))
-        {        
+        if(!start)
+        {
+
+            setBooleanChatting(true);
+
             await interaction.reply({
                 content: `Общение начинается...`,
-                ephemeral: true});
+                ephemeral: true
+            });
                 
-            await interaction.client.channels.cache.get('1175738843203391550').send(`${msg}`)
+            const channel = await interaction.client.channels.cache.get('1175738843203391550');
+
+            await channel.sendTyping();
+
+            setTimeout(async () => {
+                await channel.send(`${msg}`)
+            }, 2000);
         }
         else
         {
             await interaction.reply({
             content: `Общение и так началось...`,
-            ephemeral: true});
+            ephemeral: true
+            });
         }
 
 	},
