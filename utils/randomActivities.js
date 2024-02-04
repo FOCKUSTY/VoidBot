@@ -190,9 +190,10 @@ const functionRandomActivity = async (client, guilds, textActivity=false, log=tr
     
     if(log) debug(`Рандомное число: ${`${rNum}`.magenta} из "${`${100}`.bgMagenta}"`);
     
-    if (rNum>=15)
+    if(rNum>=15)
     {
-      if(!textActivity)
+      if(textActivity) return await setRandomnessActivity(client, textActivity, log);
+      else
       {
         if(rNum>=90)
         {
@@ -216,7 +217,6 @@ const functionRandomActivity = async (client, guilds, textActivity=false, log=tr
     
             if(activities[0]?.name)
             {
-              if(textActivity) return await activities[0]?.name;
               client.user.setActivity(`${activities[0]?.name}`);
               
               if(log)
@@ -227,37 +227,32 @@ const functionRandomActivity = async (client, guilds, textActivity=false, log=tr
             }
             else
             {
-              if(textActivity) return await setRandomnessActivity(client, log);
-              setRandomnessActivity(client, log);
+              setRandomnessActivity(client, textActivity, log);
             }
             count = 0;
           };
           setActivity();
         }
-      }
-      else
-      {
-        if(textActivity) return await setRandomnessActivity(client, textActivity, log);
-        setRandomnessActivity(client, textActivity, log);
+        else setRandomnessActivity(client, textActivity, log);
       }
     }
     else if (rNum<10)
     {
-      if(rNum>=5)
+      if(rNum>=5) 
       {
         if(textActivity) return await setGuildsLengthActivity(client, guilds, textActivity, log);
-        setGuildsLengthActivity(client, guilds, textActivity, log);
+        else setGuildsLengthActivity(client, guilds, textActivity, log);
       }
       else
       {
         if(textActivity) return await setRandomnessGuildActivity(client, guilds, textActivity, log);
-        setRandomnessGuildActivity(client, guilds, textActivity, log);
+        else setRandomnessGuildActivity(client, guilds, textActivity, log);
       }
     }
     else
     {
       if(textActivity) return await setRandomnessNameActivity(client, textActivity, log);
-      setRandomnessNameActivity(client, textActivity, log);
+      else setRandomnessNameActivity(client, textActivity, log);
     }
     if(log) skip();
   }

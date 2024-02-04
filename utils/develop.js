@@ -67,6 +67,9 @@ const getDevelop = (getter = 'developEmbed') =>
     
     case 'authorname':
       return authorName;
+
+    case 'color':
+      return color;
   
     default:
       return developEmbed;

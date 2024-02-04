@@ -71,6 +71,8 @@ module.exports =
 
 				console.log(`Готово!`.bold +` `+`The Void`.bgCyan.black+` готов к работе, как `+`${client.user.tag}`.red.bold+`\n`);
 
+				functionRandomActivity(client, guilds, false, true);
+				
 				setInterval(() => {
 					functionRandomActivity(client, guilds, false, true);
 				}, 75000);

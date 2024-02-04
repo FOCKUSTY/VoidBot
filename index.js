@@ -58,12 +58,12 @@ const guildFoldersPath = path.join(__dirname, 'guildCommands');
 const guildCommandFolders = fs.readdirSync(guildFoldersPath);
 
 console.log(`Мои команды:`.bold);
-indexDeployCommands(globalcommandFolders, globalfoldersPath, client);
+indexDeployCommands(globalcommandFolders, globalfoldersPath, client, 'global');
 
 skip();
 
 console.log('Мои команды гильдии:'.bold);
-indexDeployCommands(guildCommandFolders, guildFoldersPath, client);
+indexDeployCommands(guildCommandFolders, guildFoldersPath, client, 'guild');
 
 const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));

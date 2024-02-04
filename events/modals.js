@@ -75,11 +75,10 @@ async function modalSubmit(int) {
         }
         else if(int.customId==='sayModal')
         {
-			
 			if(!(channel?.permissionsFor(interaction.client.user.id).has([PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel]))) {
             await int.reply({
             content:
-            `Сообщение не было доставлено на Ваш канал, возможны причины:\nВаш канал не является текстовым каналом\nУ меня не достаточно прав отправить сообщение на Ваш канал`,
+            `Сообщение не было доставлено на Ваш канал, возможны причины:\nВаш канал не является текстовым\nУ меня не достаточно прав отправить сообщение на Ваш канал`,
             ephemeral: true});
             return
         };
@@ -102,8 +101,8 @@ async function modalSubmit(int) {
             channel.send(`${msg.replaceAll(`\\n`, `\n`)}`)
         }
         
-        try {
-
+        try
+        {
         const embed = new EmbedBuilder()
         .setColor(0x161618)
         .setAuthor({name: `The Void`, iconURL: `https://cdn.discordapp.com/icons/1169284741846016061/63ff0e27c4c5de492894df065ef72266.png`})
@@ -115,13 +114,15 @@ async function modalSubmit(int) {
 		content: `Сообщение было доставлено на: ${channel}`,
 		embeds: [embed], ephemeral: true});
 
-    } catch (err) {
-        
-        await int.reply({
-        content:
-        `Сообщение не было доставлено на Ваш канал, возможны причины:\nВаш канал не является текстовым каналом\nУ меня не достаточно прав отправить сообщение на Ваш канал\n## Ошибка:\n\`\`\`${err}\`\`\``,
-        ephemeral: true});
-    }
+        }
+        catch (err) 
+        {
+
+            await int.reply({
+            content:
+            `Сообщение не было доставлено на Ваш канал, возможны причины:\nВаш канал не является текстовым каналом\nУ меня не достаточно прав отправить сообщение на Ваш канал\n## Ошибка:\n\`\`\`${err}\`\`\``,
+            ephemeral: true});
+        }
 
     /*  ----------------------------------------------------- updateModal -----------------------------------------------------  */
     /*  ----------------------------------------------------- updateModal -----------------------------------------------------  */

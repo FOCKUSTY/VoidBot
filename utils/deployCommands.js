@@ -1,20 +1,39 @@
-const { REST, Routes } = require('discord.js');
-const fs = require('node:fs');
-const path = require('node:path');
-const { color } = require('colors')
-const { guildId } = require('../config.json');
-const { hat } = require('../../VoidDataBase/data.json')
+const
+    { REST, Routes } = require('discord.js'),
+    { color } = require('colors'),
+    { guildId } = require('../config.json'),
+    { hat } = require('../../VoidDataBase/data.json'),
+    { copy } = require('../utils/copyArray'),
+    
+    fs = require('node:fs'),
+    path = require('node:path'),
+    
+    allCommands = [],
+    
+    globalCommands = [],
+    guildCommands = [];
 
-const commands = [];
-
-const getCommands = () =>
+const getCommands = (type='all') =>
 {
-    return commands;
+    switch (type)
+    {
+        case 'all':
+            return allCommands;
+
+        case 'global':
+            return globalCommands;
+
+        case 'guild':
+            return guildCommands;
+    
+        default:
+            return allCommands;
+    }
 }
 
 let using = 0;
 
-const indexDeployCommands = (commandFolders, foldersPath, client) =>
+const indexDeployCommands = (commandFolders, foldersPath, client, type) =>
 {
     for (const folder of commandFolders)
     {
@@ -34,7 +53,7 @@ const indexDeployCommands = (commandFolders, foldersPath, client) =>
                 if(options.length!=0)
                 {
                     text = `Команда ${`${command.data.name}`.cyan}`
-                    for(let i=0; i<12 - name.length-1; i++) spaces += ' ';
+                    for(let i=0; i<15 - name.length-1; i++) spaces += ' ';
                     subcommands.push(`${spaces} Опции:`);
                     for(let key in command.data.options)
                     {
@@ -45,7 +64,10 @@ const indexDeployCommands = (commandFolders, foldersPath, client) =>
                     using = 0;
                 };
 
-                commands.push(`${hat} ${command.data.name}`);
+                allCommands.push(`${hat} ${command.data.name}`);
+
+                if(type==='global') globalCommands.push(`${command.data.name}`);
+                else if(type==='guild') guildCommands.push(`${command.data.name}`);
 
                 client.commands.set(command.data.name, command);
                 subcommands.unshift(text);

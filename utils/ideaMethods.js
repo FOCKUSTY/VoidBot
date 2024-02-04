@@ -2,7 +2,7 @@ const
 
     { addUserTagToDB, getUserTagOutDB } = require('./dataBase'),
 
-    { TheVoidId: clientId, TheAbyssiaId, ideaChannelId } = require('../config.json');
+    { clientId, TheAbyssiaId, ideaChannelId } = require('../config.json');
 
 const readAllMessageFromIdeaChannel = async (client) =>
 {
@@ -11,7 +11,7 @@ const readAllMessageFromIdeaChannel = async (client) =>
 
     channel.messages.fetch({ limit: 100 }).then(messages => messages.forEach(async message =>
         {
-            if(message.author.id === TheVoidId || message.author.id === TheAbyssiaId)
+            if(message.author.id === clientId || message.author.id === TheAbyssiaId)
             {
                 if(message.embeds)
                 {
