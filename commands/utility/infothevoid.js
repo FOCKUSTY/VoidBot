@@ -1,30 +1,23 @@
-const
-	{
-		SlashCommandBuilder,
-		EmbedBuilder
-	} = require('discord.js'),
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { Random } = require("random-js");
+const { download } = require(`../../developing`)
+const random = new Random();
+let text = `Всё это фейк`
 
-	{ Random } = require("random-js"),
-	{ getActivities } = require('../../utils/updateActivities'),
- 	random = new Random();
-	
-let text = `Всё это фейк`;
-
-module.exports =
-{
+module.exports = {
 	cooldown: 0,
 	data: new SlashCommandBuilder()
 		.setName('thevoid')
 		.setDescription('Информация о The Void !')
 		.setDescriptionLocalizations({ru:'Информация о The Void',"en-US":'Info about The Void'}),
-	async execute(interaction)
-	{
-		const download = getActivities('download');
+	async execute(interaction) {
 
 		const rnum = random.integer(0, download.length-1)
-		text = download[rnum];
+		text = download[rnum]
 
-		await interaction.reply( { content: `${text}`, fetchReply: true, ephemeral: true } );
+		await interaction.reply({
+			content: `${text}`, fetchReply: true, ephemeral: true
+		})
 
 		const embed = new EmbedBuilder()
 		.setColor(0x161618)

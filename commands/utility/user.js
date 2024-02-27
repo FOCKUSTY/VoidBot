@@ -1,9 +1,7 @@
-const
-	{ SlashCommandBuilder, EmbedBuilder, time } = require('discord.js'),
-	{ getDevelop } = require('../../utils/develop');
+const { SlashCommandBuilder, EmbedBuilder, time } = require('discord.js');
+const { iconURL } = require(`../../developing.json`)
 
-module.exports =
-{
+module.exports = {
 	cooldown: 5,
 	data: new SlashCommandBuilder()
 	.setName('user')
@@ -23,36 +21,27 @@ module.exports =
 		.setNameLocalizations({ru:'участник',"en-US":'member'})
 		.setDescriptionLocalizations({ru:'Участник на сервере',"en-US":'Member on guild'})),
 	async execute(interaction) {
-		const iconURL = getDevelop('iconURL');
 		const int = interaction
-		if(int.guild!=null && int.guild!=undefined)
-		{
-			let 
-				userO = int.user,
-				member = int.member
-
-		if (int.options.getUser(`member`))
-		{
-			const user = int.options.getUser(`member`).id;
-			userO = int.options.getUser(`member`);
-			member = int.guild.members.cache.get(user);
+		if(int.guild!=null && int.guild!=undefined) {
+			let userO = int.user
+			let member = int.member
+		if (int.options.getUser(`member`)) {
+			const user = int.options.getUser(`member`).id
+			userO = int.options.getUser(`member`)
+			member = int.guild.members.cache.get(user)
 		}
 			
-			let
-				totalRoles = member.roles?.cache,
-				memberRoles = new Map();
-
+			let totalRoles = member.roles?.cache
+			let memberRoles = new Map();
 			const guildUserRoles = []
 	
-			totalRoles?.forEach(role =>
-			{
+			totalRoles?.forEach(role => {
 				memberRoles.set(role.position, role.id)
 			})
 	
 			const memberRolesSort = new Map([...memberRoles.entries()].sort((a, b) => b[0] - a[0]));
 	
-			memberRolesSort.forEach(roleId =>
-			{
+			memberRolesSort.forEach(roleId => {
 				guildUserRoles.push(`\n<@&${roleId}>`)
 			})
 	

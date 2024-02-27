@@ -1,34 +1,24 @@
-const
-	{
-		Events,
-		Client,
-		GatewayIntentBits,
-		Collection,
-	} = require('discord.js'),
-	
-	{ dateCheck } = require('../utils/date'),
-	{ Color, color, bold } = require(`colors`),
- 	
-	date = new Date(),
-	client = new Client({intents: [GatewayIntentBits.Guilds]})
+const { Events, Client, GatewayIntentBits, Collection, InteractionType } = require('discord.js');
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const { dateCheck } = require(`../developing`)
+const { Color, color, bold } = require(`colors`);
+const date = new Date();
 
 client.cooldowns = new Collection();
 
-module.exports =
-{
+module.exports = {
 	name: Events.InteractionCreate,
-	async execute(interaction)
-	{
+	async execute(interaction) {
 		const int = interaction;
 		
 		if (!int.isChatInputCommand()) return;
 		
-		// const user = int.user.globalName;
-		// const userAvatar = `https://cdn.discordapp.com/avatars/${int.user.id}/${int.user.avatar}.png`;
+		const user = int.user.globalName;
+		const userAvatar = `https://cdn.discordapp.com/avatars/${int.user.id}/${int.user.avatar}.png`;
 
 		const command = int.client.commands.get(int.commandName);
 
-		// const commandName = int.commandName;
+		const commandName = int.commandName;
 
 		const subcommands = [];
 		for (let key in int.options) {
@@ -36,20 +26,18 @@ module.exports =
 			const subcommand = int.options[`_subcommand`];
 			const hoistedOptions = int.options[`_hoistedOptions`];
 			if (int.options.hasOwnProperty(key)) {
-				if(group!=null)
-				{
+				if(group!=null) {
 					subcommands.push(`Группа: ${group}`);
+					if(subcommand) `\n`;
 				};
-				if(subcommand!=null)
-				{
+				if(subcommand!=null) {
 					subcommands.push(`Подкоманда: ${subcommand}`);
+					if(hoistedOptions) `\n`;
 				};
-				if(hoistedOptions[0]?.name!=undefined)
-				{
-					for(let i in hoistedOptions) subcommands.push(`Опция: ${hoistedOptions[i]?.name}`);
+				if(hoistedOptions[0]?.name!=undefined) {
+					subcommands.push(`Опция: ${hoistedOptions[0]?.name}`);
 				};
-				if(group===null && subcommand===null && hoistedOptions[0]?.name===undefined)
-				{
+				if(group===null && subcommand===null && hoistedOptions[0]?.name===undefined) {
 					subcommands.push(`Нет подкоманд`);
 				};
 				break;
@@ -58,13 +46,13 @@ module.exports =
 
 console.log(
 	`Было замечено использование команды` + `\n` +
-	`Название команды: ` + `${int.commandName}`.red + `\n` +
+	`Название команды: ` + `/${int.commandName}`.red + `\n` +
 	`${subcommands.join(`\n`)}` + `\n` +
 	`Команду использовал: ` + `${int.user} - ${int.user.username} (${int.user.globalName})`.green + `\n` +
-	`Аккаунт создан с ` + `${dateCheck(int.user.createdAt)||`Не известно`}`.magenta + `\n` +
+	`Аккаунт создан с ` + `${dateCheck(int.user.createdAt, int?.guild)||`Не известно`}`.magenta + `\n` +
 	`На сервере: ` + `${int?.guild||`Не на сервере`}`.yellow+`\n`+
-	`Сервер создан с `+`${dateCheck(int?.guild?.createdAt)||`Не на сервере`}`.magenta+ `\n` +
-	`Участник на сервере с `+`${dateCheck(int?.member?.joinedAt)||`Не на сервере`}`.magenta+`` + `\n` +
+	`Сервер создан с `+`${dateCheck(int?.guild?.createdAt, int?.guild)||`Не на сервере`}`.magenta+ `\n` +
+	`Участник на сервере с `+`${dateCheck(int?.member?.joinedAt, int?.guild)||`Не на сервере`}`.magenta+`` + `\n` +
 	`В канале: ` + `${int?.channel||`Личные сообщения`} ${int?.channel?.name||`с ботом`}`.yellow + `\n` +
 	`Время использования: ` + `<t:${Math.floor(int.createdTimestamp / 1000 - 35)}> (<t:${Math.floor(int.createdTimestamp / 1000 - 35)}:R>)`.cyan + `\n` +
 	`Время в часах: ` + ``+`${date.toLocaleString()}`.magenta+`` + '\n'

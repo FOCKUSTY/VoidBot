@@ -1,9 +1,7 @@
-const
-	{ SlashCommandBuilder } = require('discord.js'),
-	{ version } = require('../../package.json');
+const { SlashCommandBuilder } = require('discord.js');
+const { version } = require('../../package.json');
 
-module.exports =
-{
+module.exports = {
 	cooldown: 5,
 	data: new SlashCommandBuilder()
 		.setName('version')
@@ -18,7 +16,8 @@ module.exports =
 		}),
 	async execute(interaction) {
 		await interaction.reply({
-			content: `Версия бота: ${version}`, ephemeral: true
+			content:
+			`Версия бота: ${version}`, ephemeral: true
 		})
 	},
 };
